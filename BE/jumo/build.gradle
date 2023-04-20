@@ -97,6 +97,7 @@ project(':domain-parking') {
 		implementation project(':domain-user')
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 		runtimeOnly 'com.mysql:mysql-connector-j'
+		implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 	}
 }
 

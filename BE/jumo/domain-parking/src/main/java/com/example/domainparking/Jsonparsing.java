@@ -1,12 +1,16 @@
 package com.example.domainparking;
 
-import com.fasterxml.jackson.core.JsonParser;
+import com.google.code.geocoder.Geocoder;
+import com.google.code.geocoder.GeocoderRequestBuilder;
+import com.google.code.geocoder.model.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/problem")
@@ -63,8 +67,29 @@ public class Jsonparsing {
 
             if(latitude == 0 && longitude == 0)
             {
-                noPointData++;
+                Float[] coords = new Float[2];
+                if (road_addr.isEmpty()){
+                    coords = findGeoPoint("경기도 성남시 분당구 삼평동");
+                }
+                else{
+                    coords = findGeoPoint("경기도 성남시 분당구 삼평동");
+                }
+
+                if (coords != null)
+                {
+                    System.out.println(old_addr);
+                    System.out.println(road_addr);
+                    latitude = coords[0];
+                    longitude = coords[1];
+                    System.out.println(latitude);
+                    System.out.println(longitude);
+                }
+
+
+
             }
+
+
 
 
 //            System.out.println(road_addr+ Integer.toString(fee_basic));
@@ -77,7 +102,37 @@ public class Jsonparsing {
 
 
 
+
+
         return true;
+    }
+
+    public static Float[] findGeoPoint(String location) {
+
+        if (location == null)
+            return null;
+
+        // setAddress : 변환하려는 주소 (경기도 성남시 분당구 등)
+        // setLanguate : 인코딩 설정
+        GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(location).setLanguage("ko").getGeocoderRequest();
+
+        try {
+            Geocoder geocoder = new Geocoder();
+            GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
+
+            if (geocoderResponse.getStatus() == GeocoderStatus.OK & !geocoderResponse.getResults().isEmpty()) {
+                GeocoderResult geocoderResult=geocoderResponse.getResults().iterator().next();
+                LatLng latitudeLongitude = geocoderResult.getGeometry().getLocation();
+
+                Float[] coords = new Float[2];
+                coords[0] = latitudeLongitude.getLat().floatValue();
+                coords[1] = latitudeLongitude.getLng().floatValue();
+                return coords;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
 }

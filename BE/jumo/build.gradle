@@ -98,6 +98,7 @@ project(':domain-parking') {
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 		runtimeOnly 'com.mysql:mysql-connector-j'
 		implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+		implementation group: 'com.google.code.geocoder-java', name: 'geocoder-java', 'version': '0.16'
 	}
 }
 

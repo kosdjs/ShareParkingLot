@@ -5,6 +5,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'androidx.navigation.safeargs.kotlin'
 }
+
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
@@ -18,7 +19,8 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [NAVER_CLIENT_ID : properties["NAVER_KEY"]]
+        manifestPlaceholders["NAVER_CLIENT_KEY"] = "NAVER_CLIENT_KEY"
+        buildConfigField "String","NAVER_CLIENT_KEY", properties["NAVER_CLIENT_KEY"]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

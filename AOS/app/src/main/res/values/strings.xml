@@ -2,4 +2,15 @@
     <string name="app_name">주차장의 모든것</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="logo_big1">주</string>
+    <string name="logo_big2">차장</string>
+    <string name="logo_small1">의</string>
+    <string name="logo_small2">모든것</string>
+    <string name="email_text">이메일</string>
+    <string name="password_text">비밀번호</string>
+    <string name="sign_up_text">회원가입</string>
+    <string name="password_reset_text">패스워드 재설정</string>
+    <string name="login_text">로그인</string>
+    <string name="easy_login_text">간편 로그인</string>
 </resources>

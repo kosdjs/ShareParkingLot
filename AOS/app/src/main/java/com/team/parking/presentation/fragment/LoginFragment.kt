@@ -27,6 +27,9 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         fragmentLoginBinding = FragmentLoginBinding.bind(view)
         tempLoginToMap()
+        bindg{
+            findNavController().navigate(R.id.action_login_fragment_to_signUpFragment)
+        }
     }
 
     /**

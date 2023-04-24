@@ -1,27 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F9963D"
     tools:context=".presentation.fragment.LoginFragment">
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/temp"
-        android:text="임시버튼"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/logo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/login_form"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintVertical_weight="1">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/logo_image"
+            android:layout_width="127dp"
+            android:layout_height="104dp"
+            android:src="@drawable/logo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.126"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.419" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/logo_big1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/line_br"
+            android:text="@string/logo_big1"
+            android:textSize="35sp"
+            app:layout_constraintLeft_toLeftOf="@+id/logo_image"
+            app:layout_constraintTop_toTopOf="@+id/logo_image"
+            android:layout_marginLeft="45dp"
+            tools:layout_editor_absoluteX="188dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/logo_big2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/line_br"
+            android:text="@string/logo_big2"
+            android:textSize="30sp"
+            app:layout_constraintLeft_toRightOf="@+id/logo_big1"
+            app:layout_constraintTop_toTopOf="@+id/logo_big1"
+            android:layout_marginTop="10dp"
+            tools:layout_editor_absoluteX="219dp"
+            tools:layout_editor_absoluteY="144dp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/logo_small1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logo_small1"
+            android:fontFamily="@font/line_rg"
+            android:textSize="30sp"
+            app:layout_constraintLeft_toRightOf="@+id/logo_big2"
+            app:layout_constraintTop_toTopOf="@+id/logo_big2" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/logo_small2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logo_small2"
+            android:fontFamily="@font/line_rg"
+            android:textSize="30sp"
+            app:layout_constraintLeft_toRightOf="@+id/logo_small1"
+            app:layout_constraintTop_toTopOf="@id/logo_small1"
+            android:layout_marginTop="20dp"
+            tools:layout_editor_absoluteX="272dp"
+            tools:layout_editor_absoluteY="177dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/login_form"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo"
+        app:layout_constraintVertical_weight="3"
+        android:background="@drawable/login_background"
+        >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/email_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/email_text"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:fontFamily="@font/line_rg"
+            android:textSize="15sp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="100dp"
+            />
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/email_input"
+            android:layout_width="275dp"
+            android:layout_height="40dp"
+            android:fontFamily="@font/line_br"
+            android:textSize="15sp"
+            android:background="@drawable/input_form"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/email_text"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/password_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password_text"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/line_rg"
+            app:layout_constraintTop_toBottomOf="@id/email_input"
+            app:layout_constraintLeft_toLeftOf="@id/email_text"
+            />
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/password_input"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:textSize="15sp"
+            android:background="@drawable/input_form"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/line_br"
+            app:layout_constraintTop_toBottomOf="@id/password_text"
+            app:layout_constraintLeft_toLeftOf="@id/email_input"
+            app:layout_constraintRight_toRightOf="@id/email_input"
+            />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/sign_up_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/password_input"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:background="#00ff0000"
+            android:text="@string/sign_up_text"
+            android:textSize="10sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="220dp"
+            android:fontFamily="@font/line_rg"
+            />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/password_reset_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00ff0000"
+            android:fontFamily="@font/line_rg"
+            app:layout_constraintTop_toTopOf="@id/sign_up_btn"
+            app:layout_constraintLeft_toRightOf="@id/sign_up_btn"
+            android:text="@string/password_reset_text"
+            android:textSize="10sp"
+            android:layout_marginLeft="5dp"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/login_btn"
+            android:layout_width="275dp"
+            android:layout_height="wrap_content"
+            android:text="@string/login_text"
+            app:layout_constraintTop_toBottomOf="@+id/sign_up_btn"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:flow_horizontalAlign="center"
+            android:background="@drawable/big_btn"
+            android:textSize="15sp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/line_rg"
+            />
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="20dp"
+            android:src="@drawable/easy_login"
+            app:layout_constraintTop_toBottomOf="@id/login_btn"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+
+            app:flow_horizontalAlign="center"
+            android:layout_marginTop="20dp"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

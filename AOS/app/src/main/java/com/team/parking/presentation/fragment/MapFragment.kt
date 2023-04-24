@@ -7,16 +7,20 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.UiThread
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.navigation.NavigationView
+import com.naver.maps.map.CameraUpdate
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
 import com.team.parking.MainActivity
 import com.team.parking.R
 import com.team.parking.databinding.FragmentMapBinding
 
 private const val TAG = "MapFragment_지훈"
-class MapFragment : Fragment() {
+class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var fragmentMapBinding: FragmentMapBinding
 
     override fun onCreateView(
@@ -39,7 +43,22 @@ class MapFragment : Fragment() {
     private fun init(){
         setDatabinding()
         setOnClickNavigationDrawerItem()
+        initMap()
     }
+
+    /**
+     * NaverMap Option
+     */
+    private fun initMap(){
+        val fm = childFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.fragment_fragment_map_maps) as com.naver.maps.map.MapFragment?
+            ?:com.naver.maps.map.MapFragment.newInstance().also{
+                fm.beginTransaction().add(R.id.fragment_fragment_map_maps,it).commit()
+            }
+        mapFragment.getMapAsync(this)
+
+    }
+
 
 
     /**
@@ -80,6 +99,16 @@ class MapFragment : Fragment() {
      */
     fun onNavigationDrawer(){
         (activity as MainActivity).navigationDrawer.openDrawer(GravityCompat.START)
+    }
+
+
+    @UiThread
+    override fun onMapReady(naverMap: NaverMap) {
+        Log.i(TAG, "onMapReady: ${naverMap.cameraPosition}")
+
+        naverMap.addOnCameraChangeListener{ reason , animated ->
+            Log.i(TAG, "onMapReady: ${naverMap.cameraPosition}")
+        }
     }
 
 

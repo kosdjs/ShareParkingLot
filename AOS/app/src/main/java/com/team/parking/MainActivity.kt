@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private fun setNavigationDrawerInit(){
         navigationDrawer = binding.drawer
         navigationView = binding.navigationFragmentMap
+        binding.drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
 
     /**

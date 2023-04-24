@@ -25,12 +25,14 @@
         app:navGraph="@navigation/nav_graph"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_fragment_map"
-        android:layout_width="match_parent"
+        android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/side_menu"/>
+        app:headerLayout="@layout/side_header"
+        app:menu="@menu/side_menu" />
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

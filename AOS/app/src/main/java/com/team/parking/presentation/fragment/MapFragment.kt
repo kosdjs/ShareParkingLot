@@ -106,10 +106,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     override fun onMapReady(naverMap: NaverMap) {
         Log.i(TAG, "onMapReady: ${naverMap.cameraPosition}")
 
-        naverMap.addOnCameraChangeListener{ reason , animated ->
-            Log.i(TAG, "onMapReady: ${naverMap.cameraPosition}")
         }
-    }
-
-
 }
+
+

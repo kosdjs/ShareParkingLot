@@ -3,14 +3,16 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string name="logo_big1">주</string>
-    <string name="logo_big2">차장</string>
-    <string name="logo_small1">의</string>
-    <string name="logo_small2">모든것</string>
     <string name="email_text">이메일</string>
     <string name="password_text">비밀번호</string>
     <string name="sign_up_text">회원가입</string>
     <string name="password_reset_text">패스워드 재설정</string>
     <string name="login_text">로그인</string>
     <string name="easy_login_text">간편 로그인</string>
+    <string name="call_text">연락처</string>
+    <string name="certification_number_text">인증번호</string>
+    <string name="name_text">이름</string>
+    <string name="remain_time_text">남은 시간</string>
+    <string name="certification_text">인증</string>
+    <string name="complete_sign_up_text">회원 가입 완료</string>
 </resources>

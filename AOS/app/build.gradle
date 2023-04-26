@@ -21,7 +21,8 @@ android {
         versionName "1.0"
         manifestPlaceholders["NAVER_CLIENT_KEY"] = "NAVER_CLIENT_KEY"
         buildConfigField "String","NAVER_CLIENT_KEY", properties["NAVER_CLIENT_KEY"]
-
+        manifestPlaceholders["KAKAO_CLIENT_KEY"] = "KAKAO_CLIENT_KEY"
+        buildConfigField "String","KAKAO_CLIENT_KEY", properties["KAKAO_CLIENT_KEY"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -54,6 +55,8 @@ dependencies {
 
     // 네이버 지도 SDK
     implementation 'com.naver.maps:map-sdk:3.15.0'
+    // 카카오 로그인
+    implementation "com.kakao.sdk:v2-user:2.13.0"
 
     //sidebar
     implementation "androidx.drawerlayout:drawerlayout:1.1.1"

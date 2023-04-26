@@ -9,7 +9,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
+import com.kakao.sdk.common.util.Utility
+import com.team.parking.data.api.UserService
+import com.team.parking.data.model.user.User
 import com.team.parking.databinding.ActivityMainBinding
+import com.team.parking.presentation.utils.App
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "MainActivity_지훈"
@@ -18,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
     lateinit var navigationDrawer : DrawerLayout
     lateinit var navigationView : NavigationView
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

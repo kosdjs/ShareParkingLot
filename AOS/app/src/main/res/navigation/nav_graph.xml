@@ -59,5 +59,14 @@
         android:id="@+id/myShareParkingLotFragment"
         android:name="com.team.parking.presentation.fragment.MyShareParkingLotFragment"
         android:label="fragment_my_share_parking_lot"
-        tools:layout="@layout/fragment_my_share_parking_lot" />
+        tools:layout="@layout/fragment_my_share_parking_lot" >
+        <action
+            android:id="@+id/action_myShareParkingLotFragment_to_daySelectFragment"
+            app:destination="@id/daySelectFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/daySelectFragment"
+        android:name="com.team.parking.presentation.fragment.DaySelectFragment"
+        android:label="fragment_day_select"
+        tools:layout="@layout/fragment_day_select" />
 </navigation>

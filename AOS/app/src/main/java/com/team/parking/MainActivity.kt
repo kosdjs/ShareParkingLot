@@ -74,5 +74,9 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_map_fragment_to_profileFragment)
             binding.drawer.closeDrawers()
         }
+        headerBinding.buttonSideHeader.setOnClickListener {
+            navController.navigate(R.id.action_map_fragment_to_myShareParkingLotFragment)
+            binding.drawer.closeDrawers()
+        }
     }
 }

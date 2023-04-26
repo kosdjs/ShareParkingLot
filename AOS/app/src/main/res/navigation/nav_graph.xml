@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_map_fragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_map_fragment_to_myShareParkingLotFragment"
+            app:destination="@id/myShareParkingLotFragment" />
     </fragment>
     <fragment
         android:id="@+id/pointFragment"
@@ -52,4 +55,9 @@
         android:name="com.team.parking.presentation.fragment.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/myShareParkingLotFragment"
+        android:name="com.team.parking.presentation.fragment.MyShareParkingLotFragment"
+        android:label="fragment_my_share_parking_lot"
+        tools:layout="@layout/fragment_my_share_parking_lot" />
 </navigation>

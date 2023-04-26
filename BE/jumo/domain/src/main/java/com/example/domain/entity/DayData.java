@@ -1,9 +1,6 @@
 package com.example.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,10 +16,11 @@ public class DayData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long day_id;
 
-    private String day_str;
+    @Enumerated(EnumType.STRING)
+    private DayName day_str;
 
-    private String day_start;
+    private int day_start;
 
-    private String day_end;
+    private int day_end;
 
 }

@@ -18,7 +18,7 @@ public class Image {
 
     private String url;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="sha_id")
     private ShareLot shareLot;
 

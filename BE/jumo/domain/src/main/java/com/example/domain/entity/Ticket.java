@@ -3,10 +3,12 @@ package com.example.domain.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Ticket {
@@ -42,7 +44,9 @@ public class Ticket {
 
     private String parking_date;
 
+    @Column(columnDefinition = "boolean default false")
     private boolean buy_confirm;
 
+    @Column(columnDefinition = "boolean default false")
     private boolean sell_confirm;
 }

@@ -3,11 +3,13 @@ package com.example.domain.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CarInfo {
@@ -22,6 +24,6 @@ public class CarInfo {
 
     private String car_str;
 
-    @ColumnDefault("false")
+    @Column(columnDefinition = "boolean default false")
     private boolean car_rep;
 }

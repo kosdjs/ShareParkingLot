@@ -1,6 +1,6 @@
 package com.team.parking.data.api
 
-import com.team.parking.data.model.MapResponse
+import com.team.parking.data.model.map.MapResponse
 import retrofit2.Response
 import retrofit2.http.GET
 

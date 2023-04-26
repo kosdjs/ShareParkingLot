@@ -22,7 +22,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     public List<ParkingListDto> getListOfPoint(ParkingInDto parkingInDto) {
         List<ParkingLot> parkingLots = parkingLotRepo.findAllByLatitudeGreaterThanAndLatitudeLessThanAndLongitudeGreaterThanAndLongitudeLessThan(
                 parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
-        System.out.println(parkingLots.size());
+
         return parkingLots.stream().map(parkingLot -> new ParkingListDto(parkingLot)).collect(Collectors.toList());
     }
 }

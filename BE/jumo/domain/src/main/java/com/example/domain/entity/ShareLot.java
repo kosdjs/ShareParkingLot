@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(builderMethodName = "ShareLotBuilder")
 public class ShareLot {
 
 
@@ -43,8 +43,17 @@ public class ShareLot {
     private float longitude;
 
 
-    public static ShareLotBuilder builder(ShareSaveDto studyDto) {
-        return null;
+    public static ShareLotBuilder builder(ShareSaveDto shareSaveDto) {
+        return ShareLotBuilder()
+                .latitude(shareSaveDto.getLatitude())
+                .longitude(shareSaveDto.getLongitude())
+                .sha_fee(shareSaveDto.getShaFee())
+                .sha_field(shareSaveDto.getShaField())
+                .sha_jibun(shareSaveDto.getJibun())
+                .sha_road(shareSaveDto.getRoad())
+                .sha_type(shareSaveDto.getShaType())
+                .sha_name(shareSaveDto.getShaName())
+                .sha_prop(shareSaveDto.getShaProp());
     }
 
 

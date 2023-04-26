@@ -19,10 +19,12 @@ public class DayData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long day_id;
 
+    @
+
     private String day_str;
 
-    private String day_start;
+    private int day_start;
 
-    private String day_end;
+    private int day_end;
 
 }

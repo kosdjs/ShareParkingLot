@@ -1,4 +1,4 @@
-package com.example.jumouser.dto;
+package com.example.domainuser.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

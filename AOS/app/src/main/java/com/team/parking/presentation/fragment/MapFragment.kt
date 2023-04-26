@@ -4,37 +4,35 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
-import androidx.annotation.UiThread
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.navigation.NavigationView
+import com.team.parking.R
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.OnSuccessListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.util.FusedLocationSource
 import com.team.parking.MainActivity
-import com.team.parking.R
 import com.team.parking.databinding.FragmentMapBinding
+
 
 private const val TAG = "MapFragment_지훈"
 class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var fragmentMapBinding: FragmentMapBinding
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
-
+    private lateinit var currentLocation : Location
+    private lateinit var fusedLocationClient : FusedLocationProviderClient
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -50,18 +48,17 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
-
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fragmentMapBinding = DataBindingUtil.bind<FragmentMapBinding>(view)!!
         init()
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
     /**
@@ -70,17 +67,47 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private fun init() {
         setDatabinding()
         setOnClickNavigationDrawerItem()
-        initMap()
+        fetchLastLocation()
     }
 
+    /**
+     * 사용자 현재위치 받기
+     */
+    private fun fetchLastLocation(){
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                PERMISSIONS,
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return
+        }
+        var task = fusedLocationClient.lastLocation
+        task.addOnSuccessListener(object : OnSuccessListener<Location?> {
+            override fun onSuccess(location: Location?) {
+                if(location!=null) {
+                    currentLocation = location
+                }
+                initMap()
+            }
+
+        })
+
+
+    }
 
     /**
      * NaverMap Option
      */
     private fun initMap() {
-
-        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-
         val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.fragment_fragment_map_maps) as com.naver.maps.map.MapFragment?
             ?:com.naver.maps.map.MapFragment.newInstance().also{
@@ -112,6 +139,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         }
     }
 
+
     /**
      * databinding 초기화
      */
@@ -121,6 +149,8 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             lifecycleOwner = this@MapFragment
         }
     }
+
+
     /**
      * 햄버거 클릭시 drawer 생성
      */
@@ -136,14 +166,15 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         naverMap.minZoom = 8.0
         naverMap.maxZoom = 18.0
     }
-
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
+        val cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLocation.latitude,currentLocation.longitude))
+        val zoomUpdate = CameraUpdate.zoomTo(14.0)
+        naverMap.moveCamera(cameraUpdate)
+        naverMap.moveCamera(zoomUpdate)
+        Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
         mapSetting()
-        // NaverMap의 locationSource 설정
-        naverMap.locationSource = locationSource
-        Log.i(TAG, "onMapReady: ")
-        // 위치 권한 허용 확인
+
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -160,11 +191,12 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             )
             return
         }
-
-
-
     }
 
+
+    /**
+     * GPS 권한 요청 CallBack
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -180,12 +212,15 @@ class MapFragment : Fragment() , OnMapReadyCallback {
                 Toast.makeText(context, "권한이 거부되어 현위치를 표시할 수 없습니다.", Toast.LENGTH_SHORT)
                     .show()
             } else {
+                fetchLastLocation()
                 naverMap.locationTrackingMode = LocationTrackingMode.Follow
+                Log.i(TAG, "onRequestPermissionsResult: ")
             }
             return
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
 }
 
 

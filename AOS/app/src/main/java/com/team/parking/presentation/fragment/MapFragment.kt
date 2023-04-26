@@ -166,6 +166,23 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         naverMap.minZoom = 8.0
         naverMap.maxZoom = 18.0
     }
+
+    /**
+     * CameraChange : 카메라 이동시 마다 호출
+     * CameraIdle : 카메라 이동 끝날시 호출
+     */
+
+    private fun getMapDataFromRemote(){
+        naverMap.addOnCameraChangeListener { i, b ->
+            Log.i(TAG, "onMapReady: camera=${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
+        }
+        naverMap.addOnCameraIdleListener {
+            Log.i(TAG, "finish")
+        }
+
+    }
+
+
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLocation.latitude,currentLocation.longitude))
@@ -174,6 +191,8 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         naverMap.moveCamera(zoomUpdate)
         Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
         mapSetting()
+        getMapDataFromRemote()
+
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),

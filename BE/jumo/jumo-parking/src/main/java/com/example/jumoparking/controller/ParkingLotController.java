@@ -1,5 +1,7 @@
 package com.example.jumoparking.controller;
 
+import com.example.domain.dto.ParkingInDto;
+import com.example.domain.dto.ParkingListDto;
 import com.example.jumoparking.service.ParkingLotService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

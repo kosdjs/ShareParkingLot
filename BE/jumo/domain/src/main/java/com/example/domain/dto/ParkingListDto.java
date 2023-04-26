@@ -1,7 +1,7 @@
-package com.example.domainuser.dto;
+package com.example.domain.dto;
 
-import com.example.domainparking.entity.ParkingLot;
-import io.swagger.v3.oas.annotations.media.Schema;
+
+import com.example.domain.entity.ParkingLot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Schema(description = "게시물 리스트 응답DTO")
 public class ParkingListDto {
     private float lat;
     private float lng;

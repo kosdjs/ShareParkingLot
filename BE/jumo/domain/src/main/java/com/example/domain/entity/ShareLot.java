@@ -1,6 +1,7 @@
-package com.example.domainuser.entity;
+package com.example.domain.entity;
 
 
+import com.example.domain.dto.ShareSaveDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,13 +44,7 @@ public class ShareLot {
 
 
     public static ShareLotBuilder builder(ShareSaveDto studyDto) {
-        return StudyBuilder()
-                .idx(studyDto.getIdx())
-                .studyName(studyDto.getStudyName())
-                .regUserIdx(studyDto.getRegUserIdx())
-                .maxCnt(studyDto.getMaxCnt())
-                .startDate(studyDto.getStartDate())
-                .endDate(studyDto.getEndDate());
+        return null;
     }
 
 

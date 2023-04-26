@@ -1,7 +1,7 @@
-package com.example.domainuser.dto;
+package com.example.domain.dto;
 
 
-import com.example.domainparking.entity.ParkingLot;
+import com.example.domain.entity.ParkingLot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,12 +23,4 @@ public class ShareSaveDto {
     private float latitude;
     private float longitude;
 
-    @Builder
-    public ShareSaveDto(ParkingLot parkingLot){
-        this.lat = parkingLot.getLatitude();
-        this.lng = parkingLot.getLongitude();
-        this.parkType = 0;
-        this.feeBasic = parkingLot.getPer_basic() * 6;
-        this.clusteringCnt = 0;
-    }
 }

@@ -1,4 +1,4 @@
-package com.example.domainuser.etc;
+package com.example.domain.etc;
 
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;

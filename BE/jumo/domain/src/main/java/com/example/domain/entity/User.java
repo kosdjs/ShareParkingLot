@@ -1,4 +1,5 @@
-package com.example.domainuser.entity;
+package com.example.domain.entity;
+
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -6,23 +7,22 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class DayData {
+public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long day_id;
-
-    private String day_str;
-
-    private String day_start;
-
-    private String day_end;
-
+    private Long user_id;
+    private String social_id;
+    private String phone;
+    private String email;
+    private String nickname;
+    private String fcm_token;
+    private String profile_img;
+    private int pt_has;
 }

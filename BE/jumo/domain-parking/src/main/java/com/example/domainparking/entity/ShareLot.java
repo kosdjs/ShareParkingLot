@@ -42,5 +42,15 @@ public class ShareLot {
     private float longitude;
 
 
+    public static ShareLotBuilder builder(ShareSaveDto studyDto) {
+        return StudyBuilder()
+                .idx(studyDto.getIdx())
+                .studyName(studyDto.getStudyName())
+                .regUserIdx(studyDto.getRegUserIdx())
+                .maxCnt(studyDto.getMaxCnt())
+                .startDate(studyDto.getStartDate())
+                .endDate(studyDto.getEndDate());
+    }
+
 
 }

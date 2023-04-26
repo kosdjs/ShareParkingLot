@@ -1,7 +1,7 @@
 package com.example.jumoparking.dto;
 
+
 import com.example.domainparking.entity.ParkingLot;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,17 +11,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Schema(description = "게시물 리스트 응답DTO")
-public class ParkingListDto {
-    private float lat;
-    private float lng;
-    private int parkType;
-    private int feeBasic;
+public class ShareSaveDto {
 
-    private int clusteringCnt;
+    private int shaType;
+    private String shaName;
+    private String jibun;
+    private String road;
+    private int shaField;
+    private int shaFee;
+    private String shaProp;
+    private float latitude;
+    private float longitude;
 
     @Builder
-    public ParkingListDto(ParkingLot parkingLot){
+    public ShareSaveDto(ParkingLot parkingLot){
         this.lat = parkingLot.getLatitude();
         this.lng = parkingLot.getLongitude();
         this.parkType = 0;

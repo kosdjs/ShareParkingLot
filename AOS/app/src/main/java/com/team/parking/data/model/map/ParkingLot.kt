@@ -11,5 +11,7 @@ data class ParkingLot(
     @SerializedName("lng")
     val lng: Double,
     @SerializedName("parkType")
-    val parkType: Int
+    val parkType: Int,
+    @SerializedName("clusteringCnt")
+    val clusteringCnt : Int
 )

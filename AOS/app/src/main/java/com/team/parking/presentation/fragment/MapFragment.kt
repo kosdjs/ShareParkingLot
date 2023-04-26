@@ -24,9 +24,14 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.team.parking.MainActivity
+import com.team.parking.data.api.MapService
+import com.team.parking.data.model.map.MapRequest
 import com.team.parking.databinding.FragmentMapBinding
+import com.team.parking.presentation.utils.App
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -39,6 +44,8 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var naverMap: NaverMap
     private lateinit var currentLocation : Location
     private lateinit var fusedLocationClient : FusedLocationProviderClient
+    private lateinit var mapRequest : MapRequest
+    private  var job : Job? = null
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -66,6 +73,29 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         init()
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
+
+
+    private fun getMapData(){
+        job = CoroutineScope(Dispatchers.IO).launch{
+            withContext(Dispatchers.Main){
+                val response = App.retrofit.create(MapService::class.java).getMapsDataFrom(mapRequest)
+                if(response.isSuccessful){
+                    val data = response.body()
+                    if(data!=null){
+                        Log.i(TAG, "getMapData: ${response.body()}")
+                        for(i in 0 until data.size){
+                            val marker = Marker()
+                            marker.position = LatLng(data[i].lat,data[i].lng)
+                            marker.map = naverMap
+                        }
+                    }
+                }else{
+                    Log.i(TAG, "getMapData: ${response.message()}")
+                }
+            }
+        }
+    }
+
 
     /**
      * 초기화 함수 모음
@@ -174,27 +204,36 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     }
 
     /**
+     * 맵 화면 이동 리스너
      * CameraChange : 카메라 이동시 마다 호출
      * CameraIdle : 카메라 이동 끝날시 호출
      */
-
     private fun getMapDataFromRemote(){
+
         naverMap.addOnCameraChangeListener { i, b ->
             //Log.i(TAG, "onMapReady: camera=${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
             //Log.i(TAG, "getMapDataFromRemote: ${getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)}")
         }
         naverMap.addOnCameraIdleListener {
-
+            /*val marker = Marker()
+            marker.position = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
+            marker.map = naverMap*/
             //Log.i(TAG, "getMapDataFromRemote 1: ${naverMap.contentBounds.center.latitude},${naverMap.contentBounds.center.longitude}")
             Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
             Log.i(TAG, "중심 좌표 : ${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
             Log.i(TAG, "${naverMap.contentBounds.southWest.latitude} ,${naverMap.contentBounds.northWest.latitude} ")
             Log.i(TAG, "${naverMap.contentBounds.southWest.longitude} ,${naverMap.contentBounds.northEast.longitude}")
+
             //getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
+            /*mapRequest = MapRequest(
+                naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude,
+                130.0,130.0,0.0,0.0,0.0
+            )*/
 
         }
-
     }
+
+
 
    /* // 좌표 -> 주소 변환
     private fun getAddress(lat: Double, lng: Double): String {
@@ -222,6 +261,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
+
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLocation.latitude,currentLocation.longitude))
         val zoomUpdate = CameraUpdate.zoomTo(14.0)
         naverMap.moveCamera(cameraUpdate)
@@ -229,6 +269,12 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
         mapSetting()
         getMapDataFromRemote()
+        mapRequest = MapRequest(
+            naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude,
+            130.0,130.0,0.0,0.0,0.0
+        )
+        getMapData()
+
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),

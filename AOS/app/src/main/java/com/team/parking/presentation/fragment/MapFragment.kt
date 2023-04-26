@@ -3,6 +3,8 @@ package com.team.parking.presentation.fragment
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -20,10 +22,14 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
 import com.naver.maps.map.util.FusedLocationSource
 import com.team.parking.MainActivity
 import com.team.parking.databinding.FragmentMapBinding
+import java.io.IOException
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 private const val TAG = "MapFragment_지훈"
@@ -174,13 +180,44 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
     private fun getMapDataFromRemote(){
         naverMap.addOnCameraChangeListener { i, b ->
-            Log.i(TAG, "onMapReady: camera=${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
+            //Log.i(TAG, "onMapReady: camera=${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
+            //Log.i(TAG, "getMapDataFromRemote: ${getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)}")
         }
         naverMap.addOnCameraIdleListener {
-            Log.i(TAG, "finish")
+
+            //Log.i(TAG, "getMapDataFromRemote 1: ${naverMap.contentBounds.center.latitude},${naverMap.contentBounds.center.longitude}")
+            Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
+            Log.i(TAG, "중심 좌표 : ${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
+            Log.i(TAG, "${naverMap.contentBounds.southWest.latitude} ,${naverMap.contentBounds.northWest.latitude} ")
+            Log.i(TAG, "${naverMap.contentBounds.southWest.longitude} ,${naverMap.contentBounds.northEast.longitude}")
+            //getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
+
         }
 
     }
+
+   /* // 좌표 -> 주소 변환
+    private fun getAddress(lat: Double, lng: Double): String {
+        val geoCoder = Geocoder(requireContext(), Locale.KOREA)
+        val address: ArrayList<Address>
+        var addressResult = "주소를 가져 올 수 없습니다."
+        try {
+            //세번째 파라미터는 좌표에 대해 주소를 리턴 받는 갯수로
+            //한좌표에 대해 두개이상의 이름이 존재할수있기에 주소배열을 리턴받기 위해 최대갯수 설정
+            address = geoCoder.getFromLocation(lat, lng, 1) as ArrayList<Address>
+            if (address.size > 0) {
+                // 주소 받아오기
+                val currentLocationAddress = address[0].getAddressLine(0)
+                    .toString()
+                Log.i(TAG, "getAddress: ${address[0].thoroughfare.toString()}")
+                addressResult = currentLocationAddress
+            }
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return addressResult
+    }*/
 
 
     override fun onMapReady(naverMap: NaverMap) {
@@ -192,7 +229,6 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
         mapSetting()
         getMapDataFromRemote()
-
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),

@@ -20,9 +20,9 @@ public class ShareLot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sha_id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     private int sha_type;
 
     private String sha_name;

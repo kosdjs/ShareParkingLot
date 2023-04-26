@@ -1,9 +1,6 @@
 package com.example.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +16,9 @@ public class DayData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long day_id;
 
-    @
+    @ManyToOne
+    @JoinColumn(name = "sha_id")
+    private ShareLot shareLot;
 
     private String day_str;
 

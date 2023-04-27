@@ -10,15 +10,24 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
 import com.team.parking.databinding.ActivityMainBinding
+import com.team.parking.presentation.viewmodel.MapViewModel
+import com.team.parking.presentation.viewmodel.MapViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 private const val TAG = "MainActivity_지훈"
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var mapViewModelFactory : MapViewModelFactory
+    lateinit var mapViewModel: MapViewModel
+
     private lateinit var binding : ActivityMainBinding
     lateinit var navigationDrawer : DrawerLayout
     lateinit var navigationView : NavigationView
@@ -30,6 +39,11 @@ class MainActivity : AppCompatActivity() {
         setNavigationDrawerInit()
         setOnClickNavigationDrawerItem()
         setFullScreen()
+        initMapViewModel()
+    }
+
+    fun initMapViewModel(){
+        mapViewModel = ViewModelProvider(this,mapViewModelFactory)[MapViewModel::class.java]
     }
     
     fun setOnClickNavigationDrawerItem(){

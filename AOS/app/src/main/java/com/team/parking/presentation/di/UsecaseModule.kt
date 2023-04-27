@@ -1,25 +1,24 @@
 package com.team.parking.presentation.di
 
-import android.app.Application
+import com.team.parking.domain.repository.MapRepository
 import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.presentation.viewmodel.MapViewModelFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Module
+
 @InstallIn(SingletonComponent::class)
-class FactoryModuel {
+@Module
+class UsecaseModule {
 
     @Singleton
     @Provides
-    fun provideMapViewModelFactory(
-        app:Application,getMapDataUseCase: GetMapDataUseCase
-    ):MapViewModelFactory{
-        return MapViewModelFactory(app,getMapDataUseCase)
+    fun provideGetMapUsecaseDataUseCase(
+        mapRepository: MapRepository
+    ) : GetMapDataUseCase{
+        return GetMapDataUseCase(mapRepository)
     }
-
 
 }

@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.team.parking.R
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -25,15 +26,17 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.team.parking.MainActivity
 import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.model.map.MapRequest
+import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
 import com.team.parking.presentation.utils.App
 import com.team.parking.presentation.viewmodel.MapViewModel
+import com.team.parking.presentation.viewmodel.MapViewModelFactory
 import dagger.hilt.android.scopes.FragmentScoped
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 
 private const val TAG = "MapFragment_지훈"
-@FragmentScoped
 
 class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var fragmentMapBinding: FragmentMapBinding
@@ -42,7 +45,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var currentLocation : Location
     private lateinit var fusedLocationClient : FusedLocationProviderClient
     private lateinit var mapRequest : MapRequest
-    private lateinit var mapViewModel: MapViewModel
+    private lateinit var viewModel: MapViewModel
     private  var job : Job? = null
 
     companion object {
@@ -70,30 +73,38 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         fragmentMapBinding = DataBindingUtil.bind<FragmentMapBinding>(view)!!
         init()
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-        mapViewModel
+        viewModel = (activity as MainActivity).mapViewModel
     }
 
 
+    /**
+     * 서버로부터 주차장 데이터 가져오기
+     */
     private fun getMapData(){
-        job = CoroutineScope(Dispatchers.IO).launch{
-            withContext(Dispatchers.Main){
-                val response = App.retrofit.create(MapAPIService::class.java).getMapsDataFrom(mapRequest)
-                if(response.isSuccessful){
-                    val data = response.body()
-                    if(data!=null){
-                        Log.i(TAG, "getMapData: ${response.body()}")
-                        for(i in 0 until data.size){
+        viewModel.getMapDatas(mapRequest)
+        viewModel.parkingLots.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is Resource.Success -> {
+                    Log.i(TAG, "서버로부터 주차장 데이터를 가져오는데 성공했습니다.")
+                    response.data.let{ data->
+                        Log.i(TAG, "getMapData: ${data!!.size}")
+                        for(i in 0 until data!!.size){
                             val marker = Marker()
                             marker.position = LatLng(data[i].lat,data[i].lng)
                             marker.map = naverMap
                         }
                     }
-                }else{
-                    Log.i(TAG, "getMapData: ${response.message()}")
+                }
+                is Resource.Error -> {
+                    Log.i(TAG, "서버로부터 주차장 데이터 가져오는데 실패하였습니다.")
+                }
+                else -> {
+                    Log.i(TAG, "서버로부터 주차장 데이터를 가져오고 있습니다.")
                 }
             }
         }
     }
+
 
 
     /**
@@ -218,10 +229,10 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             marker.position = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
             marker.map = naverMap*/
             //Log.i(TAG, "getMapDataFromRemote 1: ${naverMap.contentBounds.center.latitude},${naverMap.contentBounds.center.longitude}")
-            Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
+            /*Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
             Log.i(TAG, "중심 좌표 : ${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
             Log.i(TAG, "${naverMap.contentBounds.southWest.latitude} ,${naverMap.contentBounds.northWest.latitude} ")
-            Log.i(TAG, "${naverMap.contentBounds.southWest.longitude} ,${naverMap.contentBounds.northEast.longitude}")
+            Log.i(TAG, "${naverMap.contentBounds.southWest.longitude} ,${naverMap.contentBounds.northEast.longitude}")*/
 
             //getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
             /*mapRequest = MapRequest(
@@ -265,7 +276,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         val zoomUpdate = CameraUpdate.zoomTo(14.0)
         naverMap.moveCamera(cameraUpdate)
         naverMap.moveCamera(zoomUpdate)
-        Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
+        //Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
         mapSetting()
         getMapDataFromRemote()
         mapRequest = MapRequest(

@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_map_fragment_to_myShareParkingLotFragment"
             app:destination="@id/myShareParkingLotFragment" />
+        <action
+            android:id="@+id/action_map_fragment_to_myTicketFragment"
+            app:destination="@id/myTicketFragment" />
     </fragment>
     <fragment
         android:id="@+id/pointFragment"
@@ -54,7 +57,11 @@
         android:id="@+id/profileFragment"
         android:name="com.team.parking.presentation.fragment.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_myCarFragment"
+            app:destination="@id/myCarFragment" />
+    </fragment>
     <fragment
         android:id="@+id/myShareParkingLotFragment"
         android:name="com.team.parking.presentation.fragment.MyShareParkingLotFragment"
@@ -77,4 +84,9 @@
         android:name="com.team.parking.presentation.fragment.MyTicketFragment"
         android:label="fragment_my_share_parking_lot_ticket"
         tools:layout="@layout/fragment_my_ticket" />
+    <fragment
+        android:id="@+id/myCarFragment"
+        android:name="com.team.parking.presentation.fragment.MyCarFragment"
+        android:label="fragment_my_car"
+        tools:layout="@layout/fragment_my_car" />
 </navigation>

@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_map_fragment_to_myTicketFragment"
             app:destination="@id/myTicketFragment" />
+        <action
+            android:id="@+id/action_map_fragment_to_parkinLotDetailFragment"
+            app:destination="@id/parkinLotDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/pointFragment"
@@ -89,4 +92,9 @@
         android:name="com.team.parking.presentation.fragment.MyCarFragment"
         android:label="fragment_my_car"
         tools:layout="@layout/fragment_my_car" />
+    <fragment
+        android:id="@+id/parkinLotDetailFragment"
+        android:name="com.team.parking.ParkinLotDetailFragment"
+        android:label="fragment_parkin_lot_detail"
+        tools:layout="@layout/fragment_parking_lot_detail" />
 </navigation>

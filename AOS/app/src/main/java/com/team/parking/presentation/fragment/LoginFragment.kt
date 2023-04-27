@@ -22,6 +22,7 @@ import com.team.parking.data.api.UserService
 import com.team.parking.data.model.user.LoginRequest
 import com.team.parking.databinding.FragmentLoginBinding
 import com.team.parking.presentation.utils.App
+import com.team.parking.presentation.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +34,8 @@ class LoginFragment : Fragment() {
 
     private lateinit var fragmentLoginBinding: FragmentLoginBinding
     private lateinit var mainActivity : MainActivity
+    private lateinit var userViewModel: UserViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,6 +51,7 @@ class LoginFragment : Fragment() {
             handlers = this@LoginFragment
             lifecycleOwner = this@LoginFragment
         }
+        userViewModel = (activity as MainActivity).userViewModel
     }
 
     override fun onAttach(context: Context) {
@@ -55,7 +59,12 @@ class LoginFragment : Fragment() {
         mainActivity = context as MainActivity
     }
 
-    fun setOnLogin(){
+
+    fun setOnJumoLogin(){
+        findNavController().navigate(R.id.action_login_fragment_to_signUpFragment)
+    }
+
+    fun setOnKakaoLogin(){
         KakaoSdk.init(mainActivity, "${KAKAO_CLIENT_KEY}")
         // 이메일 로그인 콜백
         val mCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -94,7 +103,9 @@ class LoginFragment : Fragment() {
                         )
 
                         if(response.isSuccessful){
-                            Log.d(TAG, "success")
+                            Log.d(TAG, "${response.body()}")
+                            userViewModel._type="kakao"
+
                         } else {
                             Log.d(TAG, "login: ${response.code()}")
                         }
@@ -106,8 +117,6 @@ class LoginFragment : Fragment() {
             UserApiClient.instance.loginWithKakaoAccount(mainActivity, callback = mCallback) // 카카오 이메일 로그인
         }
     }
-
-
     fun setOnSignUp(){
         findNavController().navigate(R.id.action_login_fragment_to_signUpFragment)
     }

@@ -49,7 +49,7 @@
         tools:layout="@layout/fragment_favorite" />
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="com.team.parking.SignUpFragment"
+        android:name="com.team.parking.presentation.fragment.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" />
 </navigation>

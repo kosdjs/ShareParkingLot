@@ -15,4 +15,9 @@
     <string name="remain_time_text">남은 시간</string>
     <string name="certification_text">인증</string>
     <string name="complete_sign_up_text">회원 가입 완료</string>
+
+    <string name="dialog_email_blank">정확하게 기입해주세요</string>
+    <string name="dialog_email_duplicated">이메일 중복</string>
+    <string name="dialog_email_success">사용 가능</string>
+    <string name="dialog_email_mark">특수문자는 \'\@\'와 \'\-\'만 사용가능</string>
 </resources>

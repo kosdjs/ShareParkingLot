@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
@@ -14,12 +15,14 @@ import com.team.parking.data.api.UserService
 import com.team.parking.data.model.user.User
 import com.team.parking.databinding.ActivityMainBinding
 import com.team.parking.presentation.utils.App
+import com.team.parking.presentation.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "MainActivity_지훈"
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
+    lateinit var userViewModel: UserViewModel
     lateinit var navigationDrawer : DrawerLayout
     lateinit var navigationView : NavigationView
     
@@ -30,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         setNavigationController()
         setNavigationDrawerInit()
         setOnClickNavigationDrawerItem()
+
+        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+
     }
     
     fun setOnClickNavigationDrawerItem(){

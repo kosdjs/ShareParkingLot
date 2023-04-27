@@ -7,19 +7,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class Image {
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long img_id;
-
-    private String url;
+    private Long credit_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="sha_id")
-    private ShareLot shareLot;
+    @JoinColumn(name = "user_id")
+    private User user;
 
+    private String buy_date;
+
+    private String lot_name;
+
+    private int pt_get;
+
+    private int pt_lose;
 }

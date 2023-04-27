@@ -1,10 +1,7 @@
 package com.team.parking.presentation.fragment
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -22,22 +19,22 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.team.parking.MainActivity
-import com.team.parking.data.api.MapService
+import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.databinding.FragmentMapBinding
 import com.team.parking.presentation.utils.App
+import com.team.parking.presentation.viewmodel.MapViewModel
+import dagger.hilt.android.scopes.FragmentScoped
 import kotlinx.coroutines.*
-import java.io.IOException
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 private const val TAG = "MapFragment_지훈"
+@FragmentScoped
+
 class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var fragmentMapBinding: FragmentMapBinding
     private lateinit var locationSource: FusedLocationSource
@@ -45,6 +42,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var currentLocation : Location
     private lateinit var fusedLocationClient : FusedLocationProviderClient
     private lateinit var mapRequest : MapRequest
+    private lateinit var mapViewModel: MapViewModel
     private  var job : Job? = null
 
     companion object {
@@ -72,13 +70,14 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         fragmentMapBinding = DataBindingUtil.bind<FragmentMapBinding>(view)!!
         init()
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+        mapViewModel
     }
 
 
     private fun getMapData(){
         job = CoroutineScope(Dispatchers.IO).launch{
             withContext(Dispatchers.Main){
-                val response = App.retrofit.create(MapService::class.java).getMapsDataFrom(mapRequest)
+                val response = App.retrofit.create(MapAPIService::class.java).getMapsDataFrom(mapRequest)
                 if(response.isSuccessful){
                     val data = response.body()
                     if(data!=null){

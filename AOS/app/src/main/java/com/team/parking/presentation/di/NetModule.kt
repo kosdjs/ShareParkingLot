@@ -1,6 +1,6 @@
 package com.team.parking.presentation.di
 
-import com.team.parking.data.api.MapService
+import com.team.parking.data.api.MapAPIService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,8 +25,8 @@ class NetModule {
 
     @Singleton
     @Provides
-    fun provideMapService(retrofit:Retrofit):MapService{
-        return retrofit.create(MapService::class.java)
+    fun provideMapService(retrofit:Retrofit):MapAPIService{
+        return retrofit.create(MapAPIService::class.java)
     }
 
 }

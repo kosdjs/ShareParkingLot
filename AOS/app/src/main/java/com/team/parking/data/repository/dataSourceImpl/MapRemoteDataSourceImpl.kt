@@ -1,15 +1,15 @@
 package com.team.parking.data.repository.dataSourceImpl
 
-import com.team.parking.data.api.MapService
+import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.model.map.ParkingLot
 import com.team.parking.data.repository.dataSource.MapRemoteDatasource
 import retrofit2.Response
 
 class MapRemoteDataSourceImpl(
-    private val mapService: MapService
+    private val mapAPIService: MapAPIService
 ) : MapRemoteDatasource{
     override suspend fun getParkingLots(mapRequest: MapRequest): Response<List<ParkingLot>> {
-        return mapService.getMapsDataFrom(mapRequest)
+        return mapAPIService.getMapsDataFrom(mapRequest)
     }
 }

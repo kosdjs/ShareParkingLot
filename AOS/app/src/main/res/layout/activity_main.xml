@@ -23,6 +23,7 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph"/>
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_fragment_map"

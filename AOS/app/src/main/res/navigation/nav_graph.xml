@@ -65,7 +65,7 @@
             app:destination="@id/daySelectFragment" />
         <action
             android:id="@+id/action_myShareParkingLotFragment_to_myShareParkingLotTicketFragment"
-            app:destination="@id/myShareParkingLotTicketFragment" />
+            app:destination="@id/myTicketFragment" />
     </fragment>
     <fragment
         android:id="@+id/daySelectFragment"
@@ -73,8 +73,8 @@
         android:label="fragment_day_select"
         tools:layout="@layout/fragment_day_select" />
     <fragment
-        android:id="@+id/myShareParkingLotTicketFragment"
-        android:name="com.team.parking.MyShareParkingLotTicketFragment"
+        android:id="@+id/myTicketFragment"
+        android:name="com.team.parking.presentation.fragment.MyTicketFragment"
         android:label="fragment_my_share_parking_lot_ticket"
         tools:layout="@layout/fragment_my_ticket" />
 </navigation>

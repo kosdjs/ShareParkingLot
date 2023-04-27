@@ -39,7 +39,7 @@
         app:layout_constraintTop_toBottomOf="@+id/text_title_profile">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_profile"
+            android:id="@+id/layout_profile_point"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -51,7 +51,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/image_profile"
+                android:id="@+id/image_profile_point"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
@@ -63,24 +63,24 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/text_nickname_profile"
+                android:id="@+id/text_nickname_point"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="이름"
-                app:layout_constraintBottom_toTopOf="@+id/text_email_profile"
-                app:layout_constraintStart_toEndOf="@+id/image_profile"
+                app:layout_constraintBottom_toTopOf="@+id/text_current_point_title_point"
+                app:layout_constraintStart_toEndOf="@+id/image_profile_point"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/text_email_profile"
+                android:id="@+id/text_current_point_title_point"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="이메일"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/image_profile"
-                app:layout_constraintTop_toBottomOf="@+id/text_nickname_profile" />
+                app:layout_constraintStart_toEndOf="@+id/image_profile_point"
+                app:layout_constraintTop_toBottomOf="@+id/text_nickname_point" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -93,7 +93,7 @@
             android:background="@drawable/profile_main_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_profile">
+            app:layout_constraintTop_toBottomOf="@+id/layout_profile_point">
 
             <TextView
                 android:id="@+id/text_main_car_title_profile"

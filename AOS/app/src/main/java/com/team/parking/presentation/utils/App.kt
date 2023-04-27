@@ -22,10 +22,6 @@ class App : Application(){
         NaverMapSdk.getInstance(this).client =
             NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_CLIENT_KEY)
 
-        retrofit = Retrofit.Builder()
-            .baseUrl("http://k8d108.p.ssafy.io:8082/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
 
     }
 

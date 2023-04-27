@@ -28,6 +28,12 @@
         <action
             android:id="@+id/action_map_fragment_to_favoriteFragment"
             app:destination="@id/favoriteFragment" />
+        <action
+            android:id="@+id/action_map_fragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_map_fragment_to_myShareParkingLotFragment"
+            app:destination="@id/myShareParkingLotFragment" />
     </fragment>
     <fragment
         android:id="@+id/pointFragment"
@@ -44,4 +50,31 @@
         android:name="com.team.parking.presentation.fragment.FavoriteFragment"
         android:label="fragment_favorite"
         tools:layout="@layout/fragment_favorite" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.team.parking.presentation.fragment.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/myShareParkingLotFragment"
+        android:name="com.team.parking.presentation.fragment.MyShareParkingLotFragment"
+        android:label="fragment_my_share_parking_lot"
+        tools:layout="@layout/fragment_my_share_parking_lot" >
+        <action
+            android:id="@+id/action_myShareParkingLotFragment_to_daySelectFragment"
+            app:destination="@id/daySelectFragment" />
+        <action
+            android:id="@+id/action_myShareParkingLotFragment_to_myShareParkingLotTicketFragment"
+            app:destination="@id/myTicketFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/daySelectFragment"
+        android:name="com.team.parking.presentation.fragment.DaySelectFragment"
+        android:label="fragment_day_select"
+        tools:layout="@layout/fragment_day_select" />
+    <fragment
+        android:id="@+id/myTicketFragment"
+        android:name="com.team.parking.presentation.fragment.MyTicketFragment"
+        android:label="fragment_my_share_parking_lot_ticket"
+        tools:layout="@layout/fragment_my_ticket" />
 </navigation>

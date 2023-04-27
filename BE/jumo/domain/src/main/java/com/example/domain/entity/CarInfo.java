@@ -5,27 +5,25 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class Favorite {
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CarInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long favorite_id;
-
-    @ManyToOne
-    @JoinColumn(name="sha_id")
-    private ShareLot shareLot;
+    private Long car_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="lot_id")
-    private ParkingLot parkingLot;
-
-    @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_name")
     private User user;
+
+    private String car_str;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean car_rep;
 }

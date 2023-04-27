@@ -2,11 +2,14 @@ package com.example.domain.entity;
 
 
 import com.example.domain.dto.ShareSaveDto;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -14,7 +17,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder(builderMethodName = "ShareLotBuilder")
 public class ShareLot {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +44,11 @@ public class ShareLot {
 
     private float longitude;
 
+    @OneToMany(mappedBy = "img_id", cascade = CascadeType.ALL)
+    private List<Image> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "favorite_id", cascade = CascadeType.ALL)
+    private List<Favorite> favoriteList = new ArrayList<>();
 
     public static ShareLotBuilder builder(ShareSaveDto shareSaveDto) {
         return ShareLotBuilder()

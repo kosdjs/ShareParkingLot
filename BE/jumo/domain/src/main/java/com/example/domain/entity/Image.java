@@ -1,6 +1,6 @@
 package com.example.domain.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class Image {
 
     private String url;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="sha_id")
     private ShareLot shareLot;
 

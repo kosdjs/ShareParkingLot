@@ -1,13 +1,18 @@
 package com.team.parking.data.model.user
 
+import java.lang.reflect.Constructor
+
 data class User(
-    private val user_id : Long,
-    private val phone : String,
-    private val email : String,
-    private val password : String,
-    private val name : String, 
-    private val fcm_token : String,
-    private val profile_img : String,
-    private val pt_has : Int,
-    private val type: String
-)
+    private var user_id : Long,
+    private var phone : String,
+    private var email : String,
+    private var password : String,
+    private var name : String,
+    private var fcm_token : String?=null,
+    private var profile_img : String?=null,
+    private var pt_has : Int=0,
+    private var type: String) {
+
+    constructor(user_id: Long,phone: String,email: String,name: String,profile_img: String?,pt_has: Int,type: String)
+            : this(user_id, phone, email, "", name, "", profile_img, pt_has, type)
+}

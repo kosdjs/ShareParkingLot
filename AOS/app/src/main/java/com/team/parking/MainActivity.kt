@@ -15,6 +15,7 @@ import com.team.parking.data.api.UserService
 import com.team.parking.data.model.user.User
 import com.team.parking.databinding.ActivityMainBinding
 import com.team.parking.presentation.utils.App
+
 import com.team.parking.presentation.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

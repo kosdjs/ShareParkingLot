@@ -171,7 +171,7 @@
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="5dp"
-                android:text="@={viewModel.email}"
+                android:text="@={viewModel._email}"
                 android:textColor="@color/black"
                 android:background="@drawable/input_form"
                 app:layout_constraintLeft_toLeftOf="@id/name_input"
@@ -194,6 +194,7 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/input_form"
+                android:text="@={viewModel._password}"
                 android:textColor="@color/black"
                 android:inputType="textPassword"
                 app:layout_constraintLeft_toLeftOf="@+id/email_input"
@@ -263,6 +264,7 @@
                 app:layout_constraintTop_toTopOf="@id/certification_number_input" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/sign_up_btn"
                 android:layout_width="310dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn"

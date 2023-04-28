@@ -20,4 +20,6 @@
     <string name="dialog_email_duplicated">이메일 중복</string>
     <string name="dialog_email_success">사용 가능</string>
     <string name="dialog_email_mark">특수문자는 \'\@\'와 \'\-\'만 사용가능</string>
+    <string name="dialog_password_fail">패스워드를 입력해주세요</string>
+    <string name="dialog_name_blank">이름을 입력해주세요</string>
 </resources>

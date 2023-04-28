@@ -7,11 +7,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.common.KakaoSdk.type
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
@@ -23,6 +21,7 @@ import com.team.parking.data.model.user.LoginRequest
 import com.team.parking.databinding.FragmentLoginBinding
 import com.team.parking.presentation.utils.App
 import com.team.parking.presentation.viewmodel.UserViewModel
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,11 +60,20 @@ class LoginFragment : Fragment() {
 
 
     fun setOnJumoLogin(){
+        CoroutineScope(Dispatchers.IO).launch{ 
+            val response = App.userRetrofit.create(UserService::class.java).login(
+                type="asd",email=userViewModel._login_email, password=userViewModel._login_password
+            )
+            if(response.isSuccessful){
+                Log.d(TAG, "setOnJumoLogin: Good")
+            }
+        }
+        
+
         findNavController().navigate(R.id.action_login_fragment_to_signUpFragment)
     }
 
     fun setOnKakaoLogin(){
-        KakaoSdk.init(mainActivity, "${KAKAO_CLIENT_KEY}")
         // 이메일 로그인 콜백
         val mCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
@@ -96,18 +104,23 @@ class LoginFragment : Fragment() {
                 else if (token != null) {
                     Log.e(TAG, "로그인 성공 ${token.accessToken}")
 
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val response = App.userRetrofit.create(UserService::class.java).login(
-                            LoginRequest(
-                            "kakao", token.accessToken)
-                        )
+                    UserApiClient.instance.me { user, error ->
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val response = App.userRetrofit.create(UserService::class.java).login(
+                                    type="kakao", accessToken = token.accessToken, social_id = user?.id.toString()
+                            )
 
-                        if(response.isSuccessful){
-                            Log.d(TAG, "${response.body()}")
-                            userViewModel._type="kakao"
-
-                        } else {
-                            Log.d(TAG, "login: ${response.code()}")
+                            Log.d(TAG, "setOnKakaoLogin: ${user?.id.toString()}, ${token.accessToken}")
+                            if(response.isSuccessful){
+                                userViewModel._type="kakao"
+                                if(response.body()!!.user_id == null){
+                                    findNavController().navigate(R.id.action_login_fragment_to_signUpFragment)
+                                }else{
+                                    userViewModel._type=""
+                                }
+                            } else {
+                                Log.d(TAG, "login: ${response.code()}")
+                            }
                         }
                     }
 

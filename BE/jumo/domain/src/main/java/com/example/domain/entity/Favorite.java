@@ -21,7 +21,7 @@ public class Favorite {
     @JoinColumn(name="sha_id")
     private ShareLot shareLot;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="lot_id")
     private ParkingLot parkingLot;
 

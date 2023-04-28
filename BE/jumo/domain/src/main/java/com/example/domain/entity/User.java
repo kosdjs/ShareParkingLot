@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -31,7 +34,6 @@ public class User {
     @Column(name="pt_has")
     private int ptHas;
 
-
     public User(SignUpRequestDto requestDto){
         this.email = requestDto.getEmail();
         this.name = requestDto.getName();
@@ -41,4 +43,13 @@ public class User {
         this.password=requestDto.getPassword();
         this.socialId=requestDto.getSocial_id();
     }
+
+    @OneToMany(mappedBy = "car_id", cascade = CascadeType.ALL)
+    private List<CarInfo> carInfoList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "ticket_id", cascade = CascadeType.ALL)
+    private List<Ticket> tickets = new ArrayList<>();
+
+    @OneToMany(mappedBy = "credit_id")
+    private List<Transaction> transactions = new ArrayList<>();
 }

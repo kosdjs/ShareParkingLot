@@ -2,10 +2,7 @@ package com.example.domain.entity;
 
 
 import com.example.domain.dto.user.SignUpRequestDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -16,17 +13,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User {
 
-    @Id
+    @Id()
+    @Column(name="user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long user_id;
     private String name;
     private String type;
+    @Column(name="social_id")
+    private String socialId;
     private String phone;
     private String email;
     private String password;
-    private String fcm_token;
-    private String profile_img;
-    private int pt_has;
+    @Column(name="fcm_token")
+    private String fcmToken;
+    @Column(name="profile_img")
+    private String profileImg;
+    @Column(name="pt_has")
+    private int ptHas;
 
 
     public User(SignUpRequestDto requestDto){
@@ -34,8 +37,8 @@ public class User {
         this.name = requestDto.getName();
         this.type = requestDto.getType();
         this.phone = requestDto.getPhone();
-        this.profile_img = requestDto.getProfile_image();
+        this.profileImg = requestDto.getProfile_image();
         this.password=requestDto.getPassword();
-
+        this.socialId=requestDto.getSocial_id();
     }
 }

@@ -16,14 +16,16 @@ public class CarInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "car_id")
     private Long car_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_name")
     private User user;
 
+    @Column(name = "car_str")
     private String car_str;
 
-    @Column(columnDefinition = "boolean default false")
+    @Column(name ="car_rep", columnDefinition = "boolean default false")
     private boolean car_rep;
 }

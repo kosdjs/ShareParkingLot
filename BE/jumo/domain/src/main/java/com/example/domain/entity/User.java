@@ -5,13 +5,16 @@ import javax.persistence.*;
 import com.example.domain.dto.user.SignUpRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
@@ -26,6 +29,7 @@ public class User {
     private String password;
     private String fcm_token;
     private String profile_img;
+    @Column(columnDefinition = "int default 0")
     private int pt_has;
 
     public User(SignUpRequestDto requestDto){
@@ -36,6 +40,10 @@ public class User {
         this.profile_img = requestDto.getProfile_image();
         this.password=requestDto.getPassword();
 
+    }
+
+    public void addPoint(int plusPoint){
+        this.pt_has += plusPoint;
     }
 
     @OneToMany(mappedBy = "car_id", cascade = CascadeType.ALL)

@@ -1,6 +1,6 @@
 package com.example.domain.dto;
 
-import com.example.domain.entity.DayName;
+import com.example.domain.etc.DayName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

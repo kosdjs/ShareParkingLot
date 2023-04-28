@@ -94,7 +94,16 @@
         tools:layout="@layout/fragment_my_car" />
     <fragment
         android:id="@+id/parkinLotDetailFragment"
-        android:name="com.team.parking.ParkinLotDetailFragment"
+        android:name="com.team.parking.presentation.fragment.ParkingLotDetailFragment"
         android:label="fragment_parkin_lot_detail"
-        tools:layout="@layout/fragment_parking_lot_detail" />
+        tools:layout="@layout/fragment_parking_lot_detail" >
+        <action
+            android:id="@+id/action_parkinLotDetailFragment_to_purchaseTicketFragment"
+            app:destination="@id/purchaseTicketFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/purchaseTicketFragment"
+        android:name="com.team.parking.presentation.fragment.PurchaseTicketFragment"
+        android:label="fragment_purchase_ticket"
+        tools:layout="@layout/fragment_purchase_ticket" />
 </navigation>

@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
+import com.kakao.sdk.common.util.Utility
 import com.team.parking.databinding.ActivityMainBinding
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.MapViewModelFactory
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     fun initMapViewModel(){
         mapViewModel = ViewModelProvider(this,mapViewModelFactory)[MapViewModel::class.java]
     }
-    
+
     fun setOnClickNavigationDrawerItem(){
         binding.navigationFragmentMap.setNavigationItemSelectedListener { item ->
             when (item.itemId) {

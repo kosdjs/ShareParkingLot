@@ -1,6 +1,7 @@
 package com.team.parking.presentation.di
 
 import com.team.parking.data.api.MapAPIService
+import com.team.parking.data.api.SearchAPIService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +23,22 @@ class NetModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+    @Singleton
+    @Provides
+    fun provideSearchRetrofit():Retrofit{
+        return Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideSearchService(retrofit:Retrofit):SearchAPIService{
+        return retrofit.create(SearchAPIService::class.java)
+    }
+
 
     @Singleton
     @Provides

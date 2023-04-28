@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import com.kakao.sdk.common.KakaoSdk
 import com.naver.maps.map.NaverMapSdk
 import com.team.parking.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
@@ -21,7 +22,7 @@ class App : Application(){
         super.onCreate()
         NaverMapSdk.getInstance(this).client =
             NaverMapSdk.NaverCloudPlatformClient(BuildConfig.NAVER_CLIENT_KEY)
-
+        KakaoSdk.init(this,BuildConfig.KAKAO_CLIENT_KEY)
 
     }
 
@@ -38,6 +39,7 @@ class App : Application(){
                 when {
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
                         return true
+
                     }
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
                         return true

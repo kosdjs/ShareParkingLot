@@ -21,6 +21,8 @@ android {
         versionName "1.0"
         manifestPlaceholders["NAVER_CLIENT_KEY"] = "NAVER_CLIENT_KEY"
         buildConfigField "String","NAVER_CLIENT_KEY", properties["NAVER_CLIENT_KEY"]
+        buildConfigField "String","KAKAO_CLIENT_KEY", properties["KAKAO_CLIENT_KEY"]
+        buildConfigField "String","KAKAO_REST_API_KEY", properties["KAKAO_REST_API_KEY"]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,7 +60,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:16.0.0'
 
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
-
+    implementation "com.kakao.sdk:v2-all:2.13.0"
 
 
 

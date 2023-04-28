@@ -2,6 +2,7 @@ package com.example.domain.dto;
 
 
 import com.example.domain.entity.ParkingLot;
+import com.example.domain.entity.ShareLot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +25,17 @@ public class ParkingListDto {
         this.lat = parkingLot.getLatitude();
         this.lng = parkingLot.getLongitude();
         this.parkType = 0;
-        this.feeBasic = parkingLot.getPer_basic() * 6;
+        this.feeBasic = parkingLot.getPer_basic() * 2;
+        this.clusteringCnt = 0;
+    }
+
+
+    @Builder
+    public ParkingListDto(ShareLot shareLot){
+        this.lat = shareLot.getLatitude();
+        this.lng = shareLot.getLongitude();
+        this.parkType = 1;
+        this.feeBasic = shareLot.getSha_fee();
         this.clusteringCnt = 0;
     }
 }

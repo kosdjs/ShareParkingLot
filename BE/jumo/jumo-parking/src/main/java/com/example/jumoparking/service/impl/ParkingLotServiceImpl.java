@@ -5,7 +5,6 @@ import com.example.domain.dto.ParkingListDto;
 import com.example.domain.entity.ParkingLot;
 import com.example.domain.repo.ParkingLotRepo;
 import com.example.jumoparking.service.ParkingLotService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

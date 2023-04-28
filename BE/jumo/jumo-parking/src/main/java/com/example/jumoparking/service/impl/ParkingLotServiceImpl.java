@@ -29,48 +29,49 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     public List<ParkingListDto> getListOfPoint(ParkingInDto parkingInDto) {
         float zoom = parkingInDto.getZoomLevel();
 
-        if (zoom > 13.8 && 15> zoom)
-        {
-            HashMap<String,Float> latMap = new HashMap<String,Float>();
-            HashMap<String,Float> lngMap = new HashMap<String,Float>();
-            HashMap<String,Integer> cntMap = new HashMap<String,Integer>();
+        if (zoom > 13.8 && 15> zoom) {
+            HashMap<String, Float> latMap = new HashMap<String, Float>();
+            HashMap<String, Float> lngMap = new HashMap<String, Float>();
+            HashMap<String, Integer> cntMap = new HashMap<String, Integer>();
 
             List<ParkingLot> parkingLots = parkingLotRepo.findAllByLatitudeGreaterThanAndLatitudeLessThanAndLongitudeGreaterThanAndLongitudeLessThan(
                     parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
 
-            for (ParkingLot parkinglot: parkingLots
-                 ) {
-                System.out.println(parkinglot.getOld_addr());
+            for (ParkingLot parkinglot : parkingLots) {
                 String oldAddr = parkinglot.getOld_addr();
                 String[] oldAddrs = oldAddr.split(" ");
-                String checkStr = oldAddrs[oldAddrs.length-2];
-                System.out.println(checkStr);
+                String checkStr = "";
 
-                if (latMap.containsKey(checkStr)){
+                for (int a = 1; a < oldAddrs.length; a++) {
+                    checkStr = oldAddrs[oldAddrs.length - a];
+                    if (checkStr.endsWith("동") || checkStr.endsWith("가") || checkStr.endsWith("읍") ||
+                            checkStr.endsWith("리")) {
+                        break;
+                    }
+                }
+
+                if (latMap.containsKey(checkStr)) {
                     latMap.put(checkStr, latMap.get(checkStr) + parkinglot.getLatitude());
                     lngMap.put(checkStr, lngMap.get(checkStr) + parkinglot.getLongitude());
-                    cntMap.put(checkStr, cntMap.get(checkStr) +1);
-                }
-                else{
-                    latMap.put(checkStr,  parkinglot.getLatitude());
-                    lngMap.put(checkStr,  parkinglot.getLongitude());
+                    cntMap.put(checkStr, cntMap.get(checkStr) + 1);
+                } else {
+                    latMap.put(checkStr, parkinglot.getLatitude());
+                    lngMap.put(checkStr, parkinglot.getLongitude());
                     cntMap.put(checkStr, 1);
                 }
             }
+
+            HashMap<String, Float> latAvg = new HashMap<String, Float>();
+            HashMap<String, Float> lngAvg = new HashMap<String, Float>();
+
+            List<String> oneCntList = new ArrayList<>();
+            for (String s : latMap.keySet()){
+                int cnt =
+            }
             List<ParkingListDto> parkingLotList = new ArrayList<>();
 
-            for(String s : latMap.keySet()){
-                float lat_sum = latMap.get(s);
-                float lng_sum = lngMap.get(s);
-                int cnt = cntMap.get(s);
-
-                System.out.println(s);
-
-                parkingLotList.add(new ParkingListDto(lat_sum/cnt, lng_sum/cnt, 0,0,cnt));
-            }
-
+            parkingLotList.add(new ParkingListDto(lat_sum/cnt, lng_sum/cnt, 0,0,cnt));
             return parkingLotList;
-
         }
         else if ( zoom > 15 && zoom < 17.2)
         {

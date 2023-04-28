@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.team.parking.MainActivity
 import com.team.parking.data.api.MapAPIService
@@ -47,7 +48,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var fusedLocationClient : FusedLocationProviderClient
     private lateinit var viewModel: MapViewModel
     private var cacheData = ArrayList<Marker>()
-
+    private var currentZoom:Double = 0.0
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
         private val PERMISSIONS = arrayOf(
@@ -85,21 +86,31 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         viewModel.parkingLots.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is Resource.Success -> {
-                    Log.i(TAG, "서버로부터 주차장 데이터를 가져오는데 성공했습니다.")
+                    //Log.i(TAG, "서버로부터 주차장 데이터를 가져오는데 성공했습니다.")
                     response.data.let{ data->
-                        for(i in 0 until data!!.size){
-                            val marker = Marker()
-                            cacheData.add(marker)
-                            marker.position = LatLng(data[i].lat,data[i].lng)
-                            marker.map = naverMap
+                        if(currentZoom<15.0){
+                            for(i in 0 until data!!.size){
+                                val marker = Marker()
+                                cacheData.add(marker)
+                                marker.position = LatLng(data[i].lat,data[i].lng)
+                                marker.icon = OverlayImage.fromResource(R.drawable.background_circle)
+                                marker.map = naverMap
+                            }
+                        }else{
+                            for(i in 0 until data!!.size){
+                                val marker = Marker()
+                                cacheData.add(marker)
+                                marker.position = LatLng(data[i].lat,data[i].lng)
+                                marker.map = naverMap
+                            }
                         }
                     }
                 }
                 is Resource.Error -> {
-                    Log.i(TAG, "서버로부터 주차장 데이터 가져오는데 실패하였습니다.")
+                    //Log.i(TAG, "서버로부터 주차장 데이터 가져오는데 실패하였습니다.")
                 }
                 else -> {
-                    Log.i(TAG, "서버로부터 주차장 데이터를 가져오고 있습니다.")
+                    //Log.i(TAG, "서버로부터 주차장 데이터를 가져오고 있습니다.")
                 }
             }
         }
@@ -230,21 +241,28 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             //Log.i(TAG, "getMapDataFromRemote: ${getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)}")
         }
         naverMap.addOnCameraIdleListener {
-            //Log.i(TAG, "getMapDataFromRemote 1: ${naverMap.contentBounds.center.latitude},${naverMap.contentBounds.center.longitude}")
+
+            currentZoom =  naverMap.cameraPosition.zoom
             Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
+            /*Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
             Log.i(TAG, "중심 좌표 : ${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
             Log.i(TAG, "${naverMap.contentBounds.southWest.latitude} ,${naverMap.contentBounds.northWest.latitude} ")
-            Log.i(TAG, "${naverMap.contentBounds.southWest.longitude} ,${naverMap.contentBounds.northEast.longitude}")
+            Log.i(TAG, "${naverMap.contentBounds.southWest.longitude} ,${naverMap.contentBounds.northEast.longitude}")*/
 
             //getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
-            val mapRequest = MapRequest(
-                naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude,
-                naverMap.contentBounds.northWest.latitude,naverMap.contentBounds.northEast.longitude,
-                naverMap.contentBounds.southWest.latitude,naverMap.contentBounds.southWest.longitude,
-                naverMap.cameraPosition.zoom
-            )
-            removeMapData()
-            getMapData(mapRequest)
+            if(currentZoom>=13.8&& currentZoom<17.2){
+                val mapRequest = MapRequest(
+                    naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude,
+                    naverMap.contentBounds.northWest.latitude,naverMap.contentBounds.northEast.longitude,
+                    naverMap.contentBounds.southWest.latitude,naverMap.contentBounds.southWest.longitude,
+                    naverMap.cameraPosition.zoom
+                )
+                removeMapData()
+                getMapData(mapRequest)
+            }
+            else{
+                removeMapData()
+            }
         }
     }
 
@@ -279,7 +297,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLocation.latitude,currentLocation.longitude))
         val zoomUpdate = CameraUpdate.zoomTo(14.0)
-        naverMap.moveCamera(cameraUpdate)
+        //naverMap.moveCamera(cameraUpdate)
         naverMap.moveCamera(zoomUpdate)
         //Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
         mapSetting()

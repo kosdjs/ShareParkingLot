@@ -2,6 +2,7 @@ package com.team.parking.presentation.fragment
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -93,7 +94,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
                                 val marker = Marker()
                                 cacheData.add(marker)
                                 marker.position = LatLng(data[i].lat,data[i].lng)
-                                marker.icon = OverlayImage.fromResource(R.drawable.background_circle)
+                                marker.iconTintColor = Color.RED
                                 marker.map = naverMap
                             }
                         }else{
@@ -101,6 +102,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
                                 val marker = Marker()
                                 cacheData.add(marker)
                                 marker.position = LatLng(data[i].lat,data[i].lng)
+                                marker.iconTintColor = Color.BLUE
                                 marker.map = naverMap
                             }
                         }
@@ -294,7 +296,8 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
-
+        val option = NaverMapOptions()
+            .isUseTextureView
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLocation.latitude,currentLocation.longitude))
         val zoomUpdate = CameraUpdate.zoomTo(14.0)
         //naverMap.moveCamera(cameraUpdate)

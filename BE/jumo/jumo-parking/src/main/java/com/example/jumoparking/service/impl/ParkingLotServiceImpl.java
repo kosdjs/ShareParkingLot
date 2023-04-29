@@ -28,23 +28,32 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     @Override
     public List<ParkingListDto> getListOfPoint(ParkingInDto parkingInDto) {
         float zoom = parkingInDto.getZoomLevel();
+        List<ParkingLot> parkingLots = parkingLotRepo.findAllByLatitudeGreaterThanAndLatitudeLessThanAndLongitudeGreaterThanAndLongitudeLessThan(
+                parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
+        List<ShareLot> shareLots = shareLotRepo.findAllByLatitudeGreaterThanAndLatitudeLessThanAndLongitudeGreaterThanAndLongitudeLessThan(
+                parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
 
-        if (zoom > 13.8 && 15> zoom)
+        if (zoom > 13.8 && 15>= zoom && parkingLots.size() + shareLots.size() > 7)
         {
             HashMap<String,Float> latMap = new HashMap<String,Float>();
             HashMap<String,Float> lngMap = new HashMap<String,Float>();
             HashMap<String,Integer> cntMap = new HashMap<String,Integer>();
+            HashMap<String,Float> latAvg = new HashMap<String,Float>();
+            HashMap<String,Float> lngAvg = new HashMap<String,Float>();
 
-            List<ParkingLot> parkingLots = parkingLotRepo.findAllByLatitudeGreaterThanAndLatitudeLessThanAndLongitudeGreaterThanAndLongitudeLessThan(
-                    parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
-
-            for (ParkingLot parkinglot: parkingLots
-                 ) {
-                System.out.println(parkinglot.getOld_addr());
+            for (ParkingLot parkinglot: parkingLots) {
+//                System.out.println(parkinglot.getOld_addr());
+//                System.out.println(checkStr);
                 String oldAddr = parkinglot.getOld_addr();
                 String[] oldAddrs = oldAddr.split(" ");
-                String checkStr = oldAddrs[oldAddrs.length-2];
-                System.out.println(checkStr);
+                String checkStr = new String();
+
+                for (int i = oldAddrs.length -1 ; i >=1 ; i--){
+                    checkStr = oldAddrs[i];
+                    if (checkStr.endsWith("동") || checkStr.endsWith("리") || checkStr.endsWith("가") || checkStr.endsWith("길")){
+                        break;
+                    }
+                }
 
                 if (latMap.containsKey(checkStr)){
                     latMap.put(checkStr, latMap.get(checkStr) + parkinglot.getLatitude());
@@ -57,29 +66,81 @@ public class ParkingLotServiceImpl implements ParkingLotService {
                     cntMap.put(checkStr, 1);
                 }
             }
+
+            for (ShareLot shareLot: shareLots) {
+//                System.out.println(parkinglot.getOld_addr());
+//                System.out.println(checkStr);
+                String jibun = shareLot.getSha_jibun();
+                String[] jibuns = jibun.split(" ");
+                String checkStr = new String();
+
+                for (int i = jibuns.length -1 ; i >=1 ; i--){
+                    checkStr = jibuns[i];
+                    if (checkStr.endsWith("동") || checkStr.endsWith("리") || checkStr.endsWith("가") || checkStr.endsWith("길")){
+                        break;
+                    }
+                }
+
+                if (latMap.containsKey(checkStr)){
+                    latMap.put(checkStr, latMap.get(checkStr) + shareLot.getLatitude());
+                    lngMap.put(checkStr, lngMap.get(checkStr) + shareLot.getLongitude());
+                    cntMap.put(checkStr, cntMap.get(checkStr) +1);
+                }
+                else{
+                    latMap.put(checkStr,  shareLot.getLatitude());
+                    lngMap.put(checkStr,  shareLot.getLongitude());
+                    cntMap.put(checkStr, 1);
+                }
+            }
             List<ParkingListDto> parkingLotList = new ArrayList<>();
+            List<String> cntOneList = new ArrayList<>();
 
             for(String s : latMap.keySet()){
                 float lat_sum = latMap.get(s);
                 float lng_sum = lngMap.get(s);
                 int cnt = cntMap.get(s);
 
-                System.out.println(s);
+                if(cnt == 1)
+                {
+                    cntOneList.add(s);
+                }
+                else {
+                    latAvg.put(s, lat_sum/cnt);
+                    lngAvg.put(s, lng_sum/cnt);
+                }
+//                System.out.println(s);
+//                parkingLotList.add(new ParkingListDto(lat_sum/cnt, lng_sum/cnt, 0,0,cnt));
+            }
 
-                parkingLotList.add(new ParkingListDto(lat_sum/cnt, lng_sum/cnt, 0,0,cnt));
+            for (String s: cntOneList)
+            {
+                String plusKey = new String();
+                double minDistance = 10000.000;
+                for (String s2 : latAvg.keySet()){
+                    double tempDistance = Math.pow(Math.abs(latAvg.get(s2) - latMap.get(s)), 2) + Math.pow(Math.abs(lngAvg.get(s2) - lngMap.get(s)), 2);
+                    if (tempDistance < minDistance){
+                        minDistance = tempDistance;
+                        plusKey = s2;
+                    }
+                }
+
+                latAvg.put(plusKey, (cntMap.get(plusKey) * latAvg.get(plusKey) + latMap.get(s))/(cntMap.get(plusKey) + 1));
+                lngAvg.put(plusKey, (cntMap.get(plusKey) * lngAvg.get(plusKey) + lngMap.get(s))/(cntMap.get(plusKey) + 1));
+                cntMap.put(plusKey, cntMap.get(plusKey)+1);
+            }
+
+            for(String s : latMap.keySet()){
+                if ( cntMap.get(s) != 1)
+                {
+                    parkingLotList.add(new ParkingListDto(latMap.get(s)/cntMap.get(s), lngMap.get(s)/cntMap.get(s), 0,0,cntMap.get(s)));
+                }
             }
 
             return parkingLotList;
 
         }
-        else if ( zoom > 15 && zoom < 17.2)
+        else if ((zoom > 15 && zoom <= 17.2) || (zoom > 13.8 && 15 >= zoom && parkingLots.size() + shareLots.size() <= 7))
         {
-            List<ParkingLot> parkingLots = parkingLotRepo.findAllByLatitudeGreaterThanAndLatitudeLessThanAndLongitudeGreaterThanAndLongitudeLessThan(
-                    parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
-            List<ShareLot> shareLots = shareLotRepo.findAllByLatitudeGreaterThanAndLatitudeLessThanAndLongitudeGreaterThanAndLongitudeLessThan(
-                    parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng()
-            );
-
             List<ParkingListDto> parkList = parkingLots.stream().map(parkingLot -> new ParkingListDto(parkingLot)).collect(Collectors.toList());
             List<ParkingListDto> shaList = shareLots.stream().map(shareLot -> new ParkingListDto(shareLot)).collect(Collectors.toList());
 

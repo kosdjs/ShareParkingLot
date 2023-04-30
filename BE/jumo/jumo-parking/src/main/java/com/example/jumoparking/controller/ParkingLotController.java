@@ -1,6 +1,7 @@
 package com.example.jumoparking.controller;
 
 import com.example.domain.dto.ParkingBottomListDto;
+import com.example.domain.dto.ParkingDetailDto;
 import com.example.domain.dto.ParkingInDto;
 import com.example.domain.dto.ParkingListDto;
 import com.example.jumoparking.service.ParkingLotService;
@@ -30,6 +31,24 @@ public class ParkingLotController {
     public List<ParkingBottomListDto> getParkingBottomList(@Validated @RequestBody ParkingInDto parkingInDto){
         return parkingLotService.getBottomListOfPoint(parkingInDto);
     }
+    @GetMapping("/detail")
+    public ParkingDetailDto shareLotDetail(@RequestParam Long lotId){ return parkingLotService.getDetail(lotId);}
+
+    @GetMapping("/favorite")
+    public boolean checkFavorite(@RequestParam Long lotId, @RequestParam Long userId, @RequestParam int parkType){
+        if(parkType == 1){
+            return shareLotService.checkFavorite(userId, lotId);
+        }
+        else{
+            return parkingLotService.checkFavorite(userId, lotId);
+        }
+    }
+
+    @GetMapping("/favorite/list")
+    public List<ParkingBottomListDto> getFavoriteList(@RequestParam Long userId){
+        return parkingLotService.getFavoriteList(userId);
+    }
+
 
 
 }

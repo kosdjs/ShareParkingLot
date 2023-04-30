@@ -1,14 +1,14 @@
 package com.example.jumoparking.service.impl;
 
+import com.example.domain.dto.ParkingDetailDto;
 import com.example.domain.dto.ParkingInDto;
 import com.example.domain.dto.ParkingListDto;
 import com.example.domain.dto.ShareSaveDto;
+import com.example.domain.entity.Favorite;
 import com.example.domain.entity.Image;
 import com.example.domain.entity.ParkingLot;
 import com.example.domain.entity.ShareLot;
-import com.example.domain.repo.ImageRepo;
-import com.example.domain.repo.ParkingLotRepo;
-import com.example.domain.repo.ShareLotRepo;
+import com.example.domain.repo.*;
 import com.example.jumoparking.service.ShareLotService;
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.BlobInfo;
@@ -31,6 +31,10 @@ public class ShareLotServiceImpl implements ShareLotService {
 
     private final ImageRepo imageRepo;
 
+    private final FavoriteRepo favoriteRepo;
+
+    private final UserRepo userRepo;
+
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String drawingStorage;
 
@@ -38,7 +42,7 @@ public class ShareLotServiceImpl implements ShareLotService {
 
 
     @Override
-    public boolean saveShareLot(ShareSaveDto shareSaveDto, @RequestPart List<MultipartFile> files) throws IOException {
+    public Long saveShareLot(ShareSaveDto shareSaveDto, @RequestPart List<MultipartFile> files) throws IOException {
 
         ShareLot shareLot = ShareLot.builder(shareSaveDto).build();
 
@@ -47,9 +51,9 @@ public class ShareLotServiceImpl implements ShareLotService {
 
             if (shareLot == null){
 
-                return false;
+                return -1L;
             }
-            return true;
+            return shareLot.getShaId();
         }
         else{
 
@@ -80,10 +84,9 @@ public class ShareLotServiceImpl implements ShareLotService {
 
 
             if (shareLot == null){
-
-                return false;
+                return -1L;
             }
-            return true;
+            return shareLot.getShaId();
         }
 
     }
@@ -102,6 +105,30 @@ public class ShareLotServiceImpl implements ShareLotService {
                 parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
 
         return shareLots.stream().map(shareLot -> new ParkingListDto(shareLot)).collect(Collectors.toList());
+    }
+
+    @Override
+    public ParkingDetailDto getDetail(Long parkId) {
+        return new ParkingDetailDto(shareLotRepo.findById(parkId).get());
+    }
+
+    @Override
+    public boolean checkFavorite(Long userId, Long lotId) {
+        Favorite favorite = favoriteRepo.findFavoritesByShareLot_ShaIdAndUser_UserId(lotId, userId);
+        if (favorite == null){
+            Favorite newFavorite = Favorite.builder()
+                    .parkingLot(null)
+                    .shareLot(shareLotRepo.findById(lotId).get())
+                    .user(userRepo.findById(userId).get())
+                    .build();
+
+            favoriteRepo.save(newFavorite);
+            return true;
+        }
+        else{
+            favoriteRepo.delete(favorite);
+            return false;
+        }
     }
 
 

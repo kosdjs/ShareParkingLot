@@ -1,12 +1,16 @@
 package com.example.jumoparking.service.impl;
 
 import com.example.domain.dto.ParkingBottomListDto;
+import com.example.domain.dto.ParkingDetailDto;
 import com.example.domain.dto.ParkingInDto;
 import com.example.domain.dto.ParkingListDto;
+import com.example.domain.entity.Favorite;
 import com.example.domain.entity.ParkingLot;
 import com.example.domain.entity.ShareLot;
+import com.example.domain.repo.FavoriteRepo;
 import com.example.domain.repo.ParkingLotRepo;
 import com.example.domain.repo.ShareLotRepo;
+import com.example.domain.repo.UserRepo;
 import com.example.jumoparking.service.ParkingLotService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +29,10 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
     private final ShareLotRepo shareLotRepo;
 
+    private final FavoriteRepo favoriteRepo;
+
+    private final UserRepo userRepo;
+
     @Override
     public List<ParkingListDto> getListOfPoint(ParkingInDto parkingInDto) {
         float zoom = parkingInDto.getZoomLevel();
@@ -32,6 +40,8 @@ public class ParkingLotServiceImpl implements ParkingLotService {
                 parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
         List<ShareLot> shareLots = shareLotRepo.findAllByLatitudeGreaterThanAndLatitudeLessThanAndLongitudeGreaterThanAndLongitudeLessThan(
                 parkingInDto.getStartLat(), parkingInDto.getEndLat(), parkingInDto.getStartLng(), parkingInDto.getEndLng());
+
+        System.out.println(parkingLots.size() + shareLots.size());
 
         if (zoom > 13.8 && 15>= zoom && parkingLots.size() + shareLots.size() > 7)
         {
@@ -42,18 +52,27 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             HashMap<String,Float> lngAvg = new HashMap<String,Float>();
 
             for (ParkingLot parkinglot: parkingLots) {
-//                System.out.println(parkinglot.getOld_addr());
-//                System.out.println(checkStr);
                 String oldAddr = parkinglot.getOld_addr();
                 String[] oldAddrs = oldAddr.split(" ");
                 String checkStr = new String();
 
-                for (int i = oldAddrs.length -1 ; i >=1 ; i--){
-                    checkStr = oldAddrs[i];
-                    if (checkStr.endsWith("동") || checkStr.endsWith("리") || checkStr.endsWith("가") || checkStr.endsWith("길")){
-                        break;
+                if (zoom > 13.8 && 14.2 >= zoom){
+                    for (int i = oldAddrs.length -1 ; i >=1 ; i--){
+                        checkStr = oldAddrs[i];
+                        if (checkStr.endsWith("읍") || checkStr.endsWith("면") || checkStr.endsWith("시") || checkStr.endsWith("구")){
+                            break;
+                        }
                     }
                 }
+                else{
+                    for (int i = oldAddrs.length -1 ; i >=1 ; i--){
+                        checkStr = oldAddrs[i];
+                        if (checkStr.endsWith("동") || checkStr.endsWith("리") || checkStr.endsWith("가") || checkStr.endsWith("길")){
+                            break;
+                        }
+                    }
+                }
+
 
                 if (latMap.containsKey(checkStr)){
                     latMap.put(checkStr, latMap.get(checkStr) + parkinglot.getLatitude());
@@ -68,8 +87,6 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             }
 
             for (ShareLot shareLot: shareLots) {
-//                System.out.println(parkinglot.getOld_addr());
-//                System.out.println(checkStr);
                 String jibun = shareLot.getSha_jibun();
                 String[] jibuns = jibun.split(" ");
                 String checkStr = new String();
@@ -108,8 +125,6 @@ public class ParkingLotServiceImpl implements ParkingLotService {
                     latAvg.put(s, lat_sum/cnt);
                     lngAvg.put(s, lng_sum/cnt);
                 }
-//                System.out.println(s);
-//                parkingLotList.add(new ParkingListDto(lat_sum/cnt, lng_sum/cnt, 0,0,cnt));
             }
 
             for (String s: cntOneList)
@@ -132,12 +147,10 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             for(String s : latMap.keySet()){
                 if ( cntMap.get(s) != 1)
                 {
-                    parkingLotList.add(new ParkingListDto(latMap.get(s)/cntMap.get(s), lngMap.get(s)/cntMap.get(s), 0,0,cntMap.get(s)));
+                    parkingLotList.add(new ParkingListDto(-1L, latMap.get(s)/cntMap.get(s), lngMap.get(s)/cntMap.get(s), 0,0,cntMap.get(s)));
                 }
             }
-
             return parkingLotList;
-
         }
         else if ((zoom > 15 && zoom <= 17.2) || (zoom > 13.8 && 15 >= zoom && parkingLots.size() + shareLots.size() <= 7))
         {
@@ -165,5 +178,44 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
         parkList.addAll(shaList);
         return parkList;
+    }
+
+    @Override
+    public ParkingDetailDto getDetail(Long parkId) {
+        return new ParkingDetailDto(parkingLotRepo.findById(parkId).get());
+    }
+
+    @Override
+    public boolean checkFavorite(Long userId, Long lotId) {
+        Favorite favorite = favoriteRepo.findFavoritesByParkingLot_LotIdAndUser_UserId(lotId, userId);
+        if (favorite == null){
+            Favorite newFavorite = Favorite.builder()
+                    .parkingLot(null)
+                    .shareLot(shareLotRepo.findById(lotId).get())
+                    .user(userRepo.findById(userId).get())
+                    .build();
+
+            favoriteRepo.save(newFavorite);
+            return true;
+        }
+        else{
+            favoriteRepo.delete(favorite);
+            return false;
+        }
+    }
+
+    @Override
+    public List<ParkingBottomListDto> getFavoriteList(Long userId) {
+        List<Favorite> favorites = favoriteRepo.findFavoritesByUser_UserId(userId);
+        List<ParkingBottomListDto> favoriteList = new ArrayList<>();
+        for(Favorite favorite : favorites){
+            if (favorite.getParkingLot() == null){
+                favoriteList.add(new ParkingBottomListDto(favorite.getShareLot()));
+            }
+            else{
+                favoriteList.add(new ParkingBottomListDto(favorite.getParkingLot()));
+            }
+        }
+        return favoriteList;
     }
 }

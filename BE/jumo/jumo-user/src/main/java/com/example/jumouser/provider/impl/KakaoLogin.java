@@ -2,6 +2,7 @@ package com.example.jumouser.provider.impl;
 
 
 import com.example.domain.dto.user.UserInfoDto;
+import com.example.domain.entity.User;
 import com.example.domain.repo.UserRepo;
 import com.example.jumouser.provider.LoginProvider;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,18 +12,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
-
 public class KakaoLogin implements LoginProvider {
+
+    private final UserRepo userRepo;
+    private KakaoLogin(UserRepo userRepo){
+        this.userRepo=userRepo;
+    }
+    public static KakaoLogin getInstance(UserRepo userRepo){
+
+        return new KakaoLogin(userRepo);
+    }
 
     @Value("${KAKAO-KEY}")
     String key;
 
     @Value("${REDIRECT.URI}")
     String redirect;
-
 
     @Override
     public UserInfoDto getUserInfo(String accessToken) {
@@ -40,10 +50,7 @@ public class KakaoLogin implements LoginProvider {
             Map<String,Object> account = (Map<String, Object>) obj.get("kakao_account");
             Map<String,Object> profile = (Map<String, Object>) account.get("profile");
             String image = (String)profile.get("profile_image_url");
-            System.out.println("obj");
-            System.out.println(obj);
-            System.out.println("account");
-            System.out.println(account);
+
             UserInfoDto userInfo = UserInfoDto.builder()
                     .type("kakao")
                     .profile_image(image)
@@ -52,10 +59,21 @@ public class KakaoLogin implements LoginProvider {
             return userInfo;
         }catch(Exception e) {
             e.printStackTrace();
+            System.out.println("not authorized");
         }
         return null;
 
     }
 
+    public Optional<User> checkUser(UserInfoDto userInfoDto){
+
+        List<User> user = userRepo.findBySocialId(userInfoDto.getSocial_id());
+
+        if(user.isEmpty()){
+            return null;
+        }else{
+            return user.stream().findAny();
+        }
+    }
 
 }

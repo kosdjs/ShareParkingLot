@@ -30,6 +30,16 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_exit"
+                android:layout_marginLeft="6dp"
+                android:onClick="@{()->handlers.popBackStack()}"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_fragment_map_search_hint"
+                app:layout_constraintBottom_toBottomOf="@id/tv_fragment_map_search_hint"/>
+
             <EditText
                 android:id="@+id/tv_fragment_map_search_hint"
                 android:layout_width="wrap_content"

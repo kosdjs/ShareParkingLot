@@ -108,13 +108,20 @@ class SearchFragment : Fragment() {
         searchAdapter.setOnSearchItemClickListener(object : SearchAdapter.SearchItemClickListener{
             override fun onClick(view: View, position: Int, data: Place) {
                 searchViewModel.searchedPlace.postValue(data)
-                findNavController().popBackStack()
+                popBackStack()
             }
         })
         searchBinding.rvFragmentSearchList.apply {
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(activity)
         }
+    }
+
+    /**
+     * 이전 페이지(MapFragment)로 이동
+     */
+    fun popBackStack(){
+        findNavController().popBackStack()
     }
 
 }

@@ -14,7 +14,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.team.parking.R
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -23,20 +22,13 @@ import com.google.android.gms.tasks.OnSuccessListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.team.parking.MainActivity
-import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.model.map.MapRequest
-import com.team.parking.data.model.map.MapResponse
 import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
-import com.team.parking.presentation.utils.App
 import com.team.parking.presentation.viewmodel.MapViewModel
-import com.team.parking.presentation.viewmodel.MapViewModelFactory
-import dagger.hilt.android.scopes.FragmentScoped
-import kotlinx.coroutines.*
-import javax.inject.Inject
+import com.team.parking.presentation.viewmodel.SearchViewModel
 
 
 private const val TAG = "MapFragment_지훈"
@@ -47,7 +39,8 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var naverMap: NaverMap
     private lateinit var currentLocation : Location
     private lateinit var fusedLocationClient : FusedLocationProviderClient
-    private lateinit var viewModel: MapViewModel
+    private lateinit var mapViewModel: MapViewModel
+    private lateinit var searchViewModel: SearchViewModel
     private var cacheData = ArrayList<Marker>()
     private var currentZoom:Double = 0.0
     companion object {
@@ -73,18 +66,18 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fragmentMapBinding = DataBindingUtil.bind<FragmentMapBinding>(view)!!
-        init()
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-        viewModel = (activity as MainActivity).mapViewModel
+        mapViewModel = (activity as MainActivity).mapViewModel
+        searchViewModel = (activity as MainActivity).searchViewModel
+        init()
     }
-
 
     /**
      * 서버로부터 주차장 데이터 가져오기
      */
     private fun getMapData(mapRequest: MapRequest){
-        viewModel.getMapDatas(mapRequest)
-        viewModel.parkingLots.observe(viewLifecycleOwner) { response ->
+        mapViewModel.getMapDatas(mapRequest)
+        mapViewModel.parkingLots.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is Resource.Success -> {
                     //Log.i(TAG, "서버로부터 주차장 데이터를 가져오는데 성공했습니다.")
@@ -132,6 +125,18 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         setDatabinding()
         setOnClickNavigationDrawerItem()
         fetchLastLocation()
+    }
+
+    /**
+     * SearchFragment 검색후 해당 장소로 좌표이동
+     */
+    private fun changeLocation(){
+        searchViewModel.searchedPlace.observe(viewLifecycleOwner){
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(it.y.toDouble(),it.x.toDouble()))
+            val zoomUpdate = CameraUpdate.zoomTo(15.0)
+            naverMap.moveCamera(cameraUpdate)
+            naverMap.moveCamera(zoomUpdate)
+        }
     }
 
     /**
@@ -252,7 +257,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         naverMap.addOnCameraIdleListener {
 
             currentZoom =  naverMap.cameraPosition.zoom
-            Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
+            //Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
             /*Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
             Log.i(TAG, "중심 좌표 : ${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
             Log.i(TAG, "${naverMap.contentBounds.southWest.latitude} ,${naverMap.contentBounds.northWest.latitude} ")
@@ -305,13 +310,15 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         this.naverMap = naverMap
         val option = NaverMapOptions()
             .isUseTextureView
-        val cameraUpdate = CameraUpdate.scrollTo(LatLng(currentLocation.latitude,currentLocation.longitude))
+        /*val cameraUpdate = CameraUpdate.scrollTo(LatLng(85.012,36.208409551764986))
         val zoomUpdate = CameraUpdate.zoomTo(14.0)
-        //naverMap.moveCamera(cameraUpdate)
+        naverMap.moveCamera(cameraUpdate)
         naverMap.moveCamera(zoomUpdate)
+        Log.i(TAG, "onMapReady: ${naverMap.cameraPosition.target.latitude} ${naverMap.cameraPosition.target.longitude}")*/
         //Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
         mapSetting()
         getMapDataFromRemote()
+        changeLocation()
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),

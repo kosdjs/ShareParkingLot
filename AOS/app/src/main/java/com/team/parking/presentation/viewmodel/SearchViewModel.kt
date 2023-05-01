@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.team.parking.data.model.map.Place
 import com.team.parking.data.model.map.SearchKeyWordResponse
 import com.team.parking.data.util.Resource
 import com.team.parking.domain.usecase.GetSearchDataUseCase
@@ -21,7 +22,11 @@ class SearchViewModel(
 
     private var _searchAddress : MutableLiveData<Resource<SearchKeyWordResponse>> = MutableLiveData()
     val searchAddress : LiveData<Resource<SearchKeyWordResponse>> get() = _searchAddress
+
+    //검색어
     var query : MutableLiveData<String> = MutableLiveData()
+    //검색후 선택된 Place
+    var searchedPlace : MutableLiveData<Place> = MutableLiveData()
 
     /**
      * 카카오 주소 검사

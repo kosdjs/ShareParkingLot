@@ -8,10 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.team.parking.BuildConfig
 import com.team.parking.MainActivity
 import com.team.parking.R
+import com.team.parking.data.model.map.Place
 import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentSearchBinding
 import com.team.parking.presentation.adapter.SearchAdapter
@@ -74,8 +76,6 @@ class SearchFragment : Fragment() {
                         searchAdapter.differ.submitList(it.documents)
                     }
                 }
-                
-
                 is Resource.Error ->{
                     response?.data?.let {
                         Toast.makeText(context,"데이터 생성 오류",Toast.LENGTH_SHORT).show()
@@ -105,6 +105,12 @@ class SearchFragment : Fragment() {
 
     private fun initAdapter(){
         searchAdapter = SearchAdapter()
+        searchAdapter.setOnSearchItemClickListener(object : SearchAdapter.SearchItemClickListener{
+            override fun onClick(view: View, position: Int, data: Place) {
+                searchViewModel.searchedPlace.postValue(data)
+                findNavController().popBackStack()
+            }
+        })
         searchBinding.rvFragmentSearchList.apply {
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(activity)

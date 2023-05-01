@@ -1,6 +1,8 @@
 package com.team.parking.presentation.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -9,7 +11,10 @@ import com.team.parking.data.model.map.Place
 import com.team.parking.data.model.map.SearchKeyWordResponse
 import com.team.parking.databinding.ItemSearchPlaceBinding
 
+private const val TAG = "SearchAdapter_지훈"
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>(){
+
+    private lateinit var onSearchItemClickListener: SearchItemClickListener
 
     private val callback = object : DiffUtil.ItemCallback<Place>(){
         override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean {
@@ -27,6 +32,9 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>(){
         fun bind(data : Place){
             binding.tvItemSearchPlaceName.text = data.place_name
             binding.tvItemSearchPlaceAddress.text = data.address_name
+            binding.clItemSearchPlace.setOnClickListener {
+                onSearchItemClickListener.onClick(it,layoutPosition,data)
+            }
         }
 
     }
@@ -43,5 +51,11 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>(){
     override fun getItemCount(): Int {
         return differ.currentList.size
     }
+    fun setOnSearchItemClickListener(onItemClickListener: SearchItemClickListener){
+        this.onSearchItemClickListener = onItemClickListener
+    }
 
+    interface SearchItemClickListener{
+        fun onClick(view: View,position:Int,data:Place)
+    }
 }

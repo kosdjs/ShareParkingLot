@@ -43,7 +43,7 @@ public class Transaction {
     public Transaction(User user, String name, int get, int lose)
     {
         this.user = user;
-        this.buy_date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        this.buy_date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.lot_name = name;
         this.pt_get = get;
         this.pt_lose = lose;

@@ -42,8 +42,12 @@ public class User {
 
     }
 
-    public void addPoint(int plusPoint){
-        this.pt_has += plusPoint;
+    public void addPoint(int point){
+        this.pt_has += point;
+    }
+
+    public void subtractPoint(int point) {
+        this.pt_has -= point;
     }
 
     @OneToMany(mappedBy = "car_id", cascade = CascadeType.ALL)

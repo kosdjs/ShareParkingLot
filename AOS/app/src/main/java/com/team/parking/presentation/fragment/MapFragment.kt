@@ -69,7 +69,6 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         locationSource = FusedLocationSource(this, PERMISSION_REQUEST_CODE)
-
     }
 
 

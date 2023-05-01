@@ -48,10 +48,13 @@ class SearchFragment : Fragment() {
         changeSearchKeyword()
     }
 
+    /**
+     * 검색창 실시간으로 반영 및 빈 검색창 될 시 목록창 초기화
+     */
+
     private fun changeSearchKeyword(){
         searchViewModel.query.observe(viewLifecycleOwner){ query->
             if(query.equals("")) {
-                Log.i(TAG, "changeSearchKeyword: 빈")
                 searchAdapter.differ.submitList(emptyList())
             }else{
                 getSearchData(query)
@@ -67,6 +70,9 @@ class SearchFragment : Fragment() {
         searchViewModel.query.postValue("")
     }
 
+    /**
+     * 검색 데이터 받아오기
+     */
     private fun getSearchData(query:String){
         searchViewModel.getAddressByKeyword(BuildConfig.KAKAO_REST_API_KEY,query)
         searchViewModel.searchAddress.observe(viewLifecycleOwner) { response ->
@@ -102,6 +108,10 @@ class SearchFragment : Fragment() {
             vm = searchViewModel
         }
     }
+
+    /**
+     * Adapter 초기화 및 Item 콜백 등록
+     */
 
     private fun initAdapter(){
         searchAdapter = SearchAdapter()

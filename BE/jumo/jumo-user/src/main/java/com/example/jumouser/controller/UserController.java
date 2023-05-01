@@ -28,9 +28,13 @@ public class UserController {
     @GetMapping("/login")
     public User login(@ModelAttribute("loginRequestDto") LoginRequestDto requestDto){
 
-        UserInfoDto userInfoDto = userFactory.loginSelector(requestDto.getType()).getUserInfo(requestDto.getAccessToken());
+        UserInfoDto userInfoDto = userFactory.loginSelector(requestDto.getType()).getUserInfo(requestDto);
         Optional<User> user = userFactory.loginSelector(requestDto.getType()).checkUser(userInfoDto);
-        return user.get();
+        if(user.isPresent()){
+            return user.get();
+        }else{
+            return null;
+        }
     }
     @ApiOperation(value = "로그인", notes = "회원가입")
     @PostMapping("/sign")

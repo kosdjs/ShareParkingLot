@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 
@@ -15,8 +16,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class NetModule {
 
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class MapRetrofit
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class SearchRetrofit
+
     @Singleton
     @Provides
+    @MapRetrofit
     fun provideMapRetrofit():Retrofit{
         return Retrofit.Builder()
             .baseUrl("http://k8d108.p.ssafy.io:8082/")
@@ -26,6 +36,13 @@ class NetModule {
 
     @Singleton
     @Provides
+    fun provideMapService(@MapRetrofit mapRetrofit:Retrofit):MapAPIService{
+        return mapRetrofit.create(MapAPIService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    @SearchRetrofit
     fun provideSearchRetrofit():Retrofit{
         return Retrofit.Builder()
             .baseUrl("https://dapi.kakao.com/")
@@ -35,15 +52,11 @@ class NetModule {
 
     @Singleton
     @Provides
-    fun provideSearchService(retrofit:Retrofit):SearchAPIService{
-        return retrofit.create(SearchAPIService::class.java)
+    fun provideSearchService(@SearchRetrofit searchRetrofit:Retrofit):SearchAPIService{
+        return searchRetrofit.create(SearchAPIService::class.java)
     }
 
 
-    @Singleton
-    @Provides
-    fun provideMapService(retrofit:Retrofit):MapAPIService{
-        return retrofit.create(MapAPIService::class.java)
-    }
+
 
 }

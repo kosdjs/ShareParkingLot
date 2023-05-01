@@ -15,7 +15,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 @HiltAndroidApp
 class App : Application(){
     companion object{
-        lateinit var retrofit: Retrofit
     }
 
     override fun onCreate() {

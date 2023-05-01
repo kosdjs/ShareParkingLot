@@ -25,4 +25,6 @@
     <string name="dialog_login_failed">아이디 혹은 패스워드가 틀립니다</string>
     <string name="dialog_password_invalid">적절하지 않은 패스워드입니다</string>
     <string name="dialog_email_invalid">적절한 이메일을 입력해주세요</string>
+
+    <string name="fragment_map_search_hint">목적지 혹은 주소 검색</string>
 </resources>

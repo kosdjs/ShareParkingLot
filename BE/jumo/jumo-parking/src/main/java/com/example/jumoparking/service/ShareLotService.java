@@ -2,10 +2,7 @@ package com.example.jumoparking.service;
 
 
 
-import com.example.domain.dto.ParkingDetailDto;
-import com.example.domain.dto.ParkingInDto;
-import com.example.domain.dto.ParkingListDto;
-import com.example.domain.dto.ShareSaveDto;
+import com.example.domain.dto.*;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,5 +19,7 @@ public interface ShareLotService {
     ParkingDetailDto getDetail(Long parkId);
 
     boolean checkFavorite(Long userId, Long lotId);
+
+    List<MyShareListDto> getListMyShare(Long userId);
 
 }

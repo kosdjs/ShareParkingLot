@@ -1,9 +1,6 @@
 package com.example.jumoparking.service.impl;
 
-import com.example.domain.dto.ParkingDetailDto;
-import com.example.domain.dto.ParkingInDto;
-import com.example.domain.dto.ParkingListDto;
-import com.example.domain.dto.ShareSaveDto;
+import com.example.domain.dto.*;
 import com.example.domain.entity.Favorite;
 import com.example.domain.entity.Image;
 import com.example.domain.entity.ParkingLot;
@@ -129,6 +126,13 @@ public class ShareLotServiceImpl implements ShareLotService {
             favoriteRepo.delete(favorite);
             return false;
         }
+    }
+
+    @Override
+    public List<MyShareListDto> getListMyShare(Long userId) {
+        List<ShareLot> shareLots = shareLotRepo.findShareLotsByUser_UserId(userId);
+
+        return shareLots.stream().map(shareLot -> new MyShareListDto(shareLot.getShaId(), shareLot.getSha_name())).collect(Collectors.toList());
     }
 
 

@@ -232,6 +232,13 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     }
 
     /**
+     * 장소 검색 클릭시 SearchFragment로 이동
+     */
+    fun setOnClickSearchListener(){
+        findNavController().navigate(R.id.action_map_fragment_to_searchFragment)
+    }
+
+    /**
      * 맵 화면 이동 리스너
      * CameraChange : 카메라 이동시 마다 호출
      * CameraIdle : 카메라 이동 끝날시 호출

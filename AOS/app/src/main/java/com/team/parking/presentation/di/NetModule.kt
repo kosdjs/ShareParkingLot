@@ -48,7 +48,7 @@ class NetModule {
     @SearchRetrofit
     fun provideSearchRetrofit():Retrofit{
         return Retrofit.Builder()
-            .baseUrl("https://dapi.kakao.com/")
+            .baseUrl(BuildConfig.SEARCH_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

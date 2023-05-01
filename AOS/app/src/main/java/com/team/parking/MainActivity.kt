@@ -18,6 +18,8 @@ import com.kakao.sdk.common.util.Utility
 import com.team.parking.databinding.ActivityMainBinding
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.MapViewModelFactory
+import com.team.parking.presentation.viewmodel.SearchViewModel
+import com.team.parking.presentation.viewmodel.SearchViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -29,6 +31,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var mapViewModelFactory : MapViewModelFactory
     lateinit var mapViewModel: MapViewModel
 
+    @Inject
+    lateinit var searchViewModelFactory: SearchViewModelFactory
+    lateinit var searchViewModel: SearchViewModel
+
     private lateinit var binding : ActivityMainBinding
     lateinit var navigationDrawer : DrawerLayout
     lateinit var navigationView : NavigationView
@@ -39,13 +45,15 @@ class MainActivity : AppCompatActivity() {
         setNavigationController()
         setNavigationDrawerInit()
         setOnClickNavigationDrawerItem()
-        setFullScreen()
+        //setFullScreen()
         initMapViewModel()
     }
 
     fun initMapViewModel(){
         mapViewModel = ViewModelProvider(this,mapViewModelFactory)[MapViewModel::class.java]
+        searchViewModel = ViewModelProvider(this,searchViewModelFactory)[SearchViewModel::class.java]
     }
+
 
     fun setOnClickNavigationDrawerItem(){
         binding.navigationFragmentMap.setNavigationItemSelectedListener { item ->

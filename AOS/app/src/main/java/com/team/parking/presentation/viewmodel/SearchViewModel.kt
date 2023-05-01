@@ -21,6 +21,7 @@ class SearchViewModel(
 
     private var _searchAddress : MutableLiveData<Resource<SearchKeyWordResponse>> = MutableLiveData()
     val searchAddress : LiveData<Resource<SearchKeyWordResponse>> get() = _searchAddress
+    var query : MutableLiveData<String> = MutableLiveData()
 
     /**
      * 카카오 주소 검사

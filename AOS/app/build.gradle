@@ -24,6 +24,7 @@ android {
         buildConfigField "String","NAVER_CLIENT_KEY", properties["NAVER_CLIENT_KEY"]
         buildConfigField "String","KAKAO_CLIENT_KEY", properties["KAKAO_CLIENT_KEY"]
         buildConfigField "String","KAKAO_REST_API_KEY", properties["KAKAO_REST_API_KEY"]
+        buildConfigField "String","SEARCH_BASE_URL", properties["SEARCH_BASE_URL"]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

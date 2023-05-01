@@ -76,6 +76,9 @@
         <action
             android:id="@+id/action_myShareParkingLotFragment_to_myShareParkingLotTicketFragment"
             app:destination="@id/myTicketFragment" />
+        <action
+            android:id="@+id/action_myShareParkingLotFragment_to_addShareParkingLotFragment"
+            app:destination="@id/addShareParkingLotFragment" />
     </fragment>
     <fragment
         android:id="@+id/daySelectFragment"
@@ -106,4 +109,13 @@
         android:name="com.team.parking.presentation.fragment.PurchaseTicketFragment"
         android:label="fragment_purchase_ticket"
         tools:layout="@layout/fragment_purchase_ticket" />
+    <fragment
+        android:id="@+id/addShareParkingLotFragment"
+        android:name="com.team.parking.presentation.fragment.AddShareParkingLotFragment"
+        android:label="fragment_add_share_parking_lot"
+        tools:layout="@layout/fragment_add_share_parking_lot" >
+        <action
+            android:id="@+id/action_addShareParkingLotFragment_to_daySelectFragment"
+            app:destination="@id/daySelectFragment" />
+    </fragment>
 </navigation>

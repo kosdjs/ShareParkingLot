@@ -1,13 +1,15 @@
 package com.example.domain.entity;
 
 import javax.persistence.*;
+
+import com.example.domain.dto.point.request.TicketCreateRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Builder
+@Builder(builderMethodName = "TicketBuilder")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,26 +20,20 @@ public class Ticket {
     private Long ticket_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sha_id")
     private ShareLot shareLot;
 
-    @Column(name = "user_id2")
-    private Long user_id2;
+    @Column(name = "seller_id")
+    private Long seller_id;
 
     @Column(name = "parking_region")
     private String parking_region;
 
     private String address;
-
-    @Column(name = "open_timing")
-    private int open_timing;
-
-    @Column(name = "close_timing")
-    private int close_timing;
 
     private int type;
 
@@ -57,4 +53,28 @@ public class Ticket {
 
     @Column(name="sell_confirm", columnDefinition = "boolean default false")
     private boolean sell_confirm;
+
+    public static TicketBuilder builder(ShareLot shareLot, User buyer, TicketCreateRequestDto ticketCreateRequestDto){
+        int[] typeToHour = new int[]{2, 6, 10, 48};
+        int cost = typeToHour[ticketCreateRequestDto.getType()]*shareLot.getSha_fee();
+
+        return TicketBuilder()
+                .shareLot(shareLot)
+                .buyer(buyer)
+                .seller_id(shareLot.getUser().getUser_id())
+                .parking_region(shareLot.getSha_name())
+                .address(shareLot.getSha_road())
+                .type(ticketCreateRequestDto.getType())
+                .cost(cost)
+                .in_timing(ticketCreateRequestDto.getInTiming());
+    }
+
+    public void setBuy_confirm(boolean buyConfirm) {
+        this.buy_confirm = buyConfirm;
+    }
+
+    public void setSell_confirm(boolean sellConfirm) {
+        this.sell_confirm = sellConfirm;
+    }
+
 }

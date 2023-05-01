@@ -2,7 +2,6 @@ package com.example.domain.entity;
 
 import javax.persistence.*;
 
-import com.example.domain.dto.point.request.PointBuyRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,8 +26,8 @@ public class Transaction {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "buy_date")
-    private String buy_date;
+    @Column(name = "transaction_date")
+    private String transaction_date;
 
     @Column(name = "lot_name")
     private String lot_name;
@@ -39,14 +38,18 @@ public class Transaction {
     @Column(name = "pt_lose")
     private int pt_lose;
 
+    @Column(name = "sha_id")
+    private Long sha_id;
+
     @Builder
-    public Transaction(User user, String name, int get, int lose)
+    public Transaction(User user, String name, int get, int lose, Long sha_id)
     {
         this.user = user;
-        this.buy_date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.transaction_date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.lot_name = name;
         this.pt_get = get;
         this.pt_lose = lose;
+        this.sha_id = sha_id;
     }
 
 }

@@ -9,12 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PointBuyResponseDto {
+public class PointConfirmResponseDto {
     private Long creditId;
     private int ptLose;
     private int ptHas;
     private String parkingRegion;
-    private String buyDay;
+    private Long shaId;
+    private String buyDate;
     private int type;
     private int inTiming;
     private int outTiming;

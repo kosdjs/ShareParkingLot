@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PointChargeRequestDto {
-    private int pt_charge;
+public class TicketCreateRequestDto {
+    private Long shaId;
+    private int inTiming;
+    private int type;
 }

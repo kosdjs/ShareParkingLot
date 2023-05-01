@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PointBuyRequestDto {
-    private Long sha_id;
-    private int pt_lose;
-    private int in_timing;
-    private int type;
+public class PointConfirmRequestDto {
+    private Long shaId;
+    private Long ticketId;
 }

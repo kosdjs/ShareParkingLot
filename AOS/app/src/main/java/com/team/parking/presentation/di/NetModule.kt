@@ -1,5 +1,6 @@
 package com.team.parking.presentation.di
 
+import com.team.parking.BuildConfig
 import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.api.SearchAPIService
 import dagger.Module
@@ -16,6 +17,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class NetModule {
 
+    val BASE_URL = BuildConfig.BASE_URL
+
     @Qualifier
     @Retention(AnnotationRetention.BINARY)
     annotation class MapRetrofit
@@ -29,7 +32,7 @@ class NetModule {
     @MapRetrofit
     fun provideMapRetrofit():Retrofit{
         return Retrofit.Builder()
-            .baseUrl("http://k8d108.p.ssafy.io:8082/")
+            .baseUrl("${BASE_URL}8082/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

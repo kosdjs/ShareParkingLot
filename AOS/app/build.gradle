@@ -20,6 +20,7 @@ android {
         versionCode 1
         versionName "1.0"
         manifestPlaceholders["NAVER_CLIENT_KEY"] = "NAVER_CLIENT_KEY"
+        buildConfigField "String","BASE_URL", properties["BASE_URL"]
         buildConfigField "String","NAVER_CLIENT_KEY", properties["NAVER_CLIENT_KEY"]
         buildConfigField "String","KAKAO_CLIENT_KEY", properties["KAKAO_CLIENT_KEY"]
         buildConfigField "String","KAKAO_REST_API_KEY", properties["KAKAO_REST_API_KEY"]

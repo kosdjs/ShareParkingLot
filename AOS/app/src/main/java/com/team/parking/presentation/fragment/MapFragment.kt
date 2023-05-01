@@ -5,19 +5,20 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.*
 import com.team.parking.R
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
@@ -37,17 +38,24 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var fragmentMapBinding: FragmentMapBinding
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
-    private lateinit var currentLocation : Location
-    private lateinit var fusedLocationClient : FusedLocationProviderClient
+    private lateinit var locationClient : FusedLocationProviderClient
     private lateinit var mapViewModel: MapViewModel
     private lateinit var searchViewModel: SearchViewModel
+    private val permissionList = Manifest.permission.ACCESS_FINE_LOCATION
+    //GPS 권한 생성
+    private val requestPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()){
+        when(it){
+            true ->{
+            }else->{
+                naverMap.locationTrackingMode = LocationTrackingMode.None
+            }
+        }
+    }
     private var cacheData = ArrayList<Marker>()
     private var currentZoom:Double = 0.0
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
-        private val PERMISSIONS = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION)
+        private const val PERMISSION_REQUEST_CODE = 1000
     }
 
     override fun onCreateView(
@@ -59,14 +67,15 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        locationSource = FusedLocationSource(this, PERMISSION_REQUEST_CODE)
+
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fragmentMapBinding = DataBindingUtil.bind<FragmentMapBinding>(view)!!
-        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
         init()
@@ -124,7 +133,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private fun init() {
         setDatabinding()
         setOnClickNavigationDrawerItem()
-        fetchLastLocation()
+        initMap()
     }
 
     /**
@@ -139,39 +148,18 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         }
     }
 
-    /**
-     * 사용자 현재위치 받기
-     */
-    private fun fetchLastLocation(){
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                PERMISSIONS,
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-            return
-        }
-        var task = fusedLocationClient.lastLocation
-        task.addOnSuccessListener(object : OnSuccessListener<Location?> {
-            override fun onSuccess(location: Location?) {
-                if(location!=null) {
-                    currentLocation = location
-                }
-                initMap()
-            }
-
-        })
-
-
+    override fun onMapReady(naverMap: NaverMap) {
+        this.naverMap = naverMap
+        requestPermission.launch(permissionList)
+        naverMap.locationSource = locationSource
+        naverMap.uiSettings.isLocationButtonEnabled = true
+        mapSetting()
+        getMapDataFromRemote()
+        changeLocation()
     }
+
+
+
 
     /**
      * NaverMap Option
@@ -282,89 +270,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
 
 
-   /* // 좌표 -> 주소 변환
-    private fun getAddress(lat: Double, lng: Double): String {
-        val geoCoder = Geocoder(requireContext(), Locale.KOREA)
-        val address: ArrayList<Address>
-        var addressResult = "주소를 가져 올 수 없습니다."
-        try {
-            //세번째 파라미터는 좌표에 대해 주소를 리턴 받는 갯수로
-            //한좌표에 대해 두개이상의 이름이 존재할수있기에 주소배열을 리턴받기 위해 최대갯수 설정
-            address = geoCoder.getFromLocation(lat, lng, 1) as ArrayList<Address>
-            if (address.size > 0) {
-                // 주소 받아오기
-                val currentLocationAddress = address[0].getAddressLine(0)
-                    .toString()
-                Log.i(TAG, "getAddress: ${address[0].thoroughfare.toString()}")
-                addressResult = currentLocationAddress
-            }
 
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return addressResult
-    }*/
-
-
-    override fun onMapReady(naverMap: NaverMap) {
-        this.naverMap = naverMap
-        val option = NaverMapOptions()
-            .isUseTextureView
-        /*val cameraUpdate = CameraUpdate.scrollTo(LatLng(85.012,36.208409551764986))
-        val zoomUpdate = CameraUpdate.zoomTo(14.0)
-        naverMap.moveCamera(cameraUpdate)
-        naverMap.moveCamera(zoomUpdate)
-        Log.i(TAG, "onMapReady: ${naverMap.cameraPosition.target.latitude} ${naverMap.cameraPosition.target.longitude}")*/
-        //Log.i(TAG, "onMapReady: ${currentLocation.latitude},${currentLocation.longitude}")
-        mapSetting()
-        getMapDataFromRemote()
-        changeLocation()
-
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                PERMISSIONS,
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-            return
-        }
-    }
-
-
-    /**
-     * GPS 권한 요청 CallBack
-     */
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (locationSource.onRequestPermissionsResult(
-                requestCode,
-                permissions,
-                grantResults
-            )
-        ) {
-            if (!locationSource.isActivated) { // 권한 거부됨
-                Toast.makeText(context, "권한이 거부되어 현위치를 표시할 수 없습니다.", Toast.LENGTH_SHORT)
-                    .show()
-            } else {
-                fetchLastLocation()
-                naverMap.locationTrackingMode = LocationTrackingMode.Follow
-                Log.i(TAG, "onRequestPermissionsResult: ")
-            }
-            return
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
 
 }
 

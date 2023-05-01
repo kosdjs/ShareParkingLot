@@ -2,6 +2,7 @@ package com.team.parking.presentation.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.team.parking.data.model.user.LoginResponse
 import com.team.parking.data.model.user.User
 
 private val TAG = "userviewmodel종건"
@@ -11,33 +12,27 @@ class UserViewModel : ViewModel() {
     var _type: String = ""
     var _profileImage: String = ""
     var _phone: String = ""
-    var _password: String = ""
+    var _password: MutableLiveData<String> = MutableLiveData()
     var _email: MutableLiveData<String> = MutableLiveData()
     var _check_email: Boolean = false
     var _check_phone: Boolean = false
     var _check_password: Boolean = false
     var _login_email :String = ""
     var _login_password :String = ""
+    var _social_id : String= ""
     // 여기까지 login 전
     var user: User? = null
 
     fun login(
-        _login_user_id: Long,
-        _login_user_name: String,
-        _login_user_type: String,
-
-        _login_user_phone: String,
-        _login_user_email: String,
-        _login_user_profile_img: String,
-        _logun_user_ptHas: Int
+        loginResponse: LoginResponse
     ) {
         user = User(
-            _login_user_id,
-            _login_user_phone,
-            _login_user_email,
-            _login_user_name,
-            _login_user_profile_img,
-            _logun_user_ptHas, _login_user_type
+            loginResponse.user_id!!,
+            loginResponse.phone!!,
+            loginResponse.email!!,
+            loginResponse.name!!,
+            loginResponse.profile_img,
+            loginResponse.ptHas, loginResponse.type!!, loginResponse.social_id ?: ""
         )
     }
 
@@ -48,7 +43,9 @@ class UserViewModel : ViewModel() {
         _email = MutableLiveData()
         _type = ""
         _profileImage = ""
-        _password = ""
+        _password = MutableLiveData()
+        _social_id=""
+
         _check_email = false
         _check_phone = false
         _check_password = false

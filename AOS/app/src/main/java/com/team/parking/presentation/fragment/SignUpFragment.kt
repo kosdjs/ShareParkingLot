@@ -56,6 +56,10 @@ class SignUpFragment : Fragment() {
             Log.i(TAG, "onViewCreated: $it")
             checkEmail(it)
         })
+        userViewModel._password.observe(viewLifecycleOwner, Observer {
+            checkPassword(it)
+        })
+
         fragmentSignUpBinding.certificationBtn.setOnClickListener {
             Log.i(TAG, "onViewCreated: ${userViewModel._email}")
         }
@@ -87,11 +91,11 @@ class SignUpFragment : Fragment() {
 
                     if (response.body() == true) {
                         requireActivity().runOnUiThread {
-                            userViewModel._check_email=true
+                            userViewModel._check_email = true
                         }
                     } else {
                         requireActivity().runOnUiThread {
-                            userViewModel._check_email=false
+                            userViewModel._check_email = false
                             fragmentSignUpBinding.emailInput.error =
                                 resources.getString(R.string.dialog_email_duplicated)
                         }
@@ -103,25 +107,36 @@ class SignUpFragment : Fragment() {
 
     }
 
+    fun checkPassword(password:String) {
+
+        val passwordPattern = "^(?=.*[a-zA-Z])(?=.*[!@#\$%\\^&\\*\\.])(?=.*[0-9]).{8,20}\$".toRegex()
+        val isPasswordValid = passwordPattern.matches(password)
+        Log.d(TAG, "checkPassword: $isPasswordValid")
+        if(!isPasswordValid){
+            fragmentSignUpBinding.passwordInput.error = "${resources.getString(R.string.dialog_password_invalid)}"
+            userViewModel._check_password=false
+        }else{
+            userViewModel._check_password=true
+        }
+    }
+
     fun signUp() {
 
-        if(userViewModel._userName.equals("")){
-            fragmentSignUpBinding.nameInput.error="${R.string.dialog_name_blank}"
+        if (userViewModel._userName.equals("")) {
+            fragmentSignUpBinding.nameInput.error = "${resources.getString(R.string.dialog_name_blank)}"
             return
-        }else if(userViewModel._check_password){
-            fragmentSignUpBinding.passwordInput.error="${R.string.dialog_password_fail}"
-            userViewModel._check_password=true
+        } else if (!userViewModel._check_password) {
+            fragmentSignUpBinding.passwordInput.error = "${resources.getString(R.string.dialog_password_fail)}"
             return
         }
 
         if (!userViewModel._check_email) {
-            Log.d(TAG, "signUp: check_email_false")
+            fragmentSignUpBinding.emailInput.error="${resources.getString(R.string.dialog_email_invalid)}"
             return
-
         }
-        if (!userViewModel._check_phone){
+        if (!userViewModel._check_phone) {
             Log.d(TAG, "signUp: check_phone_false")
-            userViewModel._check_phone=true
+            userViewModel._check_phone = true
             return
         }
 
@@ -131,7 +146,8 @@ class SignUpFragment : Fragment() {
                 SignUpRequest(
                     userViewModel._userName, userViewModel._phone,
                     userViewModel._email.value!!, userViewModel._type,
-                    userViewModel._profileImage, userViewModel._password
+                    userViewModel._profileImage, userViewModel._password.value!!,
+                    userViewModel._social_id
                 )
             )
 

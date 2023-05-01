@@ -17,7 +17,10 @@ interface UserService {
                       @Query("accessToken")accessToken : String?=null,
                       @Query("email") email : String? = null,
                       @Query("password") password : String?=null,
-                      @Query("social_id") social_id : String?=null): Response<LoginResponse>
+                      @Query("social_id") social_id : String?=null,
+                      @Query("name") name : String?=null,
+                      @Query("profile_img") profile_img : String?=null
+    ): Response<LoginResponse>
 
     @GET("user/email")
     suspend fun checkEmail(@Query("email")email: String) : Response<Boolean>

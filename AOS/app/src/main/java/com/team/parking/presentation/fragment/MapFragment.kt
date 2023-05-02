@@ -26,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.widget.ZoomControlView
 import com.team.parking.MainActivity
@@ -38,7 +39,7 @@ import com.team.parking.presentation.viewmodel.SearchViewModel
 
 private const val TAG = "MapFragment_지훈"
 
-class MapFragment : Fragment() , OnMapReadyCallback {
+class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var fragmentMapBinding: FragmentMapBinding
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
@@ -46,6 +47,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var searchViewModel: SearchViewModel
     private val permissionList = Manifest.permission.ACCESS_FINE_LOCATION
+    private lateinit var bottomSheetBehavior  : BottomSheetBehavior<View>
     //GPS 권한 생성
     private val requestPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()){
@@ -82,9 +84,9 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         fragmentMapBinding = DataBindingUtil.bind<FragmentMapBinding>(view)!!
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
-
-
         init()
+        bottomSheetBehavior = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     /**
@@ -100,7 +102,28 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     }
 
     /**
-     * 서버로부터 주차장 데이터 가져오기
+     * 주차장 상세 데이터 가져오기
+     */
+    private fun getMapDetailData(lotId:Int){
+        mapViewModel.getDetailMapData(lotId)
+        mapViewModel.parkingLot.observe(viewLifecycleOwner){ response->
+            when (response){
+                is Resource.Success ->{
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+                is Resource.Error ->{
+                    Log.i(TAG, "getMapDetailDataE: ")
+                }
+                else ->{
+                    Log.i(TAG, "getMapDetailDataL: ")
+                }
+            }
+
+        }
+    }
+
+    /**
+     * 주차장 데이터 가져오기
      */
     private fun getMapData(mapRequest: MapRequest){
         mapViewModel.getMapDatas(mapRequest)
@@ -112,10 +135,16 @@ class MapFragment : Fragment() , OnMapReadyCallback {
                         if(currentZoom<15.0){
                             for(i in 0 until data!!.size){
                                 val marker = Marker()
+                                marker.tag = data[i]
                                 cacheData.add(marker)
                                 marker.position = LatLng(data[i].lat,data[i].lng)
                                 marker.iconTintColor = Color.RED
                                 marker.map = naverMap
+                                marker.setOnClickListener {
+                                    Log.i(TAG, "onclick ")
+                                    getMapDetailData(data[i].parkId)
+                                    false
+                                }
                             }
                         }else{
                             for(i in 0 until data!!.size){
@@ -144,6 +173,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     private fun removeMapData(){
         for(i in 0 until cacheData.size){
             cacheData[i].map = null
+            cacheData[i].onClickListener = null
         }
     }
 
@@ -156,7 +186,6 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         setDatabinding()
         setOnClickNavigationDrawerItem()
         initMap()
-        setBottomSheet()
     }
 
     /**
@@ -299,7 +328,6 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             }
         }
     }
-
 
 
 

@@ -30,6 +30,9 @@ class MapViewModel(
     private var _parkingLots : MutableLiveData<Resource<List<MapResponse>>> = MutableLiveData()
     val parkingLots : LiveData<Resource<List<MapResponse>>> get() = _parkingLots
 
+    //주차장 상세 데이터
+    private var _parkingLot : MutableLiveData<Resource<MapDetailResponse>> = MutableLiveData()
+    val parkingLot : LiveData<Resource<MapDetailResponse>> get() = _parkingLot
 
     private var _marker : MutableLiveData<Marker> = MutableLiveData()
 
@@ -49,6 +52,26 @@ class MapViewModel(
         }catch (e:Exception){
             _parkingLots.postValue(Resource.Error(e.message.toString()))
         }
+
+    }
+
+    /**
+     * 주차장 상세 데이터 받기
+     */
+    fun getDetailMapData(lotId : Int) = viewModelScope.launch(Dispatchers.IO){
+        _parkingLot.postValue(Resource.Loading())
+        try{
+            if(application.isNetworkAvailable(app)){
+                val apiResult = getMapDetailDataUseCase.execute(lotId)
+                _parkingLot.postValue(apiResult)
+            }else{
+                _parkingLot.postValue(Resource.Error("인터넷 사용이 불가능합니다."))
+            }
+
+        }catch(e:Exception){
+            _parkingLot.postValue(Resource.Error(e.message.toString()))
+        }
+
 
     }
 

@@ -25,6 +25,7 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.widget.ZoomControlView
 import com.team.parking.MainActivity
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.util.Resource
@@ -119,6 +120,10 @@ class MapFragment : Fragment() , OnMapReadyCallback {
             }
         }
     }
+
+    /**
+     * 지도 이동시 기존 좌표 삭제
+     */
     private fun removeMapData(){
         for(i in 0 until cacheData.size){
             cacheData[i].map = null
@@ -137,22 +142,37 @@ class MapFragment : Fragment() , OnMapReadyCallback {
     }
 
     /**
-     * SearchFragment 검색후 해당 장소로 좌표이동
+     * SearchFragment 검색후 해당 장소로 좌표이동 후 마커생성
      */
     private fun changeLocation(){
         searchViewModel.searchedPlace.observe(viewLifecycleOwner){
-            val cameraUpdate = CameraUpdate.scrollTo(LatLng(it.y.toDouble(),it.x.toDouble()))
             val zoomUpdate = CameraUpdate.zoomTo(15.0)
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(it.y.toDouble(),it.x.toDouble()))
+            val marker = Marker(LatLng(it.y.toDouble(),it.x.toDouble()))
+            marker.iconTintColor = Color.MAGENTA
+            marker.map = naverMap
             naverMap.moveCamera(cameraUpdate)
             naverMap.moveCamera(zoomUpdate)
         }
+    }
+    /**
+     * 내위치 버튼 추가 및 최소 줌 최대 줌 추가
+     */
+    private fun mapSetting(){
+        naverMap.uiSettings.apply {
+            isLocationButtonEnabled = true
+            logoGravity = Gravity.END
+            setLogoMargin(0,10,10,0)
+        }
+        naverMap.minZoom = 12.0
+        naverMap.maxZoom = 18.0
     }
 
     override fun onMapReady(naverMap: NaverMap) {
         this.naverMap = naverMap
         requestPermission.launch(permissionList)
+        naverMap.defaultCameraAnimationDuration = 1000
         naverMap.locationSource = locationSource
-        naverMap.uiSettings.isLocationButtonEnabled = true
         mapSetting()
         getMapDataFromRemote()
         changeLocation()
@@ -162,7 +182,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
 
     /**
-     * NaverMap Option
+     * NaverMap 초기화
      */
     private fun initMap() {
         val fm = childFragmentManager
@@ -171,6 +191,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
                 fm.beginTransaction().add(R.id.fragment_fragment_map_maps,it).commit()
             }
         mapFragment.getMapAsync(this)
+
     }
 
 
@@ -215,15 +236,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         (activity as MainActivity).navigationDrawer.openDrawer(GravityCompat.START)
     }
 
-    /**
-     * 내위치 버튼 추가 및 최소 줌 최대 줌 추가
-     */
-    private fun mapSetting(){
-        naverMap.uiSettings.isLocationButtonEnabled = true
-        naverMap.uiSettings.logoGravity = (Gravity.END)
-        naverMap.minZoom = 8.0
-        naverMap.maxZoom = 18.0
-    }
+
 
     /**
      * 장소 검색 클릭시 SearchFragment로 이동

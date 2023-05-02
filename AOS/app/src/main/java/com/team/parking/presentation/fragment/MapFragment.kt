@@ -94,9 +94,9 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         val bottomSheetBehavior = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-        fragmentMapBinding.btnFragmentMapOpen.setOnClickListener {
+        /*fragmentMapBinding.btnFragmentMapOpen.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        }
+        }*/
     }
 
     /**
@@ -156,6 +156,7 @@ class MapFragment : Fragment() , OnMapReadyCallback {
         setDatabinding()
         setOnClickNavigationDrawerItem()
         initMap()
+        setBottomSheet()
     }
 
     /**

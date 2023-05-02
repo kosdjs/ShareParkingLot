@@ -7,10 +7,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.map.overlay.Marker
+import com.team.parking.data.model.map.MapDetailResponse
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.model.map.MapResponse
 import com.team.parking.data.util.Resource
 import com.team.parking.domain.usecase.GetMapDataUseCase
+import com.team.parking.domain.usecase.GetMapDetailDataUseCase
 import com.team.parking.presentation.utils.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +20,8 @@ import kotlinx.coroutines.launch
 private const val TAG = "MapViewModel_지훈"
 class MapViewModel(
     private val app:Application,
-    val getMapDataUseCase: GetMapDataUseCase
+    val getMapDataUseCase: GetMapDataUseCase,
+    val getMapDetailDataUseCase: GetMapDetailDataUseCase
 ) : AndroidViewModel(app){
     val application = App()
 
@@ -26,6 +29,7 @@ class MapViewModel(
     //지도 주차장 데이터
     private var _parkingLots : MutableLiveData<Resource<List<MapResponse>>> = MutableLiveData()
     val parkingLots : LiveData<Resource<List<MapResponse>>> get() = _parkingLots
+
 
     private var _marker : MutableLiveData<Marker> = MutableLiveData()
 

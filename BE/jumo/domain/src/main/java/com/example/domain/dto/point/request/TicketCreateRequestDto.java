@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TicketCreateRequestDto {
     private Long shaId;
+    private String carNumber;
     private int inTiming;
     private int type;
 }

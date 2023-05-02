@@ -5,10 +5,10 @@ import lombok.*;
 @Builder
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class TicketCreateResponseDto {
     private Long ticketId;
-    private Long buyer;
+    private String buyer;
+    private String carNumber;
     private Long shaId;
     private String parkingRegion;
     private String address;

@@ -3,26 +3,23 @@ package com.example.jumouser.service.impl;
 import com.example.domain.dto.point.request.PointConfirmRequestDto;
 import com.example.domain.dto.point.request.TicketCreateRequestDto;
 import com.example.domain.dto.point.request.TicketSellerRequestDto;
-import com.example.domain.dto.point.response.PointConfirmResponseDto;
-import com.example.domain.dto.point.response.PointChargeResponseDto;
-import com.example.domain.dto.point.response.TicketCreateResponseDto;
-import com.example.domain.dto.point.response.TicketSellerResponseDto;
-import com.example.domain.entity.ShareLot;
-import com.example.domain.entity.Ticket;
-import com.example.domain.entity.Transaction;
-import com.example.domain.entity.User;
+import com.example.domain.dto.point.response.*;
+import com.example.domain.entity.*;
+import com.example.domain.etc.OutTiming;
 import com.example.domain.repo.ShareLotRepo;
 import com.example.domain.repo.TicketRepo;
 import com.example.domain.repo.TransactionRepo;
 import com.example.domain.repo.UserRepo;
-import com.example.error.exception.InputException;
 import com.example.error.exception.SaveException;
 import com.example.jumouser.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,6 +29,7 @@ public class PointServiceImpl implements PointService {
     private final TransactionRepo transactionRepo;
     private final ShareLotRepo shareLotRepo;
     private final TicketRepo ticketRepo;
+    private final OutTiming outTiming;
 
     @Override
     public PointChargeResponseDto chargePoint(Long userId, int ptCharge) {
@@ -60,27 +58,77 @@ public class PointServiceImpl implements PointService {
         if (user.isPresent() && shareLot.isPresent()) {
 
             // 출차시간 계산
-            int[] plusHour = new int[]{1, 3, 5, 24};
-            int outTiming = ticketCreateRequestDto.getInTiming() + plusHour[ticketCreateRequestDto.getType()];
-            outTiming = Math.min(outTiming, 24);
+            int outTime = outTiming.OutTimingMethod(ticketCreateRequestDto.getInTiming(), ticketCreateRequestDto.getType());
 
             // 주차권 생성 및 저장
             Ticket ticket = Ticket.builder(shareLot.get(), user.get(), ticketCreateRequestDto).build();
             ticketRepo.save(ticket);
             return new TicketCreateResponseDto(
                     ticket.getTicket_id(),
-                    ticket.getBuyer().getUser_id(),
+                    ticket.getBuyer().getName(),
+                    ticket.getCar_number(),
                     ticket.getShareLot().getSha_id(),
-                    ticket.getParking_region(),
+                    ticket.getParkingRegion(),
                     ticket.getAddress(),
                     ticket.getType(),
                     ticket.getIn_timing(),
-                    outTiming,
+                    outTime,
                     ticket.getCost()
             );
         }
         throw new IllegalStateException();
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TicketListResponseDto> getBoughtTicketList(Long userId) {
+        Optional<User> buyer = userRepo.findById(userId);
+        if (buyer.isPresent()) {
+            List<Ticket> tickets = ticketRepo.findAllByBuyer(buyer.get());
+            return tickets.stream().map(t -> new TicketListResponseDto(outTiming, t)).collect(Collectors.toList());
+        }
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public List<TicketListResponseDto> getSoldTicketList(Long shaId) {
+        Optional<ShareLot> shareLot = shareLotRepo.findById(shaId);
+
+        if (shareLot.isPresent()) {
+            List<Ticket> tickets = ticketRepo.findAllByShareLot(shareLot.get());
+            return tickets.stream().map(t -> new TicketListResponseDto(outTiming, t)).collect(Collectors.toList());
+        }
+        throw new IllegalStateException();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TicketDetailResponseDto getTicket(Long ticketId) {
+        Optional<Ticket> currTicket = ticketRepo.findById(ticketId);
+
+        if (currTicket.isPresent()) {
+            Optional<ShareLot> shareLot = shareLotRepo.findById(currTicket.get().getShareLot().getSha_id());
+
+            int outTime = outTiming.OutTimingMethod(currTicket.get().getIn_timing(), currTicket.get().getType());
+            List<Image> images = shareLot.get().getImages();
+
+            return new TicketDetailResponseDto(
+                    currTicket.get().getTicket_id(),
+                    currTicket.get().getParkingRegion(),
+                    currTicket.get().getBuyer().getName(),
+                    currTicket.get().getCar_number(),
+                    currTicket.get().getParking_date(),
+                    currTicket.get().getType(),
+                    currTicket.get().getIn_timing(),
+                    outTime,
+                    currTicket.get().getCost(),
+                    images,
+                    currTicket.get().isSell_confirm(),
+                    currTicket.get().isBuy_confirm()
+                    );
+        }
+        throw new IllegalStateException();
     }
 
     @Override
@@ -96,8 +144,9 @@ public class PointServiceImpl implements PointService {
                     currTicket.get().getTicket_id(),
                     ticketSellerRequestDto.getShaId(),
                     currTicket.get().getCost(),
-                    currTicket.get().getParking_region(),
-                    currTicket.get().getParking_date()
+                    currTicket.get().getParkingRegion(),
+                    currTicket.get().getParking_date(),
+                    currTicket.get().isSell_confirm()
             );
         } throw new IllegalStateException();
 
@@ -109,14 +158,11 @@ public class PointServiceImpl implements PointService {
         Optional<ShareLot> shareLot = shareLotRepo.findById(pointConfirmRequestDto.getShaId());
         Optional<User> seller = userRepo.findById(shareLot.get().getUser().getUser_id());
         Optional<Ticket> ticket = ticketRepo.findById(pointConfirmRequestDto.getTicketId());
+
         int ptLose = ticket.get().getCost();
         int inTiming = ticket.get().getIn_timing();
         int type = ticket.get().getType();
-
-        // 출차시간 계산
-        int[] typeToHour = new int[]{1, 3, 5, 24};
-        int outTiming = inTiming + typeToHour[type];
-        outTiming = Math.min(outTiming, 24);
+        int outTime = outTiming.OutTimingMethod(inTiming, type);
 
         if (buyer.isPresent() && shareLot.isPresent() && seller.isPresent()) {
 
@@ -135,10 +181,10 @@ public class PointServiceImpl implements PointService {
             userRepo.save(buyerUser);
 
             // 구매 확정 처리
-            Optional<Ticket> userTicket = ticketRepo.findById(pointConfirmRequestDto.getTicketId());
-            if (userTicket.isPresent()) {
-                userTicket.get().setBuy_confirm(true);
-                ticketRepo.save(userTicket.get());
+            Optional<Ticket> buyerTicket = ticketRepo.findById(pointConfirmRequestDto.getTicketId());
+            if (buyerTicket.isPresent()) {
+                buyerTicket.get().setBuy_confirm(true);
+                ticketRepo.save(buyerTicket.get());
             }
             /*------------구매자 끝--------------*/
 
@@ -168,7 +214,7 @@ public class PointServiceImpl implements PointService {
                     buy_transaction.getTransaction_date(),
                     type,
                     inTiming,
-                    outTiming
+                    outTime
                     );
         }
         throw new SaveException("Unable to Save");

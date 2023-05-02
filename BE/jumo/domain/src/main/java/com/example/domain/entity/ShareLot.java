@@ -25,6 +25,7 @@ public class ShareLot {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
     private int sha_type;
 
     private String sha_name;
@@ -44,11 +45,14 @@ public class ShareLot {
 
     private float longitude;
 
-    @OneToMany(mappedBy = "img_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "favorite_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
     private List<Favorite> favoriteList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
+    private List<Ticket> ticketList = new ArrayList<>();
 
     public static ShareLotBuilder builder(ShareSaveDto shareSaveDto) {
         return ShareLotBuilder()

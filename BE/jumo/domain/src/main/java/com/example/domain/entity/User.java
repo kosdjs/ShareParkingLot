@@ -21,6 +21,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long user_id;
     private String name;
     private String type;
@@ -29,7 +30,7 @@ public class User {
     private String password;
     private String fcm_token;
     private String profile_img;
-    @Column(columnDefinition = "int default 0")
+    @Column(name = "pt_has", columnDefinition = "int default 0")
     private int pt_has;
 
     public User(SignUpRequestDto requestDto){
@@ -50,12 +51,12 @@ public class User {
         this.pt_has -= point;
     }
 
-    @OneToMany(mappedBy = "car_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CarInfo> carInfoList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "ticket_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL)
     private List<Ticket> tickets = new ArrayList<>();
 
-    @OneToMany(mappedBy = "credit_id")
+    @OneToMany(mappedBy = "user")
     private List<Transaction> transactions = new ArrayList<>();
 }

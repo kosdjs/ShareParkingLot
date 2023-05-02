@@ -7,12 +7,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Builder(builderMethodName = "TicketBuilder")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@DynamicInsert
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,15 +30,18 @@ public class Ticket {
     @JoinColumn(name = "buyer_id")
     private User buyer;
 
+    @Column(name = "car_number")
+    private String car_number;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sha_id")
     private ShareLot shareLot;
 
     @Column(name = "seller_id")
-    private Long seller_id;
+    private Long sellerId;
 
     @Column(name = "parking_region")
-    private String parking_region;
+    private String parkingRegion;
 
     private String address;
 
@@ -42,13 +52,13 @@ public class Ticket {
     @Column(name = "in_timing")
     private int in_timing;
 
-    @Column(columnDefinition = "boolean default true")
+    @ColumnDefault("true")
     private boolean validation;
 
     @Column(name = "parking_date")
     private String parking_date;
 
-    @Column(name = "buy_confirm", columnDefinition = "boolean default false")
+    @Column(name = "buy_confirm", columnDefinition = "boolean default true")
     private boolean buy_confirm;
 
     @Column(name="sell_confirm", columnDefinition = "boolean default false")
@@ -61,11 +71,13 @@ public class Ticket {
         return TicketBuilder()
                 .shareLot(shareLot)
                 .buyer(buyer)
-                .seller_id(shareLot.getUser().getUser_id())
-                .parking_region(shareLot.getSha_name())
+                .car_number(ticketCreateRequestDto.getCarNumber())
+                .sellerId(shareLot.getUser().getUser_id())
+                .parkingRegion(shareLot.getSha_name())
                 .address(shareLot.getSha_road())
                 .type(ticketCreateRequestDto.getType())
                 .cost(cost)
+                .parking_date(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .in_timing(ticketCreateRequestDto.getInTiming());
     }
 

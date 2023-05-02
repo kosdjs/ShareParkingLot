@@ -14,7 +14,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.common.util.Utility
 import com.team.parking.data.api.UserService
 import com.team.parking.data.model.user.User
@@ -49,6 +51,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var headerBinding: SideHeaderBinding
     lateinit var navController: NavController
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -60,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         //setFullScreen()
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         initMapViewModel()
+        getFCMToken()
     }
 
     fun initMapViewModel(){
@@ -140,5 +145,23 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_map_fragment_to_myShareParkingLotFragment)
             binding.drawer.closeDrawers()
         }
+    }
+
+    private fun getFCMToken(): String?{
+        var token: String? = null
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            token = task.result
+
+            // Log and toast
+            Log.d(TAG, "FCM Token is ${token}")
+        })
+
+        return token
     }
 }

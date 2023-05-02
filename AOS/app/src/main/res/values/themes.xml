@@ -14,6 +14,6 @@
         <item name="android:statusBarColor">@color/main_color2</item>
         <!-- Customize your theme here. -->
     </style>
-    <style name="Theme.NavigationDrawer" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
+    <style name="Theme.NavigationDrawer" parent="Theme.MaterialComponents.Light.NoActionBar"/>
 
 </resources>

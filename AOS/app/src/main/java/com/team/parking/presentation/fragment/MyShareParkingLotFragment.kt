@@ -1,0 +1,35 @@
+package com.team.parking.presentation.fragment
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.team.parking.R
+import com.team.parking.databinding.FragmentMyShareParkingLotBinding
+
+
+class MyShareParkingLotFragment : Fragment() {
+
+    private lateinit var binding: FragmentMyShareParkingLotBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentMyShareParkingLotBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.imageBackMyShareParkingLot.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+        binding.imageAddMyShareParkingLot.setOnClickListener {
+            findNavController().navigate(R.id.action_myShareParkingLotFragment_to_addShareParkingLotFragment)
+        }
+    }
+
+}

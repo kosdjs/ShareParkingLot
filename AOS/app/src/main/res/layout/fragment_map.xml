@@ -126,6 +126,9 @@
 
     </FrameLayout>
 
+    <include layout="@layout/fragment_parking_lot_detail"
+        android:id="@+id/bottom_sheet_open"/>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

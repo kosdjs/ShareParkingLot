@@ -21,6 +21,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.*
 import com.team.parking.R
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
@@ -76,10 +78,25 @@ class MapFragment : Fragment() , OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         fragmentMapBinding = DataBindingUtil.bind<FragmentMapBinding>(view)!!
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
+
+
         init()
+    }
+
+    /**
+     * BottomSheet 생성
+     */
+    private fun setBottomSheet(){
+        val bottomSheetBehavior = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        fragmentMapBinding.btnFragmentMapOpen.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
     }
 
     /**

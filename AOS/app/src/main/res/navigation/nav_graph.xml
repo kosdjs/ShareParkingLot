@@ -71,6 +71,7 @@
         android:name="com.team.parking.presentation.fragment.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+        <fragment
         android:id="@+id/signUpFragment"
         android:name="com.team.parking.presentation.fragment.SignUpFragment"
         android:label="fragment_sign_up"
@@ -147,7 +148,7 @@
     </fragment>
     <fragment
         android:id="@+id/ticketDetailFragment"
-        android:name="com.team.parking.TicketDetailFragment"
+        android:name="com.team.parking.presentation.fragment.TicketDetailFragment"
         android:label="fragment_ticket_detail"
         tools:layout="@layout/fragment_ticket_detail" />
 </navigation>

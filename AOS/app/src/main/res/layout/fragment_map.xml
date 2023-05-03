@@ -6,6 +6,9 @@
         <variable
             name="handlers"
             type="com.team.parking.presentation.fragment.MapFragment" />
+        <variable
+            name="vm"
+            type="com.team.parking.presentation.viewmodel.MapViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -127,7 +130,9 @@
     </FrameLayout>
 
     <include layout="@layout/fragment_parking_lot_detail"
-        android:id="@+id/bottom_sheet_open"/>
+        android:id="@+id/bottom_sheet_open"
+        app:vm ="@{vm}"
+        />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

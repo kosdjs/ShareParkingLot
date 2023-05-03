@@ -76,8 +76,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         locationSource = FusedLocationSource(this, PERMISSION_REQUEST_CODE)
     }
-
-
+    
+    
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -85,31 +85,30 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
         init()
+        mapViewModel.park.observe(viewLifecycleOwner){
+            Log.i(TAG, "onViewCreated: ${it}")
+        }
+    }
+    
+
+    /**
+     * BottomSheet 생성 (초기에는 보이지 않음)
+     */
+    private fun setBottomSheet(){
         bottomSheetBehavior = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     /**
-     * BottomSheet 생성
-     */
-    private fun setBottomSheet(){
-        val bottomSheetBehavior = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-
-        /*fragmentMapBinding.btnFragmentMapOpen.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        }*/
-    }
-
-    /**
      * 주차장 상세 데이터 가져오기
      */
+    
     private fun getMapDetailData(lotId:Int){
         mapViewModel.getDetailMapData(lotId)
         mapViewModel.parkingLot.observe(viewLifecycleOwner){ response->
             when (response){
                 is Resource.Success ->{
-                    Log.i(TAG, "getMapDetailData: ${response.data}")
+                    mapViewModel.updatePark(response.data!!)
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
                 is Resource.Error ->{
@@ -187,6 +186,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         setDatabinding()
         setOnClickNavigationDrawerItem()
         initMap()
+        setBottomSheet()
     }
 
     /**
@@ -273,6 +273,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         fragmentMapBinding.apply {
             handlers = this@MapFragment
             lifecycleOwner = this@MapFragment
+            vm = mapViewModel
         }
     }
 

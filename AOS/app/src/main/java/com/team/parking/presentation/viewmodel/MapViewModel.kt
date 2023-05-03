@@ -34,7 +34,19 @@ class MapViewModel(
     private var _parkingLot : MutableLiveData<Resource<MapDetailResponse>> = MutableLiveData()
     val parkingLot : LiveData<Resource<MapDetailResponse>> get() = _parkingLot
 
+    //주차장 상세 프래그먼트 데이터
+    private var _park : MutableLiveData<MapDetailResponse> = MutableLiveData()
+    val park : LiveData<MapDetailResponse> get() = _park
+
     private var _marker : MutableLiveData<Marker> = MutableLiveData()
+
+    /**
+     * 주차장 상세 데이터 갱신(DetailFragment)
+     */
+
+    fun updatePark(mapDetailResponse: MapDetailResponse){
+        _park.postValue(mapDetailResponse)
+    }
 
     /**
      * 서버로부터 주차장 데이터 받기

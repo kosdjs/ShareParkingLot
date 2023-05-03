@@ -2,13 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-
     <data>
         <variable
             name="vm"
             type="com.team.parking.presentation.viewmodel.MapViewModel" />
-
     </data>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
@@ -38,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="주차장 이름"
+            android:text="@{vm.park.lotName}"
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -51,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="주차장 주소"
+            android:text="@{vm.park.jibun}"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -107,7 +106,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:text="기본 정보"
+            android:text="기본정보"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/text_additional_info_title_parking_lot_detail"

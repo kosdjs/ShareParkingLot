@@ -30,7 +30,7 @@ public class TicketCreateResponseDto {
         this.ticketId = ticket.getTicket_id();
         this.buyer = ticket.getBuyer().getName();
         this.carNumber = ticket.getCar_number();
-        this.shaId = ticket.getShareLot().getSha_id();
+        this.shaId = ticket.getShareLot().getShaId();
         this.parkingRegion = ticket.getParkingRegion();
         this.address = ticket.getAddress();
         this.type = ticket.getType();

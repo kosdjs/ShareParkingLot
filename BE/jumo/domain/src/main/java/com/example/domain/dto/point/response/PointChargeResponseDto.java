@@ -17,10 +17,10 @@ public class PointChargeResponseDto {
 
     @Builder
     public PointChargeResponseDto(User user, int ptCharge) {
-        this.userId = user.getUser_id();
+        this.userId = user.getUserId();
         this.nickname = user.getName();
         this.ptCharge = ptCharge;
-        this.ptHas = user.getPt_has();
+        this.ptHas = user.getPtHas();
     }
 
 }

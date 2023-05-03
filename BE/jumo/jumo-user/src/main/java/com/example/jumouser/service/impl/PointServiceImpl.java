@@ -37,7 +37,7 @@ public class PointServiceImpl implements PointService {
     public int getUserPoint(Long userId) {
         Optional<User> currUser = userRepo.findById(userId);
         if (currUser.isPresent()) {
-            return currUser.get().getPt_has();
+            return currUser.get().getPtHas();
         } else throw new IllegalStateException();
     }
 
@@ -163,8 +163,8 @@ public class PointServiceImpl implements PointService {
         Optional<User> buyer = userRepo.findById(userId);
         Optional<Ticket> ticket = ticketRepo.findById(ticketId);
 
-        Optional<ShareLot> shareLot = shareLotRepo.findById(ticket.get().getShareLot().getSha_id());
-        Optional<User> seller = userRepo.findById(shareLot.get().getUser().getUser_id());
+        Optional<ShareLot> shareLot = shareLotRepo.findById(ticket.get().getShareLot().getShaId());
+        Optional<User> seller = userRepo.findById(shareLot.get().getUser().getUserId());
 
         int ptLose = ticket.get().getCost();
         int inTiming = ticket.get().getIn_timing();
@@ -178,7 +178,7 @@ public class PointServiceImpl implements PointService {
             */
             // 구매자 거래 내역 저장
             Transaction buy_transaction = new Transaction(
-                    buyer.get(), shareLot.get().getSha_name(), 0, ptLose, shareLot.get().getSha_id()
+                    buyer.get(), shareLot.get().getSha_name(), 0, ptLose, shareLot.get().getShaId()
                     );
             transactionRepo.save(buy_transaction);
 
@@ -206,7 +206,7 @@ public class PointServiceImpl implements PointService {
 
             // 판매자 거래 내역 저장
             Transaction sell_transaction = new Transaction(
-                    seller.get(), shareLot.get().getSha_name(), ptLose, 0, shareLot.get().getSha_id()
+                    seller.get(), shareLot.get().getSha_name(), ptLose, 0, shareLot.get().getShaId()
             );
             transactionRepo.save(sell_transaction);
             /*-----------판매자 끝-----------*/
@@ -215,9 +215,9 @@ public class PointServiceImpl implements PointService {
             return new TicketBuyConfirmResponseDto(
                     buy_transaction.getCredit_id(),
                     ptLose,
-                    buyerUser.getPt_has(),
+                    buyerUser.getPtHas(),
                     shareLot.get().getSha_name(),
-                    shareLot.get().getSha_id(),
+                    shareLot.get().getShaId(),
                     buy_transaction.getTransactionDate(),
                     type,
                     inTiming,

@@ -19,7 +19,7 @@ public class TicketSellConfirmResponseDto {
     @Builder
     public TicketSellConfirmResponseDto(Ticket ticket) {
         this.ticketId = ticket.getTicket_id();
-        this.shaId = ticket.getShareLot().getSha_id();
+        this.shaId = ticket.getShareLot().getShaId();
         this.ptToEarn = ticket.getCost();
         this.parkingRegion = ticket.getParkingRegion();
         this.parkingDate = ticket.getParkingDate();

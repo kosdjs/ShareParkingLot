@@ -28,4 +28,13 @@ public class CarInfo {
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean car_rep;
+
+    // ????
+    public boolean getCar_rep() {
+        return car_rep;
+    }
+
+    public void setCar_rep(boolean car_rep) {
+        this.car_rep = car_rep;
+    }
 }

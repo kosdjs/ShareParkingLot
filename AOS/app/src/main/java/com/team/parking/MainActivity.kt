@@ -14,7 +14,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+
 import com.google.android.gms.tasks.OnCompleteListener
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.common.util.Utility
@@ -65,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         initMapViewModel()
         getFCMToken()
+        onLoginSuccess()
     }
 
     fun initMapViewModel(){
@@ -163,5 +166,15 @@ class MainActivity : AppCompatActivity() {
         })
 
         return token
+    private fun onLoginSuccess(){
+        userViewModel.userLiveData.observe(this){
+            runOnUiThread {
+                headerBinding.textNicknameSideHeader.text = it.name
+                Glide.with(this@MainActivity)
+                    .load(it.profile_img)
+                    .error(R.drawable.ic_baseline_person_24)
+                    .into(headerBinding.imageProfileSideHeader)
+            }
+        }
     }
 }

@@ -44,10 +44,18 @@ public class User {
         this.socialId=requestDto.getSocial_id();
     }
 
+    public void addPoint(int point){
+        this.ptHas += point;
+    }
+
+    public void subtractPoint(int point) {
+        this.ptHas -= point;
+    }
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CarInfo> carInfoList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL)
     private List<Ticket> tickets = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")

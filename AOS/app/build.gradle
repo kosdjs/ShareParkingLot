@@ -66,6 +66,8 @@ dependencies {
     def lifecycle_version = "2.5.1"
     def nav_version = "2.5.3"
 
+
+    //implementation 'kr.co.prnd:persistBottomSheetFragment:x.y.z'
     // 네이버 지도 SDK
     implementation 'com.navercorp.nid:oauth-jdk8:5.1.0'
     // 카카오 로그인

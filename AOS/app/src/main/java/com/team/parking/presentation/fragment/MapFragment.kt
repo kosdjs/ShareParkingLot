@@ -18,6 +18,8 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.location.*
 import com.team.parking.R
 import com.google.android.gms.tasks.OnSuccessListener
@@ -88,7 +90,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
 
 
     }
-    
+
 
     /**
      * BottomSheet 생성 (초기에는 보이지 않음)
@@ -131,6 +133,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             when (response){
                 is Resource.Success ->{
                     mapViewModel.updatePark(response.data!!)
+                    Glide.with(this).load(R.drawable.icon_no_image).skipMemoryCache(true).diskCacheStrategy(
+                        DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
                 is Resource.Error ->{
@@ -171,7 +175,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 marker.iconTintColor = Color.BLUE
                                 marker.map = naverMap
                                 marker.setOnClickListener {
-                                    Log.i(TAG, "getMapData: ${data[i].parkId}")
                                     getMapDetailData(data[i].parkId)
                                     false
                                 }

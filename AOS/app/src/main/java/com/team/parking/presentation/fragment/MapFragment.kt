@@ -168,7 +168,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      */
     private fun getMapData(mapRequest: MapRequest){
         mapViewModel.getMapDatas(mapRequest)
-        Log.i(TAG, "getMapData: ${currentZoom}")
         mapViewModel.parkingLots.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is Resource.Success -> {
@@ -341,8 +340,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun getMapDataFromRemote(){
 
         naverMap.addOnCameraChangeListener { i, b ->
-            //Log.i(TAG, "onMapReady: camera=${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
-            //Log.i(TAG, "getMapDataFromRemote: ${getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)}")
+
         }
         naverMap.addOnCameraIdleListener {
 
@@ -361,7 +359,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     naverMap.contentBounds.southWest.latitude,naverMap.contentBounds.southWest.longitude,
                     naverMap.cameraPosition.zoom
                 )
-                Log.i(TAG, "${mapRequest}")
                 getMapData(mapRequest)
             }else{
                 removeClusteringMapData()

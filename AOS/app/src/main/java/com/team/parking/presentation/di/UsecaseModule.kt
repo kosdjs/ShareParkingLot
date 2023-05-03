@@ -3,6 +3,7 @@ package com.team.parking.presentation.di
 import com.team.parking.domain.repository.MapRepository
 import com.team.parking.domain.repository.SearchRepository
 import com.team.parking.domain.usecase.GetMapDataUseCase
+import com.team.parking.domain.usecase.GetSearchAddressUseCase
 import com.team.parking.domain.usecase.GetSearchDataUseCase
 import dagger.Module
 import dagger.Provides
@@ -29,6 +30,14 @@ class UsecaseModule {
         searchRepository: SearchRepository
     ) : GetSearchDataUseCase{
         return GetSearchDataUseCase(searchRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetSearchAddressUsecase(
+        searchRepository: SearchRepository
+    ) : GetSearchAddressUseCase{
+        return GetSearchAddressUseCase(searchRepository)
     }
 
 }

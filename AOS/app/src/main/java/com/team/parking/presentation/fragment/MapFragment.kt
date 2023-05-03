@@ -60,7 +60,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
         }
     }
-    private var cacheData = ArrayList<Marker>()
+    private var clusteringCache = ArrayList<Marker>()
+    private var noClusteringCache = ArrayList<Marker>()
     private var currentZoom:Double = 0.0
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1000
@@ -147,30 +148,47 @@ class MapFragment : Fragment() , OnMapReadyCallback{
 
         }
     }
+    /**
+     * SearchFragment 검색후 해당 장소로 좌표이동 후 마커생성
+     */
+    private fun changeLocation(){
+        searchViewModel.searchedPlace.observe(viewLifecycleOwner){
+            val zoomUpdate = CameraUpdate.zoomTo(15.0)
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(it.y.toDouble(),it.x.toDouble()))
+            val marker = Marker(LatLng(it.y.toDouble(),it.x.toDouble()))
+            marker.iconTintColor = Color.MAGENTA
+            marker.map = naverMap
+            naverMap.moveCamera(cameraUpdate)
+            naverMap.moveCamera(zoomUpdate)
+        }
+    }
 
     /**
      * 주차장 데이터 가져오기
      */
     private fun getMapData(mapRequest: MapRequest){
         mapViewModel.getMapDatas(mapRequest)
+        Log.i(TAG, "getMapData: ${currentZoom}")
         mapViewModel.parkingLots.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is Resource.Success -> {
                     //Log.i(TAG, "서버로부터 주차장 데이터를 가져오는데 성공했습니다.")
                     response.data.let{ data->
-                        if(currentZoom<15.0){
+                        if(data!![0].parkId==-1){
                             for(i in 0 until data!!.size){
+                                removeNoClusteringMapData()
                                 val marker = Marker()
                                 marker.tag = data[i]
-                                cacheData.add(marker)
+                                clusteringCache.add(marker)
                                 marker.position = LatLng(data[i].lat,data[i].lng)
                                 marker.iconTintColor = Color.RED
                                 marker.map = naverMap
                             }
                         }else{
                             for(i in 0 until data!!.size){
+                                removeClusteringMapData()
                                 val marker = Marker()
-                                cacheData.add(marker)
+                                noClusteringCache.add(marker)
                                 marker.position = LatLng(data[i].lat,data[i].lng)
                                 marker.iconTintColor = Color.BLUE
                                 marker.map = naverMap
@@ -195,10 +213,19 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     /**
      * 지도 이동시 기존 좌표 삭제
      */
-    private fun removeMapData(){
-        for(i in 0 until cacheData.size){
-            cacheData[i].map = null
-            cacheData[i].onClickListener = null
+    private fun removeClusteringMapData(){
+        for(i in 0 until clusteringCache.size){
+            clusteringCache[i].map = null
+            clusteringCache[i].onClickListener = null
+        }
+    }
+    /**
+     * 지도 이동시 기존 좌표 삭제
+     */
+    private fun removeNoClusteringMapData(){
+        for(i in 0 until noClusteringCache.size){
+            noClusteringCache[i].map = null
+            noClusteringCache[i].onClickListener = null
         }
     }
 
@@ -216,20 +243,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     }
 
     /**
-     * SearchFragment 검색후 해당 장소로 좌표이동 후 마커생성
-     */
-    private fun changeLocation(){
-        searchViewModel.searchedPlace.observe(viewLifecycleOwner){
-            val zoomUpdate = CameraUpdate.zoomTo(15.0)
-            val cameraUpdate = CameraUpdate.scrollTo(LatLng(it.y.toDouble(),it.x.toDouble()))
-            val marker = Marker(LatLng(it.y.toDouble(),it.x.toDouble()))
-            marker.iconTintColor = Color.MAGENTA
-            marker.map = naverMap
-            naverMap.moveCamera(cameraUpdate)
-            naverMap.moveCamera(zoomUpdate)
-        }
-    }
-    /**
      * 내위치 버튼 추가 및 최소 줌 최대 줌 추가
      */
     private fun mapSetting(){
@@ -238,7 +251,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             logoGravity = Gravity.END
             setLogoMargin(0,10,10,0)
         }
-        naverMap.minZoom = 12.0
+        naverMap.minZoom = 8.0
         naverMap.maxZoom = 18.0
     }
 
@@ -334,26 +347,27 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         naverMap.addOnCameraIdleListener {
 
             currentZoom =  naverMap.cameraPosition.zoom
-            //Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
-            /*Log.i(TAG, "줌 레벨 : ${naverMap.cameraPosition.zoom}")
-            Log.i(TAG, "중심 좌표 : ${naverMap.cameraPosition.target.latitude},${naverMap.cameraPosition.target.longitude}")
-            Log.i(TAG, "${naverMap.contentBounds.southWest.latitude} ,${naverMap.contentBounds.northWest.latitude} ")
-            Log.i(TAG, "${naverMap.contentBounds.southWest.longitude} ,${naverMap.contentBounds.northEast.longitude}")*/
 
-            //getAddress(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
-            if(currentZoom>=13.8&& currentZoom<17.2){
+            if(currentZoom>=13.8&&currentZoom<17.2){
+                if(currentZoom<15.0){
+                    removeNoClusteringMapData()
+                }
+                else{
+                    removeClusteringMapData()
+                }
                 val mapRequest = MapRequest(
                     naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude,
                     naverMap.contentBounds.northWest.latitude,naverMap.contentBounds.northEast.longitude,
                     naverMap.contentBounds.southWest.latitude,naverMap.contentBounds.southWest.longitude,
                     naverMap.cameraPosition.zoom
                 )
-                removeMapData()
+                Log.i(TAG, "${mapRequest}")
                 getMapData(mapRequest)
+            }else{
+                removeClusteringMapData()
+                removeNoClusteringMapData()
             }
-            else{
-                removeMapData()
-            }
+
         }
     }
 

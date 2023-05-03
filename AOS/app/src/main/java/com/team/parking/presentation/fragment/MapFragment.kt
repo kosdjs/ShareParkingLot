@@ -109,11 +109,11 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapViewModel.parkingLot.observe(viewLifecycleOwner){ response->
             when (response){
                 is Resource.Success ->{
-                    Log.i(TAG, "getMapDetailData: ")
+                    Log.i(TAG, "getMapDetailData: ${response.data}")
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
                 is Resource.Error ->{
-                    Log.i(TAG, "")
+                    Log.i(TAG, "서버와 통신이 원활하지 않습니다.")
                 }
                 else ->{
                     //Log.i(TAG, "getMapDetailDataL: ")

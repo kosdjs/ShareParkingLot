@@ -10,5 +10,5 @@ import retrofit2.Response
 interface MapRepository {
 
     suspend fun getParkingLots(mapRequest: MapRequest) : Resource<List<MapResponse>>
-    suspend fun getParkingLotDetail(lotId:Int) : Resource<MapDetailResponse>
+    suspend fun getParkingLotDetail(parkId:Int) : Resource<MapDetailResponse>
 }

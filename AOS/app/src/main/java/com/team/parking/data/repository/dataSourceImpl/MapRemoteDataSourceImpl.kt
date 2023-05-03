@@ -14,8 +14,8 @@ class MapRemoteDataSourceImpl(
         return mapAPIService.getMapsData(mapRequest)
     }
 
-    override suspend fun getParkingLotDetail(lotId: Int): Response<MapDetailResponse> {
-        return mapAPIService.getMapDetailData(lotId)
+    override suspend fun getParkingLotDetail(parkId: Int): Response<MapDetailResponse> {
+        return mapAPIService.getMapDetailData(parkId)
     }
 
 

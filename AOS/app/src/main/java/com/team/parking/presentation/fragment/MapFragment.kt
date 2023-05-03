@@ -109,13 +109,14 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapViewModel.parkingLot.observe(viewLifecycleOwner){ response->
             when (response){
                 is Resource.Success ->{
+                    Log.i(TAG, "getMapDetailData: ")
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
                 is Resource.Error ->{
-                    Log.i(TAG, "getMapDetailDataE: ")
+                    Log.i(TAG, "")
                 }
                 else ->{
-                    Log.i(TAG, "getMapDetailDataL: ")
+                    //Log.i(TAG, "getMapDetailDataL: ")
                 }
             }
 
@@ -140,11 +141,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 marker.position = LatLng(data[i].lat,data[i].lng)
                                 marker.iconTintColor = Color.RED
                                 marker.map = naverMap
-                                marker.setOnClickListener {
-                                    Log.i(TAG, "onclick ")
-                                    getMapDetailData(data[i].parkId)
-                                    false
-                                }
                             }
                         }else{
                             for(i in 0 until data!!.size){
@@ -153,6 +149,11 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 marker.position = LatLng(data[i].lat,data[i].lng)
                                 marker.iconTintColor = Color.BLUE
                                 marker.map = naverMap
+                                marker.setOnClickListener {
+                                    Log.i(TAG, "getMapData: ${data[i].parkId}")
+                                    getMapDetailData(data[i].parkId)
+                                    false
+                                }
                             }
                         }
                     }

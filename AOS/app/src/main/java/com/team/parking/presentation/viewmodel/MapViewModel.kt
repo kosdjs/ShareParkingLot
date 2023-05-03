@@ -58,11 +58,11 @@ class MapViewModel(
     /**
      * 주차장 상세 데이터 받기
      */
-    fun getDetailMapData(lotId : Int) = viewModelScope.launch(Dispatchers.IO){
+    fun getDetailMapData(parkId : Int) = viewModelScope.launch(Dispatchers.IO){
         _parkingLot.postValue(Resource.Loading())
         try{
             if(application.isNetworkAvailable(app)){
-                val apiResult = getMapDetailDataUseCase.execute(lotId)
+                val apiResult = getMapDetailDataUseCase.execute(parkId)
                 _parkingLot.postValue(apiResult)
             }else{
                 _parkingLot.postValue(Resource.Error("인터넷 사용이 불가능합니다."))

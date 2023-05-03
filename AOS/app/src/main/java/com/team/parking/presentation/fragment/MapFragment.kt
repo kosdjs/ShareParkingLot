@@ -85,9 +85,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
         init()
-        mapViewModel.park.observe(viewLifecycleOwner){
-            Log.i(TAG, "onViewCreated: ${it}")
-        }
+
+
     }
     
 
@@ -97,6 +96,29 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun setBottomSheet(){
         bottomSheetBehavior = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    /**
+     * BottomSheet 상태 관리
+     * 화면이 꽉 차면 끌어올리는 아이콘 사라짐
+     */
+    private fun setBottomSheetListener(){
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if(newState==BottomSheetBehavior.STATE_EXPANDED){
+                    fragmentMapBinding.bottomSheetOpen.btnDetailUp.visibility = View.INVISIBLE
+                }
+                else{
+                    fragmentMapBinding.bottomSheetOpen.btnDetailUp.visibility = View.VISIBLE
+                }
+
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+            }
+
+        })
     }
 
     /**
@@ -187,6 +209,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         setOnClickNavigationDrawerItem()
         initMap()
         setBottomSheet()
+        setBottomSheetListener()
     }
 
     /**

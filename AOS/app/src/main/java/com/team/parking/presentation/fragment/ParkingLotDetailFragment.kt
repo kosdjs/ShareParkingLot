@@ -32,7 +32,6 @@ class ParkingLotDetailFragment : BottomSheetDialogFragment(){
             vm = mapViewModel
             lifecycleOwner = this@ParkingLotDetailFragment
         }
-        Log.i(TAG, "onViewCreated: ")
     }
 
 }

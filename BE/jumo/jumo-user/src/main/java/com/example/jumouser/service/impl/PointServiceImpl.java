@@ -1,8 +1,6 @@
 package com.example.jumouser.service.impl;
 
-import com.example.domain.dto.point.request.PointConfirmRequestDto;
 import com.example.domain.dto.point.request.TicketCreateRequestDto;
-import com.example.domain.dto.point.request.TicketSellerRequestDto;
 import com.example.domain.dto.point.response.*;
 import com.example.domain.entity.*;
 import com.example.domain.etc.OutTiming;
@@ -10,13 +8,16 @@ import com.example.domain.repo.ShareLotRepo;
 import com.example.domain.repo.TicketRepo;
 import com.example.domain.repo.TransactionRepo;
 import com.example.domain.repo.UserRepo;
+import com.example.error.exception.InputException;
 import com.example.error.exception.SaveException;
 import com.example.jumouser.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +33,42 @@ public class PointServiceImpl implements PointService {
     private final OutTiming outTiming;
 
     @Override
+    @Transactional(readOnly = true)
+    public int getUserPoint(Long userId) {
+        Optional<User> currUser = userRepo.findById(userId);
+        if (currUser.isPresent()) {
+            return currUser.get().getPt_has();
+        } else throw new IllegalStateException();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PointEarnedResponseDto> getEarnedPointList(Long userId, String year, String month) {
+        Optional<User> currUser = userRepo.findById(userId);
+        String date = year + "-" + month;
+
+        if (currUser.isPresent()) {
+            List<Transaction> transactions = transactionRepo.findAllByUserAndTransactionDateStartingWithAndPtGetGreaterThan(currUser.get(), date, 0);
+            return transactions.stream().map(PointEarnedResponseDto::new).collect(Collectors.toList());
+        }
+        throw new InputException("this user is not present");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PointSpentResponseDto> getSpentPointList(Long userId, String year, String month) {
+        Optional<User> currUser = userRepo.findById(userId);
+        String date = year + "-" + month;
+
+        if (currUser.isPresent()) {
+            List<Transaction> transactions = transactionRepo.findAllByUserAndTransactionDateStartingWithAndPtLoseGreaterThan(currUser.get(), date, 0);
+
+            return transactions.stream().map(PointSpentResponseDto::new).collect(Collectors.toList());
+        }
+        throw new InputException("this user is not present");
+    }
+
+    @Override
     public PointChargeResponseDto chargePoint(Long userId, int ptCharge) {
         Optional<User> user = userRepo.findById(userId);
 
@@ -41,9 +78,7 @@ public class PointServiceImpl implements PointService {
             currUser.addPoint(ptCharge);
             userRepo.save(currUser);
 
-            return new PointChargeResponseDto(
-                    currUser.getUser_id(), currUser.getName(), ptCharge, currUser.getPt_has()
-            );
+            return new PointChargeResponseDto(currUser, ptCharge);
 
         }
         return null;
@@ -63,18 +98,7 @@ public class PointServiceImpl implements PointService {
             // 주차권 생성 및 저장
             Ticket ticket = Ticket.builder(shareLot.get(), user.get(), ticketCreateRequestDto).build();
             ticketRepo.save(ticket);
-            return new TicketCreateResponseDto(
-                    ticket.getTicket_id(),
-                    ticket.getBuyer().getName(),
-                    ticket.getCar_number(),
-                    ticket.getShareLot().getSha_id(),
-                    ticket.getParkingRegion(),
-                    ticket.getAddress(),
-                    ticket.getType(),
-                    ticket.getIn_timing(),
-                    outTime,
-                    ticket.getCost()
-            );
+            return new TicketCreateResponseDto(outTiming, ticket);
         }
         throw new IllegalStateException();
 
@@ -82,22 +106,29 @@ public class PointServiceImpl implements PointService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TicketListResponseDto> getBoughtTicketList(Long userId) {
+    public List<TicketBuyerResponseDto> getBoughtTicketList(Long userId) {
         Optional<User> buyer = userRepo.findById(userId);
+        String date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
         if (buyer.isPresent()) {
-            List<Ticket> tickets = ticketRepo.findAllByBuyer(buyer.get());
-            return tickets.stream().map(t -> new TicketListResponseDto(outTiming, t)).collect(Collectors.toList());
+            List<Ticket> tickets = ticketRepo.findAllByBuyerAndParkingDate(buyer.get(), date);
+            return tickets.stream().map(t -> new TicketBuyerResponseDto(outTiming, t)).collect(Collectors.toList());
         }
         throw new IllegalStateException();
     }
 
     @Override
-    public List<TicketListResponseDto> getSoldTicketList(Long shaId) {
+    @Transactional(readOnly = true)
+    public List<TicketSellerResponseDto> getSoldTicketList(Long userId, Long shaId) {
         Optional<ShareLot> shareLot = shareLotRepo.findById(shaId);
+        Optional<User> seller = userRepo.findById(userId);
+        String date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        if (shareLot.isPresent()) {
-            List<Ticket> tickets = ticketRepo.findAllByShareLot(shareLot.get());
-            return tickets.stream().map(t -> new TicketListResponseDto(outTiming, t)).collect(Collectors.toList());
+        if (shareLot.isPresent() && seller.isPresent()) {
+            if (shareLot.get().getUser() == seller.get()) {
+                List<Ticket> tickets = ticketRepo.findAllByShareLotAndSellerIdAndParkingDate(shareLot.get(), userId, date);
+                return tickets.stream().map(t -> new TicketSellerResponseDto(outTiming, t)).collect(Collectors.toList());
+            } else throw new InputException("this User is NOT seller of this ParkingLot");
         }
         throw new IllegalStateException();
     }
@@ -108,56 +139,32 @@ public class PointServiceImpl implements PointService {
         Optional<Ticket> currTicket = ticketRepo.findById(ticketId);
 
         if (currTicket.isPresent()) {
-            Optional<ShareLot> shareLot = shareLotRepo.findById(currTicket.get().getShareLot().getSha_id());
-
-            int outTime = outTiming.OutTimingMethod(currTicket.get().getIn_timing(), currTicket.get().getType());
-            List<Image> images = shareLot.get().getImages();
-
-            return new TicketDetailResponseDto(
-                    currTicket.get().getTicket_id(),
-                    currTicket.get().getParkingRegion(),
-                    currTicket.get().getBuyer().getName(),
-                    currTicket.get().getCar_number(),
-                    currTicket.get().getParking_date(),
-                    currTicket.get().getType(),
-                    currTicket.get().getIn_timing(),
-                    outTime,
-                    currTicket.get().getCost(),
-                    images,
-                    currTicket.get().isSell_confirm(),
-                    currTicket.get().isBuy_confirm()
-                    );
+            return new TicketDetailResponseDto(outTiming, currTicket.get());
         }
         throw new IllegalStateException();
     }
 
     @Override
-    public TicketSellerResponseDto ticketSellConfirm(Long userId, TicketSellerRequestDto ticketSellerRequestDto) {
+    public TicketSellConfirmResponseDto ticketSellConfirm(Long userId, Long ticketId) {
         Optional<User> seller = userRepo.findById(userId);
-        Optional<Ticket> currTicket = ticketRepo.findById(ticketSellerRequestDto.getTicketId());
+        Optional<Ticket> currTicket = ticketRepo.findById(ticketId);
 
         if (seller.isPresent() && currTicket.isPresent()) {
             currTicket.get().setSell_confirm(true);
             ticketRepo.save(currTicket.get());
 
-            return new TicketSellerResponseDto(
-                    currTicket.get().getTicket_id(),
-                    ticketSellerRequestDto.getShaId(),
-                    currTicket.get().getCost(),
-                    currTicket.get().getParkingRegion(),
-                    currTicket.get().getParking_date(),
-                    currTicket.get().isSell_confirm()
-            );
+            return new TicketSellConfirmResponseDto(currTicket.get());
         } throw new IllegalStateException();
 
     }
 
     @Override
-    public PointConfirmResponseDto ticketBuyConfirm(Long userId, PointConfirmRequestDto pointConfirmRequestDto ) {
+    public TicketBuyConfirmResponseDto ticketBuyConfirm(Long userId, Long ticketId ) {
         Optional<User> buyer = userRepo.findById(userId);
-        Optional<ShareLot> shareLot = shareLotRepo.findById(pointConfirmRequestDto.getShaId());
+        Optional<Ticket> ticket = ticketRepo.findById(ticketId);
+
+        Optional<ShareLot> shareLot = shareLotRepo.findById(ticket.get().getShareLot().getSha_id());
         Optional<User> seller = userRepo.findById(shareLot.get().getUser().getUser_id());
-        Optional<Ticket> ticket = ticketRepo.findById(pointConfirmRequestDto.getTicketId());
 
         int ptLose = ticket.get().getCost();
         int inTiming = ticket.get().getIn_timing();
@@ -181,7 +188,7 @@ public class PointServiceImpl implements PointService {
             userRepo.save(buyerUser);
 
             // 구매 확정 처리
-            Optional<Ticket> buyerTicket = ticketRepo.findById(pointConfirmRequestDto.getTicketId());
+            Optional<Ticket> buyerTicket = ticketRepo.findById(ticketId);
             if (buyerTicket.isPresent()) {
                 buyerTicket.get().setBuy_confirm(true);
                 ticketRepo.save(buyerTicket.get());
@@ -205,13 +212,13 @@ public class PointServiceImpl implements PointService {
             /*-----------판매자 끝-----------*/
 
             // DTO return
-            return new PointConfirmResponseDto(
+            return new TicketBuyConfirmResponseDto(
                     buy_transaction.getCredit_id(),
                     ptLose,
                     buyerUser.getPt_has(),
                     shareLot.get().getSha_name(),
                     shareLot.get().getSha_id(),
-                    buy_transaction.getTransaction_date(),
+                    buy_transaction.getTransactionDate(),
                     type,
                     inTiming,
                     outTime

@@ -56,12 +56,12 @@ public class Ticket {
     private boolean validation;
 
     @Column(name = "parking_date")
-    private String parking_date;
+    private String parkingDate;
 
-    @Column(name = "buy_confirm", columnDefinition = "boolean default true")
+    @Column(name = "buy_confirm")
     private boolean buy_confirm;
 
-    @Column(name="sell_confirm", columnDefinition = "boolean default false")
+    @Column(name="sell_confirm")
     private boolean sell_confirm;
 
     public static TicketBuilder builder(ShareLot shareLot, User buyer, TicketCreateRequestDto ticketCreateRequestDto){
@@ -77,12 +77,14 @@ public class Ticket {
                 .address(shareLot.getSha_road())
                 .type(ticketCreateRequestDto.getType())
                 .cost(cost)
-                .parking_date(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                .in_timing(ticketCreateRequestDto.getInTiming());
+                .parkingDate(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .in_timing(ticketCreateRequestDto.getInTiming())
+                .validation(true);
     }
 
     public void setBuy_confirm(boolean buyConfirm) {
         this.buy_confirm = buyConfirm;
+        this.validation = false;
     }
 
     public void setSell_confirm(boolean sellConfirm) {

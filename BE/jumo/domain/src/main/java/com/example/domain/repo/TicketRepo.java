@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface TicketRepo extends JpaRepository<Ticket, Long> {
-    List<Ticket> findAllByBuyer(User buyer);
 
-    List<Ticket> findAllByShareLot(ShareLot shareLot);
+    List<Ticket> findAllByBuyerAndParkingDate(User buyer, String date);
+    List<Ticket> findAllByShareLotAndSellerIdAndParkingDate(ShareLot shareLot, Long sellerId, String date);
 }

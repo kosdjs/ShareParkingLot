@@ -27,16 +27,16 @@ public class Transaction {
     private User user;
 
     @Column(name = "transaction_date")
-    private String transaction_date;
+    private String transactionDate;
 
     @Column(name = "lot_name")
     private String lot_name;
 
     @Column(name = "pt_get")
-    private int pt_get;
+    private int ptGet;
 
     @Column(name = "pt_lose")
-    private int pt_lose;
+    private int ptLose;
 
     @Column(name = "sha_id")
     private Long sha_id;
@@ -45,10 +45,10 @@ public class Transaction {
     public Transaction(User user, String name, int get, int lose, Long sha_id)
     {
         this.user = user;
-        this.transaction_date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.transactionDate = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.lot_name = name;
-        this.pt_get = get;
-        this.pt_lose = lose;
+        this.ptGet = get;
+        this.ptLose = lose;
         this.sha_id = sha_id;
     }
 

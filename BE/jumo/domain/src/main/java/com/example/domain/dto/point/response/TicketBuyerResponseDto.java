@@ -1,6 +1,5 @@
 package com.example.domain.dto.point.response;
 
-import com.example.domain.entity.Image;
 import com.example.domain.entity.Ticket;
 import com.example.domain.etc.OutTiming;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,42 +8,34 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
-@Builder
 @Getter
+@Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class TicketDetailResponseDto {
+public class TicketBuyerResponseDto {
     @JsonIgnore
     private final OutTiming outTiming;
 
     private Long ticketId;
+    private Long shaId;
+    private int ptToLose;
     private String parkingRegion;
-    private String nickname;
-    private String carNumber;
     private String parkingDate;
-    private int type;
     private int inTiming;
     private int outTime;
-    private int cost;
-    private List<Image> images;
     private boolean sellConfirm;
     private boolean buyConfirm;
 
     @Builder
-    public TicketDetailResponseDto(OutTiming outTiming, Ticket ticket) {
+    public TicketBuyerResponseDto(OutTiming outTiming, Ticket ticket) {
         this.outTiming = outTiming;
         this.ticketId = ticket.getTicket_id();
+        this.shaId = ticket.getShareLot().getSha_id();
+        this.ptToLose = ticket.getCost();
         this.parkingRegion = ticket.getParkingRegion();
-        this.nickname = ticket.getBuyer().getName();
-        this.carNumber = ticket.getCar_number();
         this.parkingDate = ticket.getParkingDate();
-        this.type = ticket.getType();
         this.inTiming = ticket.getIn_timing();
         this.outTime = outTiming.OutTimingMethod(ticket.getIn_timing(), ticket.getType());
-        this.cost = ticket.getCost();
-        this.images = ticket.getShareLot().getImages();
         this.sellConfirm = ticket.isSell_confirm();
         this.buyConfirm = ticket.isBuy_confirm();
     }

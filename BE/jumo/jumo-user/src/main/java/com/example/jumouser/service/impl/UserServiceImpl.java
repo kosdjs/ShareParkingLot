@@ -2,9 +2,9 @@ package com.example.jumouser.service.impl;
 
 import com.example.domain.dto.user.SignUpRequestDto;
 import com.example.domain.dto.user.UserProfileResponseDto;
-import com.example.domain.entity.Image;
-import com.example.domain.entity.ShareLot;
+import com.example.domain.entity.FcmToken;
 import com.example.domain.entity.User;
+import com.example.domain.repo.NotiRepo;
 import com.example.domain.repo.UserRepo;
 import com.example.jumouser.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,15 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
+    private final NotiRepo notiRepo;
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String drawingStorage;
 
@@ -94,5 +93,11 @@ public class UserServiceImpl implements UserService {
 
         }
         return null;
+    }
+
+    @Override
+    public Boolean updateFcmToken(Long user_id, String fcm_token) {
+        notiRepo.save(new FcmToken(user_id,fcm_token));
+        return true;
     }
 }

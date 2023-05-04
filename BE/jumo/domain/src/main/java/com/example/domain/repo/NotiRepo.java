@@ -1,7 +1,8 @@
-package com.example.notification.repository;
+package com.example.domain.repo;
 
 
-import com.example.notification.entity.FcmToken;
+
+import com.example.domain.entity.FcmToken;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

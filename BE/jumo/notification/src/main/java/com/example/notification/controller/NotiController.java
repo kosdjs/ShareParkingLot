@@ -9,6 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/noti")
 @RequiredArgsConstructor
 public class NotiController {
-
-
+    
 }

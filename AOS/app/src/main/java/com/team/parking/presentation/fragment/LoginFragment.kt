@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.model.ClientError
@@ -20,11 +22,11 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
-import com.team.parking.BuildConfig.KAKAO_CLIENT_KEY
 import com.team.parking.MainActivity
 import com.team.parking.R
 import com.team.parking.data.api.UserService
 import com.team.parking.data.model.user.LoginRequest
+import com.team.parking.data.model.user.UpdateFcmTokenRequest
 import com.team.parking.databinding.FragmentLoginBinding
 import com.team.parking.presentation.utils.App
 import com.team.parking.presentation.viewmodel.UserViewModel
@@ -60,7 +62,7 @@ class LoginFragment : Fragment() {
             lifecycleOwner = this@LoginFragment
             viewModel = userViewModel
         }
-        findNavController().navigate(R.id.action_loginFragment_to_mapFragment)
+
     }
 
     override fun onAttach(context: Context) {
@@ -71,9 +73,10 @@ class LoginFragment : Fragment() {
 
     fun setOnJumoLogin(){
         CoroutineScope(Dispatchers.IO).launch{
+
             Log.d(TAG, "setOnJumoLogin: ${userViewModel._login_password}")
             val response = App.userRetrofit.create(UserService::class.java).login(
-                type="jumo",email=userViewModel._login_email, password=userViewModel._login_password
+                type="jumo",email=userViewModel._login_email, password=userViewModel._login_password, fcm_token = userViewModel.fcm_token.value
             )
             Log.d(TAG, "setOnJumoLogin: responsejumo")
             if(response.isSuccessful){
@@ -85,10 +88,12 @@ class LoginFragment : Fragment() {
                         }
                     }
                 }else{
+
                     withContext(Dispatchers.Main) {
                         requireActivity().runOnUiThread {
                             Log.d(TAG, "setOnJumoLogin: Good")
                             userViewModel.login(response.body()!!)
+
                             findNavController().navigate(R.id.action_loginFragment_to_mapFragment)
                         }
                     }
@@ -130,8 +135,9 @@ class LoginFragment : Fragment() {
 
                     UserApiClient.instance.me { user, error ->
                         CoroutineScope(Dispatchers.IO).launch {
+
                             val response = App.userRetrofit.create(UserService::class.java).login(
-                                    type="kakao", accessToken = token.accessToken, social_id = user?.id.toString()
+                                    type="kakao", accessToken = token.accessToken, social_id = user?.id.toString(), fcm_token=userViewModel.fcm_token.value
                             )
 
                             Log.d(TAG, "setOnKakaoLogin: ${user?.id.toString()}, ${token.accessToken}")
@@ -148,6 +154,7 @@ class LoginFragment : Fragment() {
                                         }
                                     }
                                 }else{
+
                                     userViewModel.login(response.body()!!)
                                     withContext(Dispatchers.Main) {
                                         requireActivity().runOnUiThread {
@@ -170,19 +177,28 @@ class LoginFragment : Fragment() {
 
     fun setOnNaverLogin(){
         var naverToken :String? = ""
-
         val profileCallback = object : NidProfileCallback<NidProfileResponse> {
             override fun onSuccess(response: NidProfileResponse) {
+
                 val userId = response.profile?.id
                 val userName = response.profile?.name
                 Log.d(TAG, "onSuccess: $userName")
                 val userImage = response.profile?.profileImage
-
                 CoroutineScope(Dispatchers.IO).launch {
-                    val response = App.userRetrofit.create(UserService::class.java).login(
-                        type="naver", name = userName, social_id = userId, profile_img= userImage
-                    )
 
+                    withContext(Dispatchers.Main){
+                        userViewModel.fcm_token.observe(viewLifecycleOwner){
+                            val response = App.userRetrofit.create(UserService::class.java).updateFcmToken(
+                                UpdateFcmTokenRequest(
+                                    userViewModel.user?.user_id, $it
+                                )
+                            )
+                        }
+                    }
+                    val response = App.userRetrofit.create(UserService::class.java).login(
+                        type="naver", name = userName, social_id = userId, profile_img= userImage, fcm_token = userViewModel.fcm_token.value
+                    )
+                    Log.i(TAG, "observe : ")
                     Log.d(TAG, "setOnNaverLogin: ${userName}, naver")
                     if(response.isSuccessful){
                         userViewModel._type="naver"
@@ -199,7 +215,11 @@ class LoginFragment : Fragment() {
                                 }
                             }
                         }else{
+                            println(response.body()!!.name)
                             userViewModel.login(response.body()!!)
+                            userViewModel.user!!.fcm_token!!.let {
+                                Log.d(TAG, "token" + it)
+                            }
                             withContext(Dispatchers.Main) {
                                 requireActivity().runOnUiThread {
                                     findNavController().navigate(R.id.action_loginFragment_to_mapFragment)
@@ -253,6 +273,23 @@ class LoginFragment : Fragment() {
         userViewModel._type="jumo"
         findNavController().navigate(R.id.action_login_fragment_to_signUpFragment)
     }
+    private fun getFCMToken() {
+        var token: String? = null
+        Log.i(TAG, "getFCMToken: ")
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
 
-    
+            // Get new FCM registration token
+            token = task.result
+
+            userViewModel.updateFcmToken(token!!)
+            // Log and toast
+            Log.d(TAG, "FCM Token is ${token}")
+        })
+
+    }
+
 }

@@ -1,9 +1,6 @@
 package com.team.parking.data.api
 
-import com.team.parking.data.model.user.LoginRequest
-import com.team.parking.data.model.user.LoginResponse
-import com.team.parking.data.model.user.SignUpRequest
-import com.team.parking.data.model.user.User
+import com.team.parking.data.model.user.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -19,7 +16,8 @@ interface UserService {
                       @Query("password") password : String?=null,
                       @Query("social_id") social_id : String?=null,
                       @Query("name") name : String?=null,
-                      @Query("profile_img") profile_img : String?=null
+                      @Query("profile_img") profile_img : String?=null,
+                      @Query("fcm_token") fcm_token : String?=null,
     ): Response<LoginResponse>
 
     @GET("user/email")
@@ -27,5 +25,8 @@ interface UserService {
 
     @POST("user/sign")
     suspend fun signUp(@Body request: SignUpRequest) : Response<User>
+
+    @POST("user/fcm-token")
+    suspend fun updateFcmToken(@Body updateFcmTokenRequest : UpdateFcmTokenRequest) : Response<Boolean>
 
 }

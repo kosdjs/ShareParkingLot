@@ -17,7 +17,8 @@ import java.util.List;
 public class ParkingLot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long lot_id;
+    @Column(name = "lot_id")
+    private Long lotId;
 
     private String lot_part;
 
@@ -69,7 +70,7 @@ public class ParkingLot {
 
     private String special_prop;
 
-    @OneToMany(mappedBy = "favorite_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL)
     private List<Favorite> favoriteList = new ArrayList<>();
 
 }

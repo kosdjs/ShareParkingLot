@@ -72,7 +72,7 @@ public class Ticket {
                 .shareLot(shareLot)
                 .buyer(buyer)
                 .car_number(ticketCreateRequestDto.getCarNumber())
-                .sellerId(shareLot.getUser().getUser_id())
+                .sellerId(shareLot.getUser().getUserId())
                 .parkingRegion(shareLot.getSha_name())
                 .address(shareLot.getSha_road())
                 .type(ticketCreateRequestDto.getType())

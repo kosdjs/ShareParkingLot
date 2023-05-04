@@ -20,12 +20,21 @@ public class CarInfo {
     private Long car_id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_name")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "car_str")
     private String car_str;
 
-    @Column(name ="car_rep", columnDefinition = "boolean default false")
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean car_rep;
+
+    // ????
+    public boolean getCar_rep() {
+        return car_rep;
+    }
+
+    public void setCar_rep(boolean car_rep) {
+        this.car_rep = car_rep;
+    }
 }

@@ -20,7 +20,8 @@ public class ShareLot {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long sha_id;
+    @Column(name = "sha_id")
+    private Long shaId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -52,10 +53,14 @@ public class ShareLot {
     private List<Favorite> favoriteList = new ArrayList<>();
 
     @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
+    private List<DayData> dayDataList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
     private List<Ticket> ticketList = new ArrayList<>();
 
-    public static ShareLotBuilder builder(ShareSaveDto shareSaveDto) {
+    public static ShareLotBuilder builder(ShareSaveDto shareSaveDto, User user) {
         return ShareLotBuilder()
+                .user(user)
                 .latitude(shareSaveDto.getLatitude())
                 .longitude(shareSaveDto.getLongitude())
                 .sha_fee(shareSaveDto.getShaFee())

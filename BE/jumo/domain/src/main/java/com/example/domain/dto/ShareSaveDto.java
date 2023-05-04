@@ -1,7 +1,6 @@
 package com.example.domain.dto;
 
 
-import com.example.domain.entity.ParkingLot;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +15,7 @@ public class ShareSaveDto {
 
     private int shaType;
     private String shaName;
+    private Long userId;
     private String jibun;
     private String road;
     private int shaField;

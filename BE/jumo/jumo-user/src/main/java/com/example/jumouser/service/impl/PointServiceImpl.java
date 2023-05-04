@@ -29,7 +29,7 @@ public class PointServiceImpl implements PointService {
     public int getUserPoint(Long userId) {
         Optional<User> currUser = userRepo.findById(userId);
         if (currUser.isPresent()) {
-            return currUser.get().getPt_has();
+            return currUser.get().getPtHas();
         } else throw new IllegalStateException();
     }
 

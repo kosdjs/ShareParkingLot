@@ -30,7 +30,7 @@ public class TicketBuyerResponseDto {
     public TicketBuyerResponseDto(OutTiming outTiming, Ticket ticket) {
         this.outTiming = outTiming;
         this.ticketId = ticket.getTicket_id();
-        this.shaId = ticket.getShareLot().getSha_id();
+        this.shaId = ticket.getShareLot().getShaId();
         this.ptToLose = ticket.getCost();
         this.parkingRegion = ticket.getParkingRegion();
         this.parkingDate = ticket.getParkingDate();

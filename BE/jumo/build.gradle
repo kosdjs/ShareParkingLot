@@ -91,6 +91,7 @@ project(':jumo-user') {
 	dependencies {
 		implementation project(':core-web')
 		implementation project(':domain')
+		implementation project(':error')
 		implementation 'org.springframework.boot:spring-boot-starter-webflux'
 //		implementation project(':firebase')
 		implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'

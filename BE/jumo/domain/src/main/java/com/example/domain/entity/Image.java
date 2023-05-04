@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "img_id")
     private Long img_id;
 
     private String url;

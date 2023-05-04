@@ -16,7 +16,7 @@ import retrofit2.http.Query
 
 interface ShareLotAPIService {
     @DELETE("shareLot/delete")
-    suspend fun deleteShareLot(@Query("parkId") parkId: Long) : Response<String>
+    suspend fun deleteShareLot(@Query("parkId") parkId: Long) : Response<Unit>
 
     @GET("shareLot/detail")
     suspend fun getShareLotDetail(@Query("parkId") parkId: Long) : Response<ParkingLotResponse>
@@ -24,22 +24,22 @@ interface ShareLotAPIService {
     @GET("shareLot/myList")
     suspend fun getShareLotList(@Query("userId") userId: Long) : Response<List<ShareLotResponse>>
 
+    @Multipart
     @POST("shareLot/save")
     suspend fun postShareLot(
-        @Part("files") files: List<MultipartBody.Part>,
         @Part("saveDto") saveDto: ShareLotRequest,
-        @Part("userId") userId: Long
-    )
+        @Part files: List<MultipartBody.Part>
+    ) : Response<Long>
 
     @POST("shareLot/saveDay")
     suspend fun postSaveDay(
         @Body daySaveDtos: DayRequest,
         @Body parkId: Long
-    )
+    ) : Response<Unit>
 
     @POST("shareLot/updateDay")
     suspend fun postUpdateDay(
         @Body daySaveDtos: DayRequest,
         @Body parkId: Long
-    )
+    ) : Response<Unit>
 }

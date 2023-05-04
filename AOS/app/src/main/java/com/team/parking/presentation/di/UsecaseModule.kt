@@ -2,9 +2,8 @@ package com.team.parking.presentation.di
 
 import com.team.parking.domain.repository.MapRepository
 import com.team.parking.domain.repository.SearchRepository
-import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.domain.usecase.GetSearchAddressUseCase
-import com.team.parking.domain.usecase.GetSearchDataUseCase
+import com.team.parking.domain.repository.ShareLotRepository
+import com.team.parking.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +37,22 @@ class UsecaseModule {
         searchRepository: SearchRepository
     ) : GetSearchAddressUseCase{
         return GetSearchAddressUseCase(searchRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun providePostShareLotUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : PostShareLotUseCase{
+        return PostShareLotUseCase(shareLotRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetShareLotListUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : GetShareLotListUseCase{
+        return GetShareLotListUseCase(shareLotRepository)
     }
 
 }

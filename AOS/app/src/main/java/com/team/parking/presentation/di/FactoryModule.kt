@@ -1,9 +1,7 @@
 package com.team.parking.presentation.di
 
 import android.app.Application
-import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.domain.usecase.GetSearchAddressUseCase
-import com.team.parking.domain.usecase.GetSearchDataUseCase
+import com.team.parking.domain.usecase.*
 import com.team.parking.presentation.viewmodel.*
 import dagger.Module
 import dagger.Provides
@@ -43,8 +41,8 @@ class FactoryModule {
     @Singleton
     @Provides
     fun provideShareParkingLotViewModelFactory(
-        app:Application
+        app:Application, postShareLotUseCase: PostShareLotUseCase, getShareLotListUseCase: GetShareLotListUseCase
     ) : ShareParkingLotViewModelFactory{
-        return ShareParkingLotViewModelFactory(app)
+        return ShareParkingLotViewModelFactory(app, postShareLotUseCase, getShareLotListUseCase)
     }
 }

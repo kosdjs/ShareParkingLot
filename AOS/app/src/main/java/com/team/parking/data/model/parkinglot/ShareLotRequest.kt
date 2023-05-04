@@ -9,5 +9,6 @@ data class ShareLotRequest (
     var shaFee: Int,
     var shaProp: String?,
     var latitude: Float,
-    var longitude: Float
+    var longitude: Float,
+    var userId: Long
 )

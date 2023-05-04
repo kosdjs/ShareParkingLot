@@ -1,46 +1,41 @@
 package com.team.parking.presentation.fragment
 
 import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.*
-import android.location.Location
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.gms.location.*
-import com.team.parking.R
-import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.naver.maps.geometry.GeoConstants.EARTH_RADIUS
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.*
+import com.naver.maps.map.CameraUpdate
+import com.naver.maps.map.LocationTrackingMode
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.util.MarkerIcons
-import com.naver.maps.map.widget.ZoomControlView
 import com.team.parking.MainActivity
+import com.team.parking.R
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.SearchViewModel
-import java.util.LinkedList
+import java.util.*
 
 
 private const val TAG = "MapFragment_지훈"
@@ -54,6 +49,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var searchViewModel: SearchViewModel
     private val permissionList = Manifest.permission.ACCESS_FINE_LOCATION
     private lateinit var bottomSheetBehavior  : BottomSheetBehavior<View>
+    var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
     //GPS 권한 생성
     private val requestPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()){
@@ -167,6 +163,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         }
     }
 
+
     /**
      * 주차장 데이터 가져오기
      */
@@ -180,7 +177,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                         if(data!!.size>0){
                             if(data!![0].parkId==-1){
                                 for(i in 0 until data!!.size){
-                                    removeNoClusteringMapData()
+                                    //removeNoClusteringMapData()
                                     val marker = Marker()
                                     marker.tag = data[i]
                                     clusteringCache.add(marker)
@@ -190,23 +187,33 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 }
                             }else{
                                 for(i in 0 until data!!.size){
-                                    removeClusteringMapData()
+                                    //removeClusteringMapData()
                                     val marker = Marker()
-                                    val markerBitmap = BitmapFactory.decodeResource(resources, R.drawable.ba).copy(
-                                        Bitmap.Config.ARGB_8888,true)
-                                    val canvas = Canvas(markerBitmap)
-                                    val paint = Paint().apply {
-                                        color = Color.BLACK
-                                        textSize = 150f
-                                        textAlign = Paint.Align.CENTER
-                                    }
-                                    canvas.drawText(data[i].feeBasic.toString(), markerBitmap.width / 2f, markerBitmap.height / 2f, paint)
 
+                               /*    CoroutineScope(Dispatchers.IO).launch {
+                                        var markerBitmap:Bitmap = Glide.with(this@MapFragment).asBitmap().load(R.drawable.ba).into(130,130).get()
+                                        val markerBitmap = BitmapFactory.decodeResource(resources, R.drawable.ba)
+
+
+                                        val canvas = Canvas(markerBitmap!!)
+                                        val paint = Paint().apply {
+                                            color = Color.BLACK
+                                            textSize = 150f
+                                            textAlign = Paint.Align.CENTER
+                                        }
+                                        canvas.drawText(data[i].feeBasic.toString(), markerBitmap!!.width / 2f, markerBitmap!!.height / 2f, paint)
+                                        val icon = OverlayImage.fromBitmap(markerBitmap!!)
+
+                                        marker.width = 130
+                                        marker.height = 130
+                                        marker.icon = icon
+                                    }*/
+                                    val markerBitmap = BitmapFactory.decodeResource(resources, R.drawable.ba)
                                     val icon = OverlayImage.fromBitmap(markerBitmap)
-
                                     marker.width = 130
                                     marker.height = 130
                                     marker.icon = icon
+
                                     noClusteringCache.add(marker)
                                     marker.position = LatLng(data[i].lat,data[i].lng)
                                     marker.map = naverMap
@@ -229,6 +236,68 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
         }
     }
+    /**
+     * 맵 화면 이동 리스너
+     * CameraChange : 카메라 이동시 마다 호출
+     * CameraIdle : 카메라 이동 끝날시 호출
+     */
+    private fun getMapDataFromRemote(){
+
+        naverMap.addOnCameraChangeListener { i, b ->
+
+        }
+        naverMap.addOnCameraIdleListener {
+            /*removeClusteringMapData()
+            removeNoClusteringMapData()*/
+            currentZoom =  naverMap.cameraPosition.zoom
+            if(currentZoom>=13.8&&currentZoom<17.2){
+                if(currentZoom<15f){
+                    removeNoClusteringMapData()
+                    val mapRequest = MapRequest(
+                        naverMap.cameraPosition.target.latitude,
+                        naverMap.cameraPosition.target.longitude,
+                        naverMap.contentBounds.northWest.latitude,
+                        naverMap.contentBounds.northEast.longitude,
+                        naverMap.contentBounds.southWest.latitude,
+                        naverMap.contentBounds.southWest.longitude,
+                        naverMap.cameraPosition.zoom
+                    )
+                    getMapData(mapRequest)
+                }else{
+                    removeClusteringMapData()
+                    val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
+                    val dist = nowLocation.distanceTo(beforeCenterLocation)
+                    Log.i(TAG, "getMapDataFromRemote: ${dist}")
+                    if(dist>=500) {
+                        beforeCenterLocation = nowLocation
+                        //m당 y 좌표 이동 값
+                        val mForLatitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180)) / 1000) * 1500
+                        //m당 x 좌표 이동 값
+                        val mForLongitude =
+                            (1 / (EARTH_RADIUS * 1 * (Math.PI / 180) * Math.cos(Math.toRadians(naverMap.cameraPosition.target.latitude))) / 1000) * 1500
+
+                        val mapRequest = MapRequest(
+                            naverMap.cameraPosition.target.latitude,
+                            naverMap.cameraPosition.target.longitude,
+                            naverMap.contentBounds.northWest.latitude + mForLatitude,
+                            naverMap.contentBounds.northEast.longitude + mForLongitude,
+                            naverMap.contentBounds.southWest.latitude - mForLatitude,
+                            naverMap.contentBounds.southWest.longitude - mForLongitude,
+                            naverMap.cameraPosition.zoom
+                        )
+                        getMapData(mapRequest)
+                    }
+                }
+
+            }else{
+                removeClusteringMapData()
+                removeNoClusteringMapData()
+            }
+
+        }
+    }
+
+
 
     /**
      * 지도 이동시 기존 좌표 삭제
@@ -285,7 +354,25 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     }
 
 
-
+    //두 지점 간의 거리 계산
+    private fun getDistance(
+        lat1: Double,
+        lon1: Double,
+        lat2: Double,
+        lon2: Double
+    ): Double {
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(
+                Math.toRadians(lat1)
+            ) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(
+                dLon / 2
+            )
+        val c =
+            2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        return EARTH_RADIUS * c * 1000
+    }
 
     /**
      * NaverMap 초기화
@@ -350,42 +437,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      */
     fun setOnClickSearchListener(){
         findNavController().navigate(R.id.action_map_fragment_to_searchFragment)
-    }
-
-    /**
-     * 맵 화면 이동 리스너
-     * CameraChange : 카메라 이동시 마다 호출
-     * CameraIdle : 카메라 이동 끝날시 호출
-     */
-    private fun getMapDataFromRemote(){
-
-        naverMap.addOnCameraChangeListener { i, b ->
-
-        }
-        naverMap.addOnCameraIdleListener {
-
-            currentZoom =  naverMap.cameraPosition.zoom
-
-            if(currentZoom>=13.8&&currentZoom<17.2){
-                if(currentZoom<15.0){
-                    removeNoClusteringMapData()
-                }
-                else{
-                    removeClusteringMapData()
-                }
-                val mapRequest = MapRequest(
-                    naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude,
-                    naverMap.contentBounds.northWest.latitude,naverMap.contentBounds.northEast.longitude,
-                    naverMap.contentBounds.southWest.latitude,naverMap.contentBounds.southWest.longitude,
-                    naverMap.cameraPosition.zoom
-                )
-                getMapData(mapRequest)
-            }else{
-                removeClusteringMapData()
-                removeNoClusteringMapData()
-            }
-
-        }
     }
 
 

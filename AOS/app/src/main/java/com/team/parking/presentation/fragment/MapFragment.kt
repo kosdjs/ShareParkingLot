@@ -2,7 +2,7 @@ package com.team.parking.presentation.fragment
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Color
+import android.graphics.*
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -11,6 +11,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -29,7 +30,9 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 import com.naver.maps.map.widget.ZoomControlView
 import com.team.parking.MainActivity
 import com.team.parking.data.model.map.MapRequest
@@ -37,6 +40,7 @@ import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.SearchViewModel
+import java.util.LinkedList
 
 
 private const val TAG = "MapFragment_지훈"
@@ -60,8 +64,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
         }
     }
-    private var clusteringCache = ArrayList<Marker>()
-    private var noClusteringCache = ArrayList<Marker>()
+    private var clusteringCache = LinkedList<Marker>()
+    private var noClusteringCache = LinkedList<Marker>()
     private var currentZoom:Double = 0.0
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1000
@@ -173,29 +177,46 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 is Resource.Success -> {
                     //Log.i(TAG, "서버로부터 주차장 데이터를 가져오는데 성공했습니다.")
                     response.data.let{ data->
-                        if(data!![0].parkId==-1){
-                            for(i in 0 until data!!.size){
-                                removeNoClusteringMapData()
-                                val marker = Marker()
-                                marker.tag = data[i]
-                                clusteringCache.add(marker)
-                                marker.position = LatLng(data[i].lat,data[i].lng)
-                                marker.iconTintColor = Color.RED
-                                marker.map = naverMap
-                            }
-                        }else{
-                            for(i in 0 until data!!.size){
-                                removeClusteringMapData()
-                                val marker = Marker()
-                                noClusteringCache.add(marker)
-                                marker.position = LatLng(data[i].lat,data[i].lng)
-                                marker.iconTintColor = Color.BLUE
-                                marker.map = naverMap
-                                marker.setOnClickListener {
-                                    getMapDetailData(data[i].parkId)
-                                    false
+                        if(data!!.size>0){
+                            if(data!![0].parkId==-1){
+                                for(i in 0 until data!!.size){
+                                    removeNoClusteringMapData()
+                                    val marker = Marker()
+                                    marker.tag = data[i]
+                                    clusteringCache.add(marker)
+                                    marker.position = LatLng(data[i].lat,data[i].lng)
+                                    marker.iconTintColor = Color.RED
+                                    marker.map = naverMap
                                 }
-                            }
+                            }else{
+                                for(i in 0 until data!!.size){
+                                    removeClusteringMapData()
+                                    val marker = Marker()
+                                    val markerBitmap = BitmapFactory.decodeResource(resources, R.drawable.ba).copy(
+                                        Bitmap.Config.ARGB_8888,true)
+                                    val canvas = Canvas(markerBitmap)
+                                    val paint = Paint().apply {
+                                        color = Color.BLACK
+                                        textSize = 150f
+                                        textAlign = Paint.Align.CENTER
+                                    }
+                                    canvas.drawText(data[i].feeBasic.toString(), markerBitmap.width / 2f, markerBitmap.height / 2f, paint)
+
+                                    val icon = OverlayImage.fromBitmap(markerBitmap)
+
+                                    marker.width = 130
+                                    marker.height = 130
+                                    marker.icon = icon
+                                    noClusteringCache.add(marker)
+                                    marker.position = LatLng(data[i].lat,data[i].lng)
+                                    marker.map = naverMap
+                                    marker.setOnClickListener {
+                                        getMapDetailData(data[i].parkId)
+                                        false
+                                    }
+                                }
+                        }
+
                         }
                     }
                 }
@@ -227,7 +248,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             noClusteringCache[i].onClickListener = null
         }
     }
-
 
 
     /**

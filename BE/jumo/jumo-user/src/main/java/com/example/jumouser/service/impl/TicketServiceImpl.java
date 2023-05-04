@@ -43,14 +43,18 @@ public class TicketServiceImpl implements TicketService {
         Optional<ShareLot> shareLot = shareLotRepo.findById(ticketCreateRequestDto.getShaId());
 
         if (user.isPresent() && shareLot.isPresent()) {
+            int[] typeToHour = new int[]{2, 6, 10, 48};
+            int cost = typeToHour[ticketCreateRequestDto.getType()]*shareLot.get().getSha_fee();
+            
+            // 보유 포인트가 결제 금액 이상일 때 구매
+            if(user.get().getPt_has() >= cost) {
+                int outTime = outTiming.OutTimingMethod(ticketCreateRequestDto.getInTiming(), ticketCreateRequestDto.getType());
 
-            // 출차시간 계산
-            int outTime = outTiming.OutTimingMethod(ticketCreateRequestDto.getInTiming(), ticketCreateRequestDto.getType());
-
-            // 주차권 생성 및 저장
-            Ticket ticket = Ticket.builder(shareLot.get(), user.get(), ticketCreateRequestDto).build();
-            ticketRepo.save(ticket);
-            return new TicketCreateResponseDto(outTiming, ticket);
+                // 주차권 생성 및 저장
+                Ticket ticket = Ticket.builder(shareLot.get(), user.get(), ticketCreateRequestDto).build();
+                ticketRepo.save(ticket);
+                return new TicketCreateResponseDto(outTiming, ticket);
+            } else throw new SaveException("Point is NOT enough to buy ticket");
         }
         throw new IllegalStateException();
 

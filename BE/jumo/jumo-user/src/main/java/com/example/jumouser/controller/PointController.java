@@ -3,7 +3,6 @@ package com.example.jumouser.controller;
 import com.example.domain.dto.point.response.*;
 import com.example.domain.repo.UserRepo;
 import com.example.jumouser.service.PointService;
-import com.example.jumouser.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

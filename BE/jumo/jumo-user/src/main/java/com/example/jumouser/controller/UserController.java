@@ -35,7 +35,7 @@ public class UserController {
         UserInfoDto userInfoDto = userFactory.loginSelector(requestDto.getType()).getUserInfo(requestDto);
         Optional<User> user = userFactory.loginSelector(requestDto.getType()).checkUser(userInfoDto);
         if(!user.isEmpty()){
-            userService.updateFcmToken(user.get().getUserId(), user.get().getFcmToken());
+            userService.updateFcmToken(user.get().getUserId(), requestDto.getFcm_token());
         }
         LoginResponseDto responseDto = LoginResponseDto.builder()
                 .user_id(user.get().getUserId())
@@ -46,7 +46,7 @@ public class UserController {
                 .ptHas(user.get().getPtHas())
                 .type(user.get().getType())
                 .social_id(user.get().getSocialId())
-                .fcm_token(user.get().getFcmToken())
+                .fcm_token(requestDto.getFcm_token())
                 .build();
         System.out.println(responseDto.toString());
         return responseDto;

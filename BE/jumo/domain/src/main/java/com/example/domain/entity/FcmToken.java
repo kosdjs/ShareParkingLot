@@ -5,10 +5,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Getter
-@RedisHash()
+@RedisHash("FcmToken")
 public class FcmToken {
     @Id
     private Long user_id;
+
     private String token;
 
     public FcmToken(Long user_id, String token){

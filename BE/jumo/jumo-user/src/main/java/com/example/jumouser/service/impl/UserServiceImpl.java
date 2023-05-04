@@ -98,6 +98,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean updateFcmToken(Long user_id, String fcm_token) {
         notiRepo.save(new FcmToken(user_id,fcm_token));
+        System.out.println(notiRepo.findById(user_id).get().getToken());
         return true;
     }
 }

@@ -36,7 +36,7 @@ public class ShareLotServiceImpl implements ShareLotService {
 
 
     @Override
-    public Long saveShareLot(ShareSaveDto shareSaveDto,Long userId, @RequestPart List<MultipartFile> files) throws IOException {
+    public Long saveShareLot(ShareSaveDto shareSaveDto,Long userId, List<MultipartFile> files) throws IOException {
 
         Optional<User> user = userRepo.findById(userId);
         ShareLot shareLot = ShareLot.builder(shareSaveDto, user.get()).build();

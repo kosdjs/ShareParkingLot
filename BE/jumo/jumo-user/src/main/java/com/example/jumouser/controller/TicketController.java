@@ -15,6 +15,12 @@ public class TicketController {
 
     private final TicketService ticketService;
 
+    // 구매 가능한 주차권
+    @GetMapping("/{shaId}/{time}")
+    public TypeResponseDto getTypeAvailability(@PathVariable Long shaId, @PathVariable int time) {
+        return ticketService.getTypeAvailability(shaId, time);
+    }
+
     // 주차권 구매 (완료)
     @PostMapping("/{userId}")
     public TicketCreateResponseDto buyTicket(@PathVariable Long userId, @RequestBody TicketCreateRequestDto ticketCreateRequestDto) {

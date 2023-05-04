@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.AssertFalse;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,6 +36,42 @@ public class TicketServiceImpl implements TicketService {
     private final ShareLotRepo shareLotRepo;
     private final TicketRepo ticketRepo;
     private final OutTiming outTiming;
+
+    @Override
+    @Transactional(readOnly = true)
+    public TypeResponseDto getTypeAvailability(Long shaId, int time) {
+        Optional<ShareLot> currShareLot = shareLotRepo.findById(shaId);
+        if (currShareLot.isPresent()) {
+            String date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            List<Ticket> existingTickets = ticketRepo.findAllByShareLotAndParkingDate(currShareLot.get(), date);
+            if (existingTickets.isEmpty()) {
+                return new TypeResponseDto(true, true, true, true);
+            } else {
+                for (Ticket ticket : existingTickets) {
+                    int inTiming = ticket.getIn_timing();
+                    int outTime = outTiming.OutTimingMethod(inTiming, ticket.getType());
+                    boolean allDay = false;
+
+                    if (inTiming <= time && time < outTime) {
+                        return new TypeResponseDto(false, false, false, false);
+                    } else {
+                        boolean oneHour = true;
+                        boolean threeHours = true;
+                        boolean fiveHours = false;
+
+                        if (time < inTiming && inTiming < time+3 ) {
+                            threeHours = false;
+                            return new TypeResponseDto(oneHour, threeHours, fiveHours, allDay);
+                        } else {
+                            fiveHours = true;
+                        }
+                    }
+                }
+
+            }
+        }
+        return null;
+    }
 
     @Override
     public TicketCreateResponseDto ticketCreate(Long userId, TicketCreateRequestDto ticketCreateRequestDto) {

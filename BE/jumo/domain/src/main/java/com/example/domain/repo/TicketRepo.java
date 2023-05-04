@@ -13,4 +13,6 @@ public interface TicketRepo extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findAllByBuyerAndParkingDate(User buyer, String date);
     List<Ticket> findAllByShareLotAndSellerIdAndParkingDate(ShareLot shareLot, Long sellerId, String date);
+
+    List<Ticket> findAllByShareLotAndParkingDate(ShareLot shareLot, String date);
 }

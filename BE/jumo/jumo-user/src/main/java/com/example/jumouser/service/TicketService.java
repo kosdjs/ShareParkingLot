@@ -7,6 +7,9 @@ import java.util.List;
 
 public interface TicketService {
 
+    // 구매 가능한 주차권
+    TypeResponseDto getTypeAvailability(Long shaId, int inTiming);
+
     // 주차권 구매
     TicketCreateResponseDto ticketCreate(Long userId, TicketCreateRequestDto ticketCreateRequestDto);
 

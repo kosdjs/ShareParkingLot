@@ -14,6 +14,7 @@ import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.text.html.Option;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Transactional
     public Optional<User> signUp(SignUpRequestDto requestDto){
         User user = new User(requestDto);
         userRepo.save(user);
@@ -59,6 +61,7 @@ public class UserServiceImpl implements UserService {
         return responseDto;
     }
 
+    @Transactional
     @Override
     public String updateProfileImg(Long user_id, MultipartFile file) throws IOException {
         Optional<User> user = userRepo.findById(user_id);

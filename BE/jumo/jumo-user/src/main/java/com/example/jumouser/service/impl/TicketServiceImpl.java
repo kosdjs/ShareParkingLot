@@ -84,7 +84,7 @@ public class TicketServiceImpl implements TicketService {
             int cost = typeToHour[ticketCreateRequestDto.getType()]*shareLot.get().getSha_fee();
             
             // 보유 포인트가 결제 금액 이상일 때 구매
-            if(user.get().getPt_has() >= cost) {
+            if(user.get().getPtHas() >= cost) {
                 int outTime = outTiming.OutTimingMethod(ticketCreateRequestDto.getInTiming(), ticketCreateRequestDto.getType());
 
                 // 주차권 생성 및 저장
@@ -156,8 +156,8 @@ public class TicketServiceImpl implements TicketService {
         Optional<User> buyer = userRepo.findById(userId);
         Optional<Ticket> ticket = ticketRepo.findById(ticketId);
 
-        Optional<ShareLot> shareLot = shareLotRepo.findById(ticket.get().getShareLot().getSha_id());
-        Optional<User> seller = userRepo.findById(shareLot.get().getUser().getUser_id());
+        Optional<ShareLot> shareLot = shareLotRepo.findById(ticket.get().getShareLot().getShaId());
+        Optional<User> seller = userRepo.findById(shareLot.get().getUser().getUserId());
 
         int ptLose = ticket.get().getCost();
         int inTiming = ticket.get().getIn_timing();
@@ -171,7 +171,7 @@ public class TicketServiceImpl implements TicketService {
             */
             // 구매자 거래 내역 저장
             Transaction buy_transaction = new Transaction(
-                    buyer.get(), shareLot.get().getSha_name(), 0, ptLose, shareLot.get().getSha_id()
+                    buyer.get(), shareLot.get().getSha_name(), 0, ptLose, shareLot.get().getShaId()
             );
             transactionRepo.save(buy_transaction);
 
@@ -199,7 +199,7 @@ public class TicketServiceImpl implements TicketService {
 
             // 판매자 거래 내역 저장
             Transaction sell_transaction = new Transaction(
-                    seller.get(), shareLot.get().getSha_name(), ptLose, 0, shareLot.get().getSha_id()
+                    seller.get(), shareLot.get().getSha_name(), ptLose, 0, shareLot.get().getShaId()
             );
             transactionRepo.save(sell_transaction);
             /*-----------판매자 끝-----------*/
@@ -208,9 +208,9 @@ public class TicketServiceImpl implements TicketService {
             return new TicketBuyConfirmResponseDto(
                     buy_transaction.getCredit_id(),
                     ptLose,
-                    buyerUser.getPt_has(),
+                    buyerUser.getPtHas(),
                     shareLot.get().getSha_name(),
-                    shareLot.get().getSha_id(),
+                    shareLot.get().getShaId(),
                     buy_transaction.getTransactionDate(),
                     type,
                     inTiming,

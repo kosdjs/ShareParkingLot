@@ -3,7 +3,6 @@ package com.example.jumouser.controller;
 
 
 import com.example.domain.dto.user.*;
-import com.example.domain.entity.FcmToken;
 import com.example.jumouser.factory.UserFactory;
 import com.example.jumouser.provider.LoginProvider;
 import com.example.jumouser.service.UserService;
@@ -34,9 +33,6 @@ public class UserController {
         System.out.println(requestDto.toString());
         UserInfoDto userInfoDto = userFactory.loginSelector(requestDto.getType()).getUserInfo(requestDto);
         Optional<User> user = userFactory.loginSelector(requestDto.getType()).checkUser(userInfoDto);
-        if(!user.isEmpty()){
-            userService.updateFcmToken(user.get().getUserId(), requestDto.getFcm_token());
-        }
         LoginResponseDto responseDto = LoginResponseDto.builder()
                 .user_id(user.get().getUserId())
                 .name(user.get().getName())
@@ -46,7 +42,6 @@ public class UserController {
                 .ptHas(user.get().getPtHas())
                 .type(user.get().getType())
                 .social_id(user.get().getSocialId())
-                .fcm_token(requestDto.getFcm_token())
                 .build();
         System.out.println(responseDto.toString());
         return responseDto;
@@ -77,5 +72,8 @@ public class UserController {
         return userService.updateProfileImg(user_id,file);
     }
 
-
+    @PostMapping("/fcm-token")
+    public Boolean updateFcmToken(@RequestBody UpdateFcmRequestDto requestDto){
+        return userService.updateFcmToken(requestDto.getUser_id(),requestDto.getFcm_token());
+    }
 }

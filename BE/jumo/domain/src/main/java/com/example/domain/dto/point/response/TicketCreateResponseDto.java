@@ -35,6 +35,7 @@ public class TicketCreateResponseDto {
         this.address = ticket.getAddress();
         this.type = ticket.getType();
         this.inTiming = ticket.getIn_timing();
+        this.outTime = outTiming.OutTimingMethod(inTiming, type);
         this.cost = ticket.getCost();
     }
 }

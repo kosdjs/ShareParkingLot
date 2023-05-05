@@ -143,10 +143,13 @@ public class TicketServiceImpl implements TicketService {
         Optional<Ticket> currTicket = ticketRepo.findById(ticketId);
 
         if (seller.isPresent() && currTicket.isPresent()) {
-            currTicket.get().setSell_confirm(true);
-            ticketRepo.save(currTicket.get());
+            if(seller.get().getUserId() == currTicket.get().getSellerId()) {
+                currTicket.get().setSell_confirm(true);
+                ticketRepo.save(currTicket.get());
+                return new TicketSellConfirmResponseDto(currTicket.get());
+            } else throw new InputException("this user is not seller");
 
-            return new TicketSellConfirmResponseDto(currTicket.get());
+
         } throw new IllegalStateException();
 
     }
@@ -165,57 +168,59 @@ public class TicketServiceImpl implements TicketService {
         int outTime = outTiming.OutTimingMethod(inTiming, type);
 
         if (buyer.isPresent() && shareLot.isPresent() && seller.isPresent()) {
-
-            /*
+            // 요청 userId가 구매자라면
+            if (buyer.get() == ticket.get().getBuyer()) {
+                /*
             구매자 측면
             */
-            // 구매자 거래 내역 저장
-            Transaction buy_transaction = new Transaction(
-                    buyer.get(), shareLot.get().getSha_name(), 0, ptLose, shareLot.get().getShaId()
-            );
-            transactionRepo.save(buy_transaction);
+                // 구매자 거래 내역 저장
+                Transaction buy_transaction = new Transaction(
+                        buyer.get(), shareLot.get().getSha_name(), 0, ptLose, shareLot.get().getShaId()
+                );
+                transactionRepo.save(buy_transaction);
 
-            // 구매자 포인트 차감 User Entity 반영
-            User buyerUser = buyer.get();
-            buyerUser.subtractPoint(ptLose);
-            userRepo.save(buyerUser);
+                // 구매자 포인트 차감 User Entity 반영
+                User buyerUser = buyer.get();
+                buyerUser.subtractPoint(ptLose);
+                userRepo.save(buyerUser);
 
-            // 구매 확정 처리
-            Optional<Ticket> buyerTicket = ticketRepo.findById(ticketId);
-            if (buyerTicket.isPresent()) {
-                buyerTicket.get().setBuy_confirm(true);
-                ticketRepo.save(buyerTicket.get());
-            }
-            /*------------구매자 끝--------------*/
+                // 구매 확정 처리
+                Optional<Ticket> buyerTicket = ticketRepo.findById(ticketId);
+                if (buyerTicket.isPresent()) {
+                    buyerTicket.get().setBuy_confirm(true);
+                    ticketRepo.save(buyerTicket.get());
+                }
+                /*------------구매자 끝--------------*/
 
 
              /*
             판매자 측면
             */
-            // 판매자 포인트 증가 User Entity 반영
-            User sellerUser = seller.get();
-            sellerUser.addPoint(ptLose);
-            userRepo.save(sellerUser);
+                // 판매자 포인트 증가 User Entity 반영
+                User sellerUser = seller.get();
+                sellerUser.addPoint(ptLose);
+                userRepo.save(sellerUser);
 
-            // 판매자 거래 내역 저장
-            Transaction sell_transaction = new Transaction(
-                    seller.get(), shareLot.get().getSha_name(), ptLose, 0, shareLot.get().getShaId()
-            );
-            transactionRepo.save(sell_transaction);
-            /*-----------판매자 끝-----------*/
+                // 판매자 거래 내역 저장
+                Transaction sell_transaction = new Transaction(
+                        seller.get(), shareLot.get().getSha_name(), ptLose, 0, shareLot.get().getShaId()
+                );
+                transactionRepo.save(sell_transaction);
+                /*-----------판매자 끝-----------*/
 
-            // DTO return
-            return new TicketBuyConfirmResponseDto(
-                    buy_transaction.getCredit_id(),
-                    ptLose,
-                    buyerUser.getPtHas(),
-                    shareLot.get().getSha_name(),
-                    shareLot.get().getShaId(),
-                    buy_transaction.getTransactionDate(),
-                    type,
-                    inTiming,
-                    outTime
-            );
+                // DTO return
+                return new TicketBuyConfirmResponseDto(
+                        buy_transaction.getCredit_id(),
+                        ptLose,
+                        buyerUser.getPtHas(),
+                        shareLot.get().getSha_name(),
+                        shareLot.get().getShaId(),
+                        buy_transaction.getTransactionDate(),
+                        type,
+                        inTiming,
+                        outTime
+                );
+            }
         }
         throw new SaveException("Unable to Save");
     }

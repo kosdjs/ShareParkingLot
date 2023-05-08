@@ -2,15 +2,10 @@ package com.example.jumouser.service.impl;
 
 import com.example.domain.dto.point.request.TicketCreateRequestDto;
 import com.example.domain.dto.point.response.*;
-import com.example.domain.entity.ShareLot;
-import com.example.domain.entity.Ticket;
-import com.example.domain.entity.Transaction;
-import com.example.domain.entity.User;
+import com.example.domain.entity.*;
+import com.example.domain.etc.DayName;
 import com.example.domain.etc.OutTiming;
-import com.example.domain.repo.ShareLotRepo;
-import com.example.domain.repo.TicketRepo;
-import com.example.domain.repo.TransactionRepo;
-import com.example.domain.repo.UserRepo;
+import com.example.domain.repo.*;
 import com.example.error.exception.InputException;
 import com.example.error.exception.SaveException;
 import com.example.jumouser.service.TicketService;
@@ -22,8 +17,10 @@ import javax.validation.constraints.AssertFalse;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,13 +34,23 @@ public class TicketServiceImpl implements TicketService {
     private final ShareLotRepo shareLotRepo;
     private final TicketRepo ticketRepo;
     private final OutTiming outTiming;
+    private final DayDataRepo dayDataRepo;
 
     @Override
     @Transactional(readOnly = true)
     public TypeResponseDto getTypeAvailability(Long shaId, int time) {
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+        String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String day = now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.US);
+
         Optional<ShareLot> currShareLot = shareLotRepo.findById(shaId);
+        Optional<DayData> currDayData = dayDataRepo.findDayDataByShareLot_ShaIdAndDayStrEquals(shaId, DayName.valueOf(day));
+        
+        int startTime = currDayData.get().getDay_start();
+        int endTime = currDayData.get().getDay_end();
+        
+
         if (currShareLot.isPresent()) {
-            String date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             // 해당하는 공유 주차장의 모든 당일 티켓 가져오기
             List<Ticket> existingTickets = ticketRepo.findAllByShareLotAndParkingDate(currShareLot.get(), date);
 
@@ -56,8 +63,13 @@ public class TicketServiceImpl implements TicketService {
 
                 // 예약된 시간 배열 생성
                 boolean[] occupied = new boolean[26];
-                Arrays.fill(occupied, true);
+                Arrays.fill(occupied, false);
 
+                // 운영 가능시간 활성화
+                for (int i = startTime; i < endTime + 1; i++) {
+                    occupied[i] = true;
+                }
+                
                 // 모든 선행 티켓에서 예약된 시간 false 만들기
                 for (Ticket ticket : existingTickets) {
                     int inTiming = ticket.getIn_timing();

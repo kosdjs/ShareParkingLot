@@ -9,9 +9,9 @@ import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -43,7 +43,6 @@ public class ShareLotServiceImpl implements ShareLotService {
         Optional<User> user = userRepo.findById(shareSaveDto.getUserId());
         ShareLot shareLot = ShareLot.builder(shareSaveDto, user.get()).build();
 
-
         if(files == null || files.size() == 0){
             shareLot = shareLotRepo.save(shareLot);
 
@@ -51,6 +50,18 @@ public class ShareLotServiceImpl implements ShareLotService {
 
                 return -1L;
             }
+            for (DayName dayName : DayName.values()){
+                DayData dayData = DayData.DayDataBuilder()
+                        .shareLot(shareLot)
+                        .dayStr(dayName)
+                        .day_start(-1)
+                        .day_end(-1)
+                        .enable(false)
+                        .build();
+
+                dayDataRepo.save(dayData);
+            }
+
             return shareLot.getShaId();
         }
         else{

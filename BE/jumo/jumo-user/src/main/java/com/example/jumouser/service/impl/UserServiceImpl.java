@@ -12,6 +12,7 @@ import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private String drawingStorage;
 
     private final Storage storage;
+
     public boolean emailCheck(String email){
         Optional<User> user = userRepo.findByEmail(email);
         if(!user.isPresent()){
@@ -97,6 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean updateFcmToken(Long user_id, String fcm_token) {
+        System.out.println(user_id);
         notiRepo.save(new FcmToken(user_id,fcm_token));
         System.out.println(notiRepo.findById(user_id).get().getToken());
         return true;

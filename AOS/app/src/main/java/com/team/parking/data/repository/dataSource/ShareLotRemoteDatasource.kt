@@ -12,16 +12,13 @@ interface ShareLotRemoteDatasource {
     suspend fun deleteShareLot(parkId: Long) : Response<Unit>
     suspend fun getShareLotDetail(parkId: Long) : Response<ParkingLotResponse>
     suspend fun getShareLotList(userId: Long) : Response<List<ShareLotResponse>>
+    suspend fun getShareLotDay(parkId: Long) : Response<List<DayRequest>>
     suspend fun postShareLot(
         saveDto: ShareLotRequest,
         files: List<MultipartBody.Part>
     ) : Response<Long>
-    suspend fun postSaveDay(
-        daySaveDtos: DayRequest,
-        parkId: Long
-    ) : Response<Unit>
-    suspend fun postUpdateDay(
-        daySaveDtos: DayRequest,
+    suspend fun putSaveDay(
+        daySaveDtos: List<DayRequest>,
         parkId: Long
     ) : Response<Unit>
 }

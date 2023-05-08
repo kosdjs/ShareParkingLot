@@ -4,5 +4,5 @@ data class DayRequest (
     var dayStart: Int,
     var dayEnd: Int,
     var dayStr: String,
-    var shareLotId: Long
+    var enable: Boolean
 )

@@ -29,11 +29,11 @@ class ShareLotRemoteDataSourceImpl(private val shareLotAPIService: ShareLotAPISe
         return shareLotAPIService.postShareLot(saveDto, files)
     }
 
-    override suspend fun postSaveDay(daySaveDtos: DayRequest, parkId: Long) : Response<Unit> {
-        return shareLotAPIService.postSaveDay(daySaveDtos, parkId)
+    override suspend fun putSaveDay(daySaveDtos: List<DayRequest>, parkId: Long) : Response<Unit> {
+        return shareLotAPIService.putSaveDay(daySaveDtos, parkId)
     }
 
-    override suspend fun postUpdateDay(daySaveDtos: DayRequest, parkId: Long) : Response<Unit> {
-        return shareLotAPIService.postUpdateDay(daySaveDtos, parkId)
+    override suspend fun getShareLotDay(parkId: Long): Response<List<DayRequest>> {
+        return shareLotAPIService.getShareLotDay(parkId)
     }
 }

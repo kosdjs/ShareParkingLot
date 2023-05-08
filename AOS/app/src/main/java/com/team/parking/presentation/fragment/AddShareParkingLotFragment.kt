@@ -48,6 +48,7 @@ class AddShareParkingLotFragment : Fragment() {
     private lateinit var shareParkingLotViewModel: ShareParkingLotViewModel
     private lateinit var shareParkingLotImageAdapter: ShareParkingLotImageAdapter
     private lateinit var userViewModel: UserViewModel
+    private lateinit var daySelectViewModel: DaySelectViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,6 +62,7 @@ class AddShareParkingLotFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         searchAddressViewModel = ViewModelProvider(this, searchAddressViewModelFactory)[SearchAddressViewModel::class.java]
         userViewModel = (activity as MainActivity).userViewModel
+        daySelectViewModel = (activity as MainActivity).daySelectViewModel
         binding.buttonAddShareParkingLot.setOnClickListener {
             if(checkEmpty()){
                 //api
@@ -83,6 +85,7 @@ class AddShareParkingLotFragment : Fragment() {
                     radioButtonExitPayAddShareParkingLot.isChecked = false
                     searchAddressViewModel.searchedAddress.value = null
                 }
+                daySelectViewModel.add = true
                 findNavController().navigate(R.id.action_addShareParkingLotFragment_to_daySelectFragment)
             }
         }

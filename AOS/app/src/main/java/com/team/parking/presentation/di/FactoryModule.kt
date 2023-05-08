@@ -41,8 +41,19 @@ class FactoryModule {
     @Singleton
     @Provides
     fun provideShareParkingLotViewModelFactory(
-        app:Application, postShareLotUseCase: PostShareLotUseCase, getShareLotListUseCase: GetShareLotListUseCase
+        app:Application, postShareLotUseCase: PostShareLotUseCase, getShareLotListUseCase: GetShareLotListUseCase,
+        deleteShareLotUseCase: DeleteShareLotUseCase
     ) : ShareParkingLotViewModelFactory{
-        return ShareParkingLotViewModelFactory(app, postShareLotUseCase, getShareLotListUseCase)
+        return ShareParkingLotViewModelFactory(app, postShareLotUseCase, getShareLotListUseCase, deleteShareLotUseCase)
+    }
+
+    @Singleton
+    @Provides
+    fun provideDaySelectViewModelFactory(
+        app:Application,
+        getShareLotDayUseCase: GetShareLotDayUseCase,
+        putShareLotDayUseCase: PutShareLotDayUseCase
+    ) : DaySelectViewModelFactory{
+        return DaySelectViewModelFactory(app, getShareLotDayUseCase, putShareLotDayUseCase)
     }
 }

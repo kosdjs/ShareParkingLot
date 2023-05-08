@@ -11,6 +11,7 @@ import com.team.parking.data.model.parkinglot.ParkingLotResponse
 import com.team.parking.data.model.parkinglot.ShareLotRequest
 import com.team.parking.data.model.parkinglot.ShareLotResponse
 import com.team.parking.data.util.Resource
+import com.team.parking.domain.usecase.DeleteShareLotUseCase
 import com.team.parking.domain.usecase.GetShareLotListUseCase
 import com.team.parking.domain.usecase.PostShareLotUseCase
 import com.team.parking.presentation.utils.App
@@ -22,7 +23,8 @@ private const val TAG = "ShareParkingLotViewMode"
 
 class ShareParkingLotViewModel(
     private val app: Application, private val postShareLotUseCase: PostShareLotUseCase,
-    private val getShareLotListUseCase: GetShareLotListUseCase
+    private val getShareLotListUseCase: GetShareLotListUseCase,
+    private val deleteShareLotUseCase: DeleteShareLotUseCase
 ) : AndroidViewModel(app) {
     private var _uriList: MutableLiveData<MutableList<Uri>> = MutableLiveData(mutableListOf())
     val uriList: LiveData<MutableList<Uri>> get() = _uriList
@@ -85,6 +87,18 @@ class ShareParkingLotViewModel(
             if(application.isNetworkAvailable(app)){
                 var apiResult = getShareLotListUseCase.execute(userId)
                 _shareLotList.postValue(apiResult.data)
+            }else{
+                Log.d(TAG, "get: 네트워크 문제")
+            }
+        }catch(e:Exception){
+            Log.d(TAG, "get: ${e.message}")
+        }
+    }
+
+    fun deleteShareLot(parkId: Long) = viewModelScope.launch(Dispatchers.IO){
+        try {
+            if(application.isNetworkAvailable(app)){
+                var apiResult = deleteShareLotUseCase.execute(parkId)
             }else{
                 Log.d(TAG, "get: 네트워크 문제")
             }

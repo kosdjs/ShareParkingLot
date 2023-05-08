@@ -11,7 +11,9 @@ import com.team.parking.databinding.ItemMyShareParkingLotBinding
 
 class ShareParkingLotListAdapter : RecyclerView.Adapter<ShareParkingLotListAdapter.ListViewHolder>(){
 
-    private lateinit var onShareParkingLotItemClickListener: ShareParkingLotItemClickListener
+    private lateinit var onShareParkingLotDeleteClickListener: ShareParkingLotDeleteClickListener
+    private lateinit var onShareParkingLotCheckClickListener: ShareParkingLotCheckClickListener
+    private lateinit var onShareParkingLotEditClickListener: ShareParkingLotEditClickListener
 
     private val callback = object : DiffUtil.ItemCallback<ShareLotResponse>(){
         override fun areItemsTheSame(oldItem: ShareLotResponse, newItem: ShareLotResponse): Boolean {
@@ -29,7 +31,13 @@ class ShareParkingLotListAdapter : RecyclerView.Adapter<ShareParkingLotListAdapt
         fun bind(data : ShareLotResponse){
             binding.textNameItemMyShareParkingLot.text = data.shaName
             binding.imageDeleteItemMyShareParkingLot.setOnClickListener {
-                onShareParkingLotItemClickListener.onClick(it, layoutPosition, data.shareLotId)
+                onShareParkingLotDeleteClickListener.onClick(it, layoutPosition, data.shareLotId)
+            }
+            binding.layoutCheckItemMyShareParkingLot.setOnClickListener {
+                onShareParkingLotCheckClickListener.onClick(it, layoutPosition, data.shareLotId)
+            }
+            binding.layoutEditItemMyShareParkingLot.setOnClickListener {
+                onShareParkingLotEditClickListener.onClick(it, layoutPosition, data.shareLotId)
             }
         }
     }
@@ -47,11 +55,27 @@ class ShareParkingLotListAdapter : RecyclerView.Adapter<ShareParkingLotListAdapt
         return differ.currentList.size
     }
 
-    fun setShareParkingLotItemClickListener(onItemClickListener: ShareParkingLotItemClickListener){
-        onShareParkingLotItemClickListener = onItemClickListener
+    fun setShareParkingLotDeleteClickListener(onItemClickListener: ShareParkingLotDeleteClickListener){
+        onShareParkingLotDeleteClickListener = onItemClickListener
     }
 
-    interface ShareParkingLotItemClickListener{
+    fun setShareParkingLotCheckClickListener(onItemClickListener: ShareParkingLotCheckClickListener){
+        onShareParkingLotCheckClickListener = onItemClickListener
+    }
+
+    fun setShareParkingLotEditClickListener(onItemClickListener: ShareParkingLotEditClickListener){
+        onShareParkingLotEditClickListener = onItemClickListener
+    }
+
+    interface ShareParkingLotDeleteClickListener{
+        fun onClick(view: View,position:Int,data:Long)
+    }
+
+    interface ShareParkingLotCheckClickListener{
+        fun onClick(view: View,position:Int,data:Long)
+    }
+
+    interface ShareParkingLotEditClickListener{
         fun onClick(view: View,position:Int,data:Long)
     }
 }

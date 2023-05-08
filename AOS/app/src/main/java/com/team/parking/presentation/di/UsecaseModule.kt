@@ -55,4 +55,27 @@ class UsecaseModule {
         return GetShareLotListUseCase(shareLotRepository)
     }
 
+    @Singleton
+    @Provides
+    fun provideGetShareLotDayUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : GetShareLotDayUseCase{
+        return GetShareLotDayUseCase(shareLotRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun providePutShareLotDayUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : PutShareLotDayUseCase{
+        return PutShareLotDayUseCase(shareLotRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideDeleteShareLotUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : DeleteShareLotUseCase{
+        return DeleteShareLotUseCase(shareLotRepository)
+    }
 }

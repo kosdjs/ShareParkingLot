@@ -5,15 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.team.parking.MainActivity
 import com.team.parking.R
+import com.team.parking.databinding.DialogCheckBinding
 import com.team.parking.databinding.FragmentMyShareParkingLotBinding
 import com.team.parking.presentation.adapter.ShareParkingLotListAdapter
 import com.team.parking.presentation.viewmodel.ShareParkingLotViewModel
 import com.team.parking.presentation.viewmodel.UserViewModel
-
 
 class MyShareParkingLotFragment : Fragment() {
 
@@ -41,9 +42,21 @@ class MyShareParkingLotFragment : Fragment() {
             findNavController().navigate(R.id.action_myShareParkingLotFragment_to_addShareParkingLotFragment)
         }
         shareParkingLotListAdapter = ShareParkingLotListAdapter()
-        shareParkingLotListAdapter.setShareParkingLotItemClickListener(object :ShareParkingLotListAdapter.ShareParkingLotItemClickListener{
+        shareParkingLotListAdapter.setShareParkingLotDeleteClickListener(object :ShareParkingLotListAdapter.ShareParkingLotDeleteClickListener{
             override fun onClick(view: View, position: Int, data: Long) {
-                //delete
+                showCheckDialog(data)
+            }
+        })
+        shareParkingLotListAdapter.setShareParkingLotCheckClickListener(object :ShareParkingLotListAdapter.ShareParkingLotCheckClickListener{
+            override fun onClick(view: View, position: Int, data: Long) {
+                //check ticket
+                findNavController().navigate(R.id.action_myShareParkingLotFragment_to_myShareParkingLotTicketFragment)
+            }
+        })
+        shareParkingLotListAdapter.setShareParkingLotEditClickListener(object :ShareParkingLotListAdapter.ShareParkingLotEditClickListener{
+            override fun onClick(view: View, position: Int, data: Long) {
+                shareParkingLotViewModel.sharelotId = data
+                findNavController().navigate(R.id.action_myShareParkingLotFragment_to_daySelectFragment)
             }
         })
         binding.recyclerViewMyShareParkingLot.apply {
@@ -59,5 +72,22 @@ class MyShareParkingLotFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         shareParkingLotViewModel.getShareLotList(userViewModel.user!!.user_id)
+    }
+
+    fun showCheckDialog(parkId: Long){
+        val builder = AlertDialog.Builder(requireContext())
+        val dialogBinding = DialogCheckBinding.inflate(layoutInflater)
+        builder.setView(dialogBinding.root)
+        val dialog = builder.create()
+        dialogBinding.apply {
+            buttonCancelCheckDialog.setOnClickListener {
+                dialog.dismiss()
+            }
+            buttonOkCheckDialog.setOnClickListener {
+                shareParkingLotViewModel.deleteShareLot(parkId)
+                shareParkingLotViewModel.getShareLotList(userViewModel.user!!.user_id)
+                dialog.dismiss()
+            }
+        }
     }
 }

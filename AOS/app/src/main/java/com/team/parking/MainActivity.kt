@@ -44,6 +44,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var shareParkingLotViewModelFactory: ShareParkingLotViewModelFactory
     lateinit var shareParkingLotViewModel: ShareParkingLotViewModel
 
+    @Inject
+    lateinit var daySelectViewModelFactory: DaySelectViewModelFactory
+    lateinit var daySelectViewModel: DaySelectViewModel
+
     private lateinit var binding : ActivityMainBinding
     lateinit var userViewModel: UserViewModel
     lateinit var navigationDrawer : DrawerLayout
@@ -69,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     fun initMapViewModel(){
         mapViewModel = ViewModelProvider(this,mapViewModelFactory)[MapViewModel::class.java]
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+        daySelectViewModel = ViewModelProvider(this, daySelectViewModelFactory)[DaySelectViewModel::class.java]
         searchViewModel = ViewModelProvider(this,searchViewModelFactory)[SearchViewModel::class.java]
         shareParkingLotViewModel = ViewModelProvider(this, shareParkingLotViewModelFactory)[ShareParkingLotViewModel::class.java]
         setProfileFragmentNavigation()
@@ -159,5 +164,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if(daySelectViewModel.add){
+            daySelectViewModel.add = false
+            super.onBackPressed()
+            super.onBackPressed()
+        } else {
+            super.onBackPressed()
+        }
+    }
     //onbackpressed dayselectviewmodel boolean check if true call backpress twice else call backpress normally
 }

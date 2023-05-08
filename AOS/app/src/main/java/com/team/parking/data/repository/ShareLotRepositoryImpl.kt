@@ -31,12 +31,12 @@ class ShareLotRepositoryImpl(private val shareLotRemoteDatasource: ShareLotRemot
         return responseToLong(shareLotRemoteDatasource.postShareLot(saveDto, files))
     }
 
-    override suspend fun postSaveDay(daySaveDtos: DayRequest, parkId: Long): Resource<Unit> {
-        return responseToUnit(shareLotRemoteDatasource.postSaveDay(daySaveDtos, parkId))
+    override suspend fun putSaveDay(daySaveDtos: List<DayRequest>, parkId: Long): Resource<Unit> {
+        return responseToUnit(shareLotRemoteDatasource.putSaveDay(daySaveDtos, parkId))
     }
 
-    override suspend fun postUpdateDay(daySaveDtos: DayRequest, parkId: Long): Resource<Unit> {
-        return responseToUnit(shareLotRemoteDatasource.postUpdateDay(daySaveDtos, parkId))
+    override suspend fun getShareLotDay(parkId: Long): Resource<List<DayRequest>> {
+        return responseToDayList(shareLotRemoteDatasource.getShareLotDay(parkId))
     }
 
     private fun responseToUnit(response: Response<Unit>): Resource<Unit> {
@@ -75,4 +75,12 @@ class ShareLotRepositoryImpl(private val shareLotRemoteDatasource: ShareLotRemot
         return Resource.Error(response.message())
     }
 
+    private fun responseToDayList(response: Response<List<DayRequest>>): Resource<List<DayRequest>> {
+        if(response.isSuccessful){
+            response.body()?.let {result->
+                return Resource.Success(result)
+            }
+        }
+        return Resource.Error(response.message())
+    }
 }

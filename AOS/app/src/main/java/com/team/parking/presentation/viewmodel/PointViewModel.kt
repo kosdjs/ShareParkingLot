@@ -49,13 +49,7 @@ class PointViewModel(
         try {
             if(application.isNetworkAvailable(app)){
                 var apiResult = putChargePointUseCase.execute(userId, point.value!!)
-                Log.d(TAG, "putChargePoint: ${userId}")
-                Log.d(TAG, "putChargePoint: ${point.value!!}")
-                Log.d(TAG, "putChargePoint: ${apiResult.message}")
-                Log.d(TAG, "putChargePoint: ${apiResult.data?.userId}")
-                Log.d(TAG, "putChargePoint: ${apiResult.data?.ptCharge}")
-                Log.d(TAG, "putChargePoint: ${apiResult.data?.ptHas}")
-                Log.d(TAG, "putChargePoint: ${apiResult.data?.nickname}")
+                _ptHas.postValue(apiResult.data?.ptHas)
             }else{
                 Log.d(TAG, "get: 네트워크 문제")
             }

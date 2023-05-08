@@ -38,6 +38,7 @@ class PointFragment : Fragment() {
         userViewModel = (activity as MainActivity).userViewModel
         pointViewModel = (activity as MainActivity).pointViewModel
         pointViewModel.ptHas.observe(viewLifecycleOwner){
+            userViewModel.user!!.pt_has = it
             fragmentPointBinding.apply {
                 textCurrentPointPoint.text = "${pointViewModel.ptHas.value} P"
                 textAfterPoint.text = "${pointViewModel.ptHas.value!! + pointViewModel.point.value!!} P"
@@ -129,8 +130,7 @@ class PointFragment : Fragment() {
                         override fun onDone(data: String?) {
                             Toast.makeText(requireContext(), "결제가 완료되었습니다.", Toast.LENGTH_SHORT).show()
                             pointViewModel.putChargePoint(userViewModel.user!!.user_id)
-                            Bootpay.removePaymentWindow();
-                            requireActivity().onBackPressed()
+                            Bootpay.removePaymentWindow()
                         }
                     }).requestPayment()
             }

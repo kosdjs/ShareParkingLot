@@ -24,12 +24,8 @@ import com.team.parking.data.api.UserService
 import com.team.parking.data.model.user.User
 import com.team.parking.databinding.ActivityMainBinding
 import com.team.parking.presentation.utils.App
-import com.team.parking.presentation.viewmodel.UserViewModel
-import com.team.parking.presentation.viewmodel.MapViewModel
-import com.team.parking.presentation.viewmodel.MapViewModelFactory
-import com.team.parking.presentation.viewmodel.SearchViewModel
-import com.team.parking.presentation.viewmodel.SearchViewModelFactory
 import com.team.parking.databinding.SideHeaderBinding
+import com.team.parking.presentation.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -44,6 +40,16 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var searchViewModelFactory: SearchViewModelFactory
     lateinit var searchViewModel: SearchViewModel
+
+    lateinit var searchAddressViewModel: SearchAddressViewModel
+
+    @Inject
+    lateinit var shareParkingLotViewModelFactory: ShareParkingLotViewModelFactory
+    lateinit var shareParkingLotViewModel: ShareParkingLotViewModel
+
+    @Inject
+    lateinit var daySelectViewModelFactory: DaySelectViewModelFactory
+    lateinit var daySelectViewModel: DaySelectViewModel
 
     private lateinit var binding : ActivityMainBinding
     lateinit var userViewModel: UserViewModel
@@ -73,7 +79,9 @@ class MainActivity : AppCompatActivity() {
     fun initMapViewModel(){
         mapViewModel = ViewModelProvider(this,mapViewModelFactory)[MapViewModel::class.java]
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+        daySelectViewModel = ViewModelProvider(this, daySelectViewModelFactory)[DaySelectViewModel::class.java]
         searchViewModel = ViewModelProvider(this,searchViewModelFactory)[SearchViewModel::class.java]
+        shareParkingLotViewModel = ViewModelProvider(this, shareParkingLotViewModelFactory)[ShareParkingLotViewModel::class.java]
         setProfileFragmentNavigation()
     }
 
@@ -160,6 +168,16 @@ class MainActivity : AppCompatActivity() {
                     .error(R.drawable.ic_baseline_person_24)
                     .into(headerBinding.imageProfileSideHeader)
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        if(daySelectViewModel.add){
+            daySelectViewModel.add = false
+            super.onBackPressed()
+            super.onBackPressed()
+        } else {
+            super.onBackPressed()
         }
     }
 

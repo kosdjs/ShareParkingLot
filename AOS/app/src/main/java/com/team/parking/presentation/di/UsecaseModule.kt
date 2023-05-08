@@ -2,9 +2,8 @@ package com.team.parking.presentation.di
 
 import com.team.parking.domain.repository.MapRepository
 import com.team.parking.domain.repository.SearchRepository
-import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.domain.usecase.GetMapDetailDataUseCase
-import com.team.parking.domain.usecase.GetSearchDataUseCase
+import com.team.parking.domain.repository.ShareLotRepository
+import com.team.parking.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,5 +39,52 @@ class UsecaseModule {
         return GetSearchDataUseCase(searchRepository)
     }
 
+    @Singleton
+    @Provides
+    fun provideGetSearchAddressUsecase(
+        searchRepository: SearchRepository
+    ) : GetSearchAddressUseCase{
+        return GetSearchAddressUseCase(searchRepository)
+    }
 
+    @Singleton
+    @Provides
+    fun providePostShareLotUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : PostShareLotUseCase{
+        return PostShareLotUseCase(shareLotRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetShareLotListUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : GetShareLotListUseCase{
+        return GetShareLotListUseCase(shareLotRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetShareLotDayUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : GetShareLotDayUseCase{
+        return GetShareLotDayUseCase(shareLotRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun providePutShareLotDayUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : PutShareLotDayUseCase{
+        return PutShareLotDayUseCase(shareLotRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideDeleteShareLotUsecase(
+        shareLotRepository: ShareLotRepository
+    ) : DeleteShareLotUseCase{
+        return DeleteShareLotUseCase(shareLotRepository)
+    }
+    
 }

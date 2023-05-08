@@ -145,10 +145,22 @@
         <action
             android:id="@+id/action_addShareParkingLotFragment_to_daySelectFragment"
             app:destination="@id/daySelectFragment" />
+        <action
+            android:id="@+id/action_addShareParkingLotFragment_to_searchAddressFragment"
+            app:destination="@id/searchAddressFragment" />
     </fragment>
     <fragment
         android:id="@+id/ticketDetailFragment"
         android:name="com.team.parking.presentation.fragment.TicketDetailFragment"
         android:label="fragment_ticket_detail"
         tools:layout="@layout/fragment_ticket_detail" />
+    <fragment
+        android:id="@+id/searchAddressFragment"
+        android:name="com.team.parking.presentation.fragment.SearchAddressFragment"
+        android:label="fragment_search_address"
+        tools:layout="@layout/fragment_search_address" >
+        <action
+            android:id="@+id/action_searchAddressFragment_to_addShareParkingLotFragment"
+            app:destination="@id/addShareParkingLotFragment" />
+    </fragment>
 </navigation>

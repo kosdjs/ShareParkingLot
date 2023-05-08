@@ -30,21 +30,27 @@ public class UserController {
     @ApiOperation(value = "로그인", notes = "Type : Kakao,Naver,Jumo 로그인, Dto 참조")
     @GetMapping("/login")
     public LoginResponseDto login(@ModelAttribute("loginRequestDto") LoginRequestDto requestDto){
-        System.out.println(requestDto.toString());
-        UserInfoDto userInfoDto = userFactory.loginSelector(requestDto.getType()).getUserInfo(requestDto);
-        Optional<User> user = userFactory.loginSelector(requestDto.getType()).checkUser(userInfoDto);
-        LoginResponseDto responseDto = LoginResponseDto.builder()
-                .user_id(user.get().getUserId())
-                .name(user.get().getName())
-                .email(user.get().getEmail())
-                .phone(user.get().getPhone())
-                .profile_img(user.get().getProfileImg())
-                .ptHas(user.get().getPtHas())
-                .type(user.get().getType())
-                .social_id(user.get().getSocialId())
-                .build();
-        System.out.println(responseDto.toString());
-        return responseDto;
+        try {
+            System.out.println(requestDto.toString());
+            UserInfoDto userInfoDto = userFactory.loginSelector(requestDto.getType()).getUserInfo(requestDto);
+            Optional<User> user = userFactory.loginSelector(requestDto.getType()).checkUser(userInfoDto);
+            LoginResponseDto responseDto = LoginResponseDto.builder()
+                    .user_id(user.get().getUserId())
+                    .name(user.get().getName())
+                    .email(user.get().getEmail())
+                    .phone(user.get().getPhone())
+                    .profile_img(user.get().getProfileImg())
+                    .ptHas(user.get().getPtHas())
+                    .type(user.get().getType())
+                    .social_id(user.get().getSocialId())
+                    .build();
+            System.out.println(responseDto.toString());
+
+            return responseDto;
+        }catch (Exception e){
+            System.out.println("error");
+            return null;
+        }
     }
 
     @ApiOperation(value = "회원가입", notes = "카카오,네이버 회원가입 -> 주모")

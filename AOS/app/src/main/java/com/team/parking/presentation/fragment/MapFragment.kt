@@ -1,6 +1,8 @@
 package com.team.parking.presentation.fragment
 
 import android.Manifest
+import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
@@ -35,6 +37,9 @@ import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.SearchViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -208,12 +213,11 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                         marker.height = 130
                                         marker.icon = icon
                                     }*/
-                                    val markerBitmap = BitmapFactory.decodeResource(resources, R.drawable.ba)
+                                    val markerBitmap = decodeSampledBitmapFromResource(resources,R.drawable.ba,130,130)
                                     val icon = OverlayImage.fromBitmap(markerBitmap)
                                     marker.width = 130
                                     marker.height = 130
                                     marker.icon = icon
-
                                     noClusteringCache.add(marker)
                                     marker.position = LatLng(data[i].lat,data[i].lng)
                                     marker.map = naverMap
@@ -236,6 +240,56 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
         }
     }
+
+    /**
+     * 이미지 크기 구하기
+     */
+
+    fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        // Raw height and width of image
+        val (height: Int, width: Int) = options.run { outHeight to outWidth }
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+
+            val halfHeight: Int = height / 2
+            val halfWidth: Int = width / 2
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+
+        return inSampleSize
+    }
+
+    /**
+     * 최적화 이미지 반환
+     */
+
+    fun decodeSampledBitmapFromResource(
+        res: Resources,
+        resId: Int,
+        reqWidth: Int,
+        reqHeight: Int
+    ): Bitmap {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        return BitmapFactory.Options().run {
+            inJustDecodeBounds = true
+            BitmapFactory.decodeResource(res, resId, this)
+
+            // Calculate inSampleSize
+            inSampleSize = calculateInSampleSize(this, reqWidth, reqHeight)
+
+            // Decode bitmap with inSampleSize set
+            inJustDecodeBounds = false
+
+            BitmapFactory.decodeResource(res, resId, this)
+        }
+    }
+
     /**
      * 맵 화면 이동 리스너
      * CameraChange : 카메라 이동시 마다 호출

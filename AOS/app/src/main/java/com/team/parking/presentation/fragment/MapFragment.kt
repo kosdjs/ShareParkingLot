@@ -54,9 +54,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private val permissionList = Manifest.permission.ACCESS_FINE_LOCATION
     private lateinit var bottomSheetBehavior  : BottomSheetBehavior<View>
     private lateinit var memoryCache : LinkedHashMap<String,OverlayImage>
+    private lateinit var memoryClurChche : LinkedHashMap<String,OverlayImage>
     private lateinit var icon : OverlayImage
+    private lateinit var cIcon : OverlayImage
     private lateinit var customView : View
+    private lateinit var ncCustomView : View
     private lateinit var textView : TextView
+    private lateinit var ncTextView : TextView
 
     var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
     //GPS 권한 생성
@@ -112,6 +116,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         Glide.with(customView).load(R.drawable.ic_marker_no_clustering).skipMemoryCache(true).into(iv)
         textView = customView.findViewById(R.id.marker_text)
         memoryCache = LinkedHashMap()
+
+
+        ncCustomView = layoutInflater.inflate(R.layout.marker_clustering,null)
+        val civ = ncCustomView.findViewById<ImageView>(R.id.marker_circle)
+        Glide.with(ncCustomView).load(R.drawable.background_circle).skipMemoryCache(true).into(civ)
+        cIcon = OverlayImage.fromView(ncCustomView)
+        //memoryClurChche = LinkedHashMap()
     }
 
     /**
@@ -129,6 +140,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             icon = getMarkerFromMemCache(price)!!
         }
     }
+
 
     /**
      * 캐시 데이터 에서 검색
@@ -231,10 +243,11 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 for(i in 0 until data!!.size){
                                     removeNoClusteringMapData()
                                     val marker = Marker()
-                                    marker.tag = data[i]
+                                    marker.width = 150
+                                    marker.height = 150
+                                    marker.icon = cIcon
                                     clusteringCache.add(marker)
                                     marker.position = LatLng(data[i].lat,data[i].lng)
-                                    marker.iconTintColor = Color.RED
                                     marker.map = naverMap
                                 }
                             }else{
@@ -332,6 +345,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             currentZoom =  naverMap.cameraPosition.zoom
             if(currentZoom>=13.8&&currentZoom<17.2){
                 if(currentZoom<15f){
+                    removeClusteringMapData()
                     removeNoClusteringMapData()
                     val mapRequest = MapRequest(
                         naverMap.cameraPosition.target.latitude,
@@ -348,7 +362,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     removeNoClusteringMapData()
                     val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
                     val dist = nowLocation.distanceTo(beforeCenterLocation)
-                    Log.i(TAG, "getMapDataFromRemote: ${dist}")
                         val mapRequest = MapRequest(
                             naverMap.cameraPosition.target.latitude,
                             naverMap.cameraPosition.target.longitude,
@@ -512,8 +525,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     fun setOnClickSearchListener(){
         findNavController().navigate(R.id.action_map_fragment_to_searchFragment)
     }
-
-
 
 
 }

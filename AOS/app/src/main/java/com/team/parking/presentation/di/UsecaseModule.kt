@@ -2,9 +2,8 @@ package com.team.parking.presentation.di
 
 import com.team.parking.domain.repository.MapRepository
 import com.team.parking.domain.repository.SearchRepository
-import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.domain.usecase.GetMapDetailDataUseCase
-import com.team.parking.domain.usecase.GetSearchDataUseCase
+import com.team.parking.domain.repository.UserRepository
+import com.team.parking.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,5 +39,50 @@ class UsecaseModule {
         return GetSearchDataUseCase(searchRepository)
     }
 
+    @Singleton
+    @Provides
+    fun provideGetUserUsecase(
+        userRepository: UserRepository
+    ) : GetUserUseCase {
+        return GetUserUseCase(userRepository)
+    }
 
+    @Singleton
+    @Provides
+    fun providePostUserUsecase(
+        userRepository: UserRepository
+    ) : PostUserUseCase {
+        return PostUserUseCase(userRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun providePostAuthMessageUseCase(
+        userRepository: UserRepository
+    ) : PostAuthMessageUseCase {
+        return PostAuthMessageUseCase(userRepository)
+    }
+    @Singleton
+    @Provides
+    fun providePutFcmTokenUsecase(
+        userRepository: UserRepository
+    ) : PutFcmTokenUseCase {
+        return PutFcmTokenUseCase(userRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetEmailUsecase(
+        userRepository: UserRepository
+    ) : GetEmailUseCase {
+        return GetEmailUseCase(userRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetAuthMessageUsecase(
+        userRepository: UserRepository
+    ) : GetAuthMessageUseCase {
+        return GetAuthMessageUseCase(userRepository)
+    }
 }

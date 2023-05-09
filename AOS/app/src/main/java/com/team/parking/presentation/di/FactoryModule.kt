@@ -1,11 +1,11 @@
 package com.team.parking.presentation.di
 
 import android.app.Application
-import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.domain.usecase.GetMapDetailDataUseCase
-import com.team.parking.domain.usecase.GetSearchDataUseCase
+import com.team.parking.domain.usecase.*
 import com.team.parking.presentation.viewmodel.MapViewModelFactory
 import com.team.parking.presentation.viewmodel.SearchViewModelFactory
+import com.team.parking.presentation.viewmodel.UserViewModel
+import com.team.parking.presentation.viewmodel.UserViewModelFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,4 +33,17 @@ class FactoryModule {
         return SearchViewModelFactory(app,searchDataUseCase)
     }
 
+    @Singleton
+    @Provides
+    fun provideUserViewModelFactory(
+        app:Application,
+        getUserUseCase: GetUserUseCase,
+        postUserUseCase: PostUserUseCase,
+        putFcmTokenUseCase : PutFcmTokenUseCase,
+        postAuthMessageUseCase: PostAuthMessageUseCase,
+        getAuthMessageUseCase: PostAuthMessageUseCase,
+        getEmailUseCase: GetEmailUseCase,
+        ) : UserViewModelFactory {
+        return UserViewModelFactory(app,getUserUseCase)
+    }
 }

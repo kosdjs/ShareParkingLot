@@ -2,23 +2,17 @@ package com.team.parking.presentation.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.team.parking.MainActivity
 import com.team.parking.R
-import com.team.parking.data.api.UserService
+import com.team.parking.data.api.UserAPIService
 import com.team.parking.data.model.user.SignUpRequest
 import com.team.parking.databinding.FragmentSignUpBinding
 import com.team.parking.presentation.utils.App
@@ -84,7 +78,7 @@ class SignUpFragment : Fragment() {
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 Log.d(TAG, "checkEmail123: $email")
-                val response = App.userRetrofit.create(UserService::class.java).checkEmail(email)
+                val response = App.userRetrofit.create(UserAPIService::class.java).checkEmail(email)
                 Log.d(TAG, "checkEmail: ${response.isSuccessful}")
                 if (response.isSuccessful) {
 
@@ -141,7 +135,7 @@ class SignUpFragment : Fragment() {
 
         CoroutineScope(Dispatchers.IO).launch {
 
-            val response = App.userRetrofit.create(UserService::class.java).signUp(
+            val response = App.userRetrofit.create(UserAPIService::class.java).signUp(
                 SignUpRequest(
                     userViewModel._userName, userViewModel._phone,
                     userViewModel._email.value!!, userViewModel._type,
@@ -159,6 +153,11 @@ class SignUpFragment : Fragment() {
 
             }
         }
+
+    }
+
+
+    fun checkPhone(){
 
     }
 }

@@ -247,10 +247,23 @@
                 android:id="@+id/remain_time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+
                 android:text="@string/remain_time_text"
+
                 app:layout_constraintLeft_toRightOf="@id/certification_number_input"
-                app:layout_constraintTop_toTopOf="@id/certification_number_input" />
+                app:layout_constraintRight_toLeftOf="@+id/certification_btn"
+                app:layout_constraintTop_toBottomOf="@id/certification_number_text" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/remain_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:textSize="12sp"
+                android:text="@{viewModel.validTime}"
+                app:layout_constraintLeft_toRightOf="@id/certification_number_input"
+                app:layout_constraintRight_toLeftOf="@id/certification_btn"
+                app:layout_constraintTop_toBottomOf="@id/remain_time_text" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/certification_btn"
@@ -259,6 +272,7 @@
 
                 android:background="@drawable/btn"
                 android:text="@string/certification_text"
+                android:onClick="@{()->handlers.checkPhone()}"
                 app:layout_constraintLeft_toRightOf="@+id/remain_time_text"
                 app:layout_constraintRight_toRightOf="@id/call_input"
                 app:layout_constraintTop_toTopOf="@id/certification_number_input" />

@@ -4,26 +4,17 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 
-import com.google.android.gms.tasks.OnCompleteListener
 import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.messaging.FirebaseMessaging
-import com.kakao.sdk.common.util.Utility
-import com.team.parking.data.api.UserService
-import com.team.parking.data.model.user.User
 import com.team.parking.databinding.ActivityMainBinding
-import com.team.parking.presentation.utils.App
 import com.team.parking.presentation.viewmodel.UserViewModel
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.MapViewModelFactory

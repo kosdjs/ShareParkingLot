@@ -24,6 +24,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.naver.maps.geometry.GeoConstants.EARTH_RADIUS
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
@@ -195,7 +197,27 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             addTab(this.newTab().setText(R.string.map_tab_price))
             addTab(this.newTab().setText(R.string.map_tab_distance))
         }
+        tab.addOnTabSelectedListener(object : OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when(tab!!.position){
+                    0->{
+                        getParkingOrderByPrice(requestAllMapRequest)
+                    }
+                    1->{
+                        getParkingOrderByDistance(requestAllMapRequest)
+                    }
+                }
+            }
 
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+
+            }
+
+        })
     }
 
     /**
@@ -240,7 +262,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      * 주차장 전체 가격순 데이터
      */
     private fun getParkingOrderByPrice(mapRequest: MapRequest){
-        mapViewModel.getParkingOrderByDistance(mapRequest)
+        mapViewModel.getParkingOrderByPrice(mapRequest)
         mapViewModel.parkingOrder.observe(viewLifecycleOwner){ response->
             when(response){
                 is Resource.Success ->{
@@ -685,7 +707,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     fun showAllParkingLot(){
         fragmentMapBinding.btnFragmentMapOpen.setOnClickListener {
             listBottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
-            getParkingOrderByDistance(requestAllMapRequest)
+            getParkingOrderByPrice(requestAllMapRequest)
             return@setOnClickListener
         }
     }

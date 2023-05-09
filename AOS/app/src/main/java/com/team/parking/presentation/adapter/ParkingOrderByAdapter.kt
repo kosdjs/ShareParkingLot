@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.team.parking.R
 import com.team.parking.data.model.map.MapDetailResponse
@@ -15,6 +16,7 @@ import com.team.parking.databinding.ItemParkingLotBinding
 class ParkingOrderByAdapter : RecyclerView.Adapter<ParkingOrderByAdapter.ParkingOrderViewHolder>(){
 
     private lateinit var onParkingItemClickListener : ParkingItemClickListener
+    private lateinit var parkingOrderTicketAdapter: ParkingOrderTicketAdapter
 
     private val callback = object : DiffUtil.ItemCallback<MapOrderResponse>(){
         override fun areItemsTheSame(
@@ -37,6 +39,12 @@ class ParkingOrderByAdapter : RecyclerView.Adapter<ParkingOrderByAdapter.Parking
     inner class ParkingOrderViewHolder(val binding : ItemParkingLotBinding) : RecyclerView.ViewHolder(binding.root){
 
         fun bind(data:MapOrderResponse){
+            var tickets = ArrayList<String>()
+            for(i in 0 until 3)
+                tickets.add("${i+1}시간 ${data.feeBasic*(i+1)}원")
+            parkingOrderTicketAdapter = ParkingOrderTicketAdapter(tickets)
+            binding.rvItemParkingTickets.adapter = parkingOrderTicketAdapter
+            binding.rvItemParkingTickets.layoutManager = LinearLayoutManager(binding.rvItemParkingTickets.context,LinearLayoutManager.HORIZONTAL,false)
             binding.clParent.setOnClickListener {
                 onParkingItemClickListener.onClick(it,layoutPosition,data)
             }

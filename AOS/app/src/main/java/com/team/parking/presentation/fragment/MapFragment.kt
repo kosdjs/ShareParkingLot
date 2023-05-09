@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -334,6 +335,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      * CameraChange : 카메라 이동시 마다 호출
      * CameraIdle : 카메라 이동 끝날시 호출
      */
+    @SuppressLint("SetTextI18n")
     private fun getMapDataFromRemote(){
 
         naverMap.addOnCameraChangeListener { i, b ->
@@ -343,7 +345,9 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             /*removeClusteringMapData()
             removeNoClusteringMapData()*/
             currentZoom =  naverMap.cameraPosition.zoom
+            val toast = Toast(context)
             if(currentZoom>=13.8&&currentZoom<17.2){
+                toast.cancel()
                 if(currentZoom<15f){
                     removeClusteringMapData()
                     removeNoClusteringMapData()
@@ -378,6 +382,22 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }else{
                 removeClusteringMapData()
                 removeNoClusteringMapData()
+                val view = layoutInflater.inflate(R.layout.toast_map,null)
+                val tv = view.findViewById<TextView>(R.id.toast_text)
+                if(currentZoom<13.8){
+                    tv.text = "보고있는 지역이 너무 넓습니다.\n지도를 확대해주세요."
+                    toast.duration = Toast.LENGTH_SHORT
+                    toast.setGravity(Gravity.CENTER,0,-600)
+                    toast.view = view
+                    toast.show()
+                }else{
+                    tv.text = "보고있는 지역이 너무 좁습니다.\n" +
+                            "지도를 축소해주세요."
+                    toast.duration= Toast.LENGTH_SHORT
+                    toast.setGravity(Gravity.CENTER,0,-600)
+                    toast.view = view
+                    toast.show()
+                }
             }
 
         }

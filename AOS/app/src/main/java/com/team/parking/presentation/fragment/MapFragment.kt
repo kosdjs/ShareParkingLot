@@ -10,10 +10,12 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -63,6 +65,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var ncCustomView : View
     private lateinit var textView : TextView
     private lateinit var ncTextView : TextView
+    private var currentType : Int = -1
+
 
     var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
     //GPS 권한 생성
@@ -165,7 +169,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         clickBottomSheet = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
         clickBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
         listBottomSheet = BottomSheetBehavior.from(fragmentMapBinding.fragmentMapShowAll.root)
-        listBottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+        listBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
     }
     private fun setTabLayout(){
         val tab = fragmentMapBinding.fragmentMapShowAll.tlMapBottomSheet
@@ -185,6 +189,11 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if(newState==BottomSheetBehavior.STATE_EXPANDED){
                     fragmentMapBinding.bottomSheetOpen.btnDetailUp.visibility = View.INVISIBLE
+                    if(currentType==1){
+                        fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.visibility = View.INVISIBLE
+                    }else{
+                        fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.visibility = View.VISIBLE
+                    }
                 }
                 else{
                     fragmentMapBinding.bottomSheetOpen.btnDetailUp.visibility = View.VISIBLE
@@ -210,11 +219,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 is Resource.Success ->{
                     mapViewModel.updatePark(response.data!!)
                     Glide.with(this).load(R.drawable.icon_no_image).skipMemoryCache(true).diskCacheStrategy(
-                        DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
+                            DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
+                    Log.i(TAG, "getMapDetailData: 1111")
+                    fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.visibility = View.INVISIBLE
                     clickBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
                 is Resource.Error ->{
-                    Log.i(TAG, "서버와 통신이 원활하지 않습니다.")
+                    //Log.i(TAG, "서버와 통신이 원활하지 않습니다.")
                 }
                 else ->{
                     //Log.i(TAG, "getMapDetailDataL: ")
@@ -223,6 +234,36 @@ class MapFragment : Fragment() , OnMapReadyCallback{
 
         }
     }
+
+    /**
+     * 공유 주차장 상세 가져오기
+     */
+    private fun getSharedLotDetail(lotId:Long){
+        mapViewModel.getSharedParkingLotDetail(lotId)
+        mapViewModel.sharedPark.observe(viewLifecycleOwner){ response ->
+            when (response){
+                is Resource.Success ->{
+                    mapViewModel.updatePark(response.data!!)
+                    if(response.data.imageUrl.size>0){
+                        Glide.with(this).load(response.data.imageUrl[0]).skipMemoryCache(true).diskCacheStrategy(
+                            DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
+                    }else{
+                        Glide.with(this).load(R.drawable.icon_no_image).skipMemoryCache(true).diskCacheStrategy(
+                            DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
+                    }
+                    fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.visibility = View.VISIBLE
+                    clickBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+                is Resource.Error ->{
+                    //Log.i(TAG, "서버와 통신이 원활하지 않습니다.")
+                }
+                else ->{
+                    //Log.i(TAG, "getMapDetailDataL: ")
+                }
+            }
+        }
+    }
+
     /**
      * SearchFragment 검색후 해당 장소로 좌표이동 후 마커생성
      */
@@ -273,9 +314,17 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                     noClusteringCache.add(marker)
                                     marker.position = LatLng(data[i].lat,data[i].lng)
                                     marker.map = naverMap
-                                    marker.setOnClickListener {
-                                        getMapDetailData(data[i].parkId)
-                                        false
+
+                                    if(data[i].parkType==0){
+                                        marker.setOnClickListener {
+                                            getMapDetailData(data[i].parkId)
+                                            false
+                                        }
+                                    }else{
+                                        marker.setOnClickListener {
+                                            getSharedLotDetail(data[i].parkId.toLong())
+                                            false
+                                        }
                                     }
                                 }
                         }

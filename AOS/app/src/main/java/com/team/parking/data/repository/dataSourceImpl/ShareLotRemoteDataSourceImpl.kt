@@ -2,6 +2,7 @@ package com.team.parking.data.repository.dataSourceImpl
 
 import com.team.parking.data.api.ShareLotAPIService
 import com.team.parking.data.model.day.DayRequest
+import com.team.parking.data.model.map.MapDetailResponse
 import com.team.parking.data.model.parkinglot.ParkingLotResponse
 import com.team.parking.data.model.parkinglot.ShareLotRequest
 import com.team.parking.data.model.parkinglot.ShareLotResponse
@@ -14,7 +15,7 @@ class ShareLotRemoteDataSourceImpl(private val shareLotAPIService: ShareLotAPISe
         return shareLotAPIService.deleteShareLot(parkId)
     }
 
-    override suspend fun getShareLotDetail(parkId: Long): Response<ParkingLotResponse> {
+    override suspend fun getShareLotDetail(parkId: Long): Response<MapDetailResponse> {
         return shareLotAPIService.getShareLotDetail(parkId)
     }
 

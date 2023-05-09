@@ -155,6 +155,7 @@
             android:layout_marginBottom="8dp"
             android:backgroundTint="@color/main_color2"
             android:text="주차권 구매"
+            android:visibility="@{vm.park.}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -1,6 +1,7 @@
 package com.team.parking.data.repository
 
 import com.team.parking.data.model.day.DayRequest
+import com.team.parking.data.model.map.MapDetailResponse
 import com.team.parking.data.model.parkinglot.ParkingLotResponse
 import com.team.parking.data.model.parkinglot.ShareLotRequest
 import com.team.parking.data.model.parkinglot.ShareLotResponse
@@ -15,7 +16,7 @@ class ShareLotRepositoryImpl(private val shareLotRemoteDataSource: ShareLotRemot
         return responseToUnit(shareLotRemoteDataSource.deleteShareLot(parkId))
     }
 
-    override suspend fun getShareLotDetail(parkId: Long): Resource<ParkingLotResponse> {
+    override suspend fun getShareLotDetail(parkId: Long): Resource<MapDetailResponse> {
         return responseToParkingLotResponse(shareLotRemoteDataSource.getShareLotDetail(parkId))
     }
 
@@ -56,7 +57,7 @@ class ShareLotRepositoryImpl(private val shareLotRemoteDataSource: ShareLotRemot
         return Resource.Error(response.message())
     }
 
-    private fun responseToParkingLotResponse(response: Response<ParkingLotResponse>): Resource<ParkingLotResponse> {
+    private fun responseToParkingLotResponse(response: Response<MapDetailResponse>): Resource<MapDetailResponse> {
         if(response.isSuccessful){
             response.body()?.let {result->
                 return Resource.Success(result)

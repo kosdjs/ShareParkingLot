@@ -1,6 +1,7 @@
 package com.team.parking.data.api
 
 import com.team.parking.data.model.day.DayRequest
+import com.team.parking.data.model.map.MapDetailResponse
 import com.team.parking.data.model.parkinglot.ParkingLotResponse
 import com.team.parking.data.model.parkinglot.ShareLotRequest
 import com.team.parking.data.model.parkinglot.ShareLotResponse
@@ -20,7 +21,7 @@ interface ShareLotAPIService {
     suspend fun deleteShareLot(@Query("parkId") parkId: Long) : Response<Unit>
 
     @GET("shareLot/detail")
-    suspend fun getShareLotDetail(@Query("parkId") parkId: Long) : Response<ParkingLotResponse>
+    suspend fun getShareLotDetail(@Query("parkId") parkId: Long) : Response<MapDetailResponse>
 
     @GET("shareLot/listDay")
     suspend fun getShareLotDay(@Query("parkId") parkId: Long) : Response<List<DayRequest>>

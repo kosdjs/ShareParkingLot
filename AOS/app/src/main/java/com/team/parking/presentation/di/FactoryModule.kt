@@ -20,9 +20,12 @@ class FactoryModule {
         app:Application,getMapDataUseCase: GetMapDataUseCase,
         getMapDetailDataUseCase: GetMapDetailDataUseCase,
         getMapOrderByDistanceDataUseCase: GetParkingOrderByDistanceDataUseCase,
-        getMapOrderByPriceDataUseCase: GetParkingOrderByPriceDataUseCase
+        getMapOrderByPriceDataUseCase: GetParkingOrderByPriceDataUseCase,
+        getSelectedShareLotUseCase: GetSelectedShareLotUseCase,
+        selectedShareLotUseCase: GetSelectedShareLotUseCase
     ):MapViewModelFactory{
-        return MapViewModelFactory(app,getMapDataUseCase,getMapDetailDataUseCase,getMapOrderByDistanceDataUseCase, getMapOrderByPriceDataUseCase)
+        return MapViewModelFactory(app,getMapDataUseCase
+            ,getMapDetailDataUseCase,getMapOrderByDistanceDataUseCase, getMapOrderByPriceDataUseCase,selectedShareLotUseCase)
     }
 
 

@@ -7,15 +7,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.map.overlay.Marker
+import com.navercorp.nid.log.toMessage
 import com.team.parking.data.model.map.MapDetailResponse
 import com.team.parking.data.model.map.MapOrderResponse
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.model.map.MapResponse
+import com.team.parking.data.model.parkinglot.ParkingLotResponse
+import com.team.parking.data.model.parkinglot.ShareLotResponse
 import com.team.parking.data.util.Resource
-import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.domain.usecase.GetMapDetailDataUseCase
-import com.team.parking.domain.usecase.GetParkingOrderByDistanceDataUseCase
-import com.team.parking.domain.usecase.GetParkingOrderByPriceDataUseCase
+import com.team.parking.domain.usecase.*
 import com.team.parking.presentation.utils.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +26,8 @@ class MapViewModel(
     val getMapDataUseCase: GetMapDataUseCase,
     val getMapDetailDataUseCase: GetMapDetailDataUseCase,
     val getMapOrderByDistanceDataUseCase: GetParkingOrderByDistanceDataUseCase,
-    val getMapOrderByPriceDataUseCase: GetParkingOrderByPriceDataUseCase
+    val getMapOrderByPriceDataUseCase: GetParkingOrderByPriceDataUseCase,
+    val getSelectedSharedLotUseCase : GetSelectedShareLotUseCase
 ) : AndroidViewModel(app){
     val application = App()
 
@@ -42,6 +43,9 @@ class MapViewModel(
     //주차장 상세 프래그먼트 데이터
     private var _park : MutableLiveData<MapDetailResponse> = MutableLiveData()
     val park : LiveData<MapDetailResponse> get() = _park
+
+    private var _sharedPark : MutableLiveData<Resource<MapDetailResponse>> = MutableLiveData()
+    val sharedPark : LiveData<Resource<MapDetailResponse>> get() = _sharedPark
 
     //전체 주차장 거리순 데이터
     private var _parkingLotOrderByDistance : MutableLiveData<Resource<List<MapOrderResponse>>> = MutableLiveData()
@@ -61,6 +65,24 @@ class MapViewModel(
 
     fun updatePark(mapDetailResponse: MapDetailResponse){
         _park.postValue(mapDetailResponse)
+    }
+
+    /**
+     * 선택된 공유 주차장 데이터 받기
+     */
+
+    fun getSharedParkingLotDetail(parkId : Long) = viewModelScope.launch {
+        _sharedPark.postValue(Resource.Loading())
+        try{
+            if(application.isNetworkAvailable(app)){
+                val apiResult = getSelectedSharedLotUseCase.execute(parkId)
+                _sharedPark.postValue(apiResult)
+            }else{
+                _sharedPark.postValue(Resource.Error("인터넷 사용 불가"))
+            }
+        }catch(e : Exception){
+            _sharedPark.postValue(Resource.Error(e.toMessage().toString()))
+        }
     }
 
     /**

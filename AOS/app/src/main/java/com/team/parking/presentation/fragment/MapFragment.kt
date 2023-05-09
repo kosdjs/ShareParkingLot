@@ -108,7 +108,9 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
         init()
-
+        fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.setOnClickListener {
+            findNavController().navigate(R.id.action_map_fragment_to_purchaseTicketFragment)
+        }
     }
 
     /**

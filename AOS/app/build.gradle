@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.gms.google-services'
 }
 
 Properties properties = new Properties()
@@ -36,6 +37,8 @@ android {
         manifestPlaceholders["NAVER_CLIENT_SECRET"] = "NAVER_CLIENT_SECRET"
         buildConfigField "String","NAVER_CLIENT_SECRET", properties["NAVER_CLIENT_SECRET"]
 
+        buildConfigField "String","BOOTPAY_CLIENT_KEY", properties["BOOTPAY_CLIENT_KEY"]
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -61,6 +64,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
     def glide_version = "4.13.2"
     def room_version = "2.4.0"
     def lifecycle_version = "2.5.1"
@@ -75,6 +79,10 @@ dependencies {
     implementation 'com.naver.maps:map-sdk:3.16.2'
     //위치정보 사용 권한
     implementation 'com.google.android.gms:play-services-location:19.0.1'
+
+    //fcm
+    implementation platform('com.google.firebase:firebase-bom:31.5.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
     implementation "com.kakao.sdk:v2-all:2.13.0"
@@ -111,6 +119,10 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     // Annotation processor
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+    // Time Picker Library
+    implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    // BootPay
+    implementation 'io.github.bootpay:android:4.2.9'
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'

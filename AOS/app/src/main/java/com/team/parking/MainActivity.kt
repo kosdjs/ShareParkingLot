@@ -14,19 +14,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+
+import com.google.android.gms.tasks.OnCompleteListener
 import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.common.util.Utility
 import com.team.parking.data.api.UserService
 import com.team.parking.data.model.user.User
 import com.team.parking.databinding.ActivityMainBinding
 import com.team.parking.presentation.utils.App
-import com.team.parking.presentation.viewmodel.UserViewModel
-import com.team.parking.presentation.viewmodel.MapViewModel
-import com.team.parking.presentation.viewmodel.MapViewModelFactory
-import com.team.parking.presentation.viewmodel.SearchViewModel
-import com.team.parking.presentation.viewmodel.SearchViewModelFactory
 import com.team.parking.databinding.SideHeaderBinding
+import com.team.parking.presentation.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,6 +41,24 @@ class MainActivity : AppCompatActivity() {
     lateinit var searchViewModelFactory: SearchViewModelFactory
     lateinit var searchViewModel: SearchViewModel
 
+    lateinit var searchAddressViewModel: SearchAddressViewModel
+
+    @Inject
+    lateinit var shareParkingLotViewModelFactory: ShareParkingLotViewModelFactory
+    lateinit var shareParkingLotViewModel: ShareParkingLotViewModel
+
+    @Inject
+    lateinit var daySelectViewModelFactory: DaySelectViewModelFactory
+    lateinit var daySelectViewModel: DaySelectViewModel
+
+    @Inject
+    lateinit var pointViewModelFactory: PointViewModelFactory
+    lateinit var pointViewModel: PointViewModel
+
+    @Inject
+    lateinit var carViewModelFactory: CarViewModelFactory
+    lateinit var carViewModel: CarViewModel
+
     private lateinit var binding : ActivityMainBinding
     lateinit var userViewModel: UserViewModel
     lateinit var navigationDrawer : DrawerLayout
@@ -49,6 +66,8 @@ class MainActivity : AppCompatActivity() {
     
     private lateinit var headerBinding: SideHeaderBinding
     lateinit var navController: NavController
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,12 +81,17 @@ class MainActivity : AppCompatActivity() {
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
         initMapViewModel()
         onLoginSuccess()
+
     }
 
     fun initMapViewModel(){
         mapViewModel = ViewModelProvider(this,mapViewModelFactory)[MapViewModel::class.java]
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+        daySelectViewModel = ViewModelProvider(this, daySelectViewModelFactory)[DaySelectViewModel::class.java]
         searchViewModel = ViewModelProvider(this,searchViewModelFactory)[SearchViewModel::class.java]
+        shareParkingLotViewModel = ViewModelProvider(this, shareParkingLotViewModelFactory)[ShareParkingLotViewModel::class.java]
+        pointViewModel = ViewModelProvider(this,pointViewModelFactory)[PointViewModel::class.java]
+        carViewModel = ViewModelProvider(this,carViewModelFactory)[CarViewModel::class.java]
         setProfileFragmentNavigation()
     }
 
@@ -142,7 +166,12 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_map_fragment_to_myShareParkingLotFragment)
             binding.drawer.closeDrawers()
         }
+        headerBinding.textMyCarSideHeader.setOnClickListener {
+            navController.navigate(R.id.action_map_fragment_to_myCarFragment)
+            binding.drawer.closeDrawers()
+        }
     }
+
 
     private fun onLoginSuccess(){
         userViewModel.userLiveData.observe(this){
@@ -155,4 +184,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onBackPressed() {
+        if(daySelectViewModel.add){
+            daySelectViewModel.add = false
+            super.onBackPressed()
+            super.onBackPressed()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
 }

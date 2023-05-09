@@ -83,9 +83,11 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
+                        android:background="#00FFFFFF"
                         android:ems="10"
-                        android:hint="주차장 이름"
+                        android:hint="주차장 이름을 입력해주세요."
                         android:inputType="textPersonName"
+                        android:textColorHint="#38000000"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/text_title_parking_lot_name_add_share_parking_lot" />
@@ -103,16 +105,20 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/edit_text_parking_lot_name_add_share_parking_lot" />
 
-                    <EditText
-                        android:id="@+id/edit_text_address_add_share_parking_lot"
+                    <TextView
+                        android:id="@+id/text_address_add_share_parking_lot"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
+                        android:background="#00FFFFFF"
                         android:ems="10"
+                        android:hint="눌러서 주소를 검색해주세요."
                         android:inputType="textPersonName"
-                        android:text="Name"
+                        android:text="눌러서 주소를 검색해주세요."
+                        android:textColor="#38000000"
+                        android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/text_title_address_add_share_parking_lot" />
@@ -128,19 +134,20 @@
                         android:textSize="24sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/edit_text_address_add_share_parking_lot" />
+                        app:layout_constraintTop_toBottomOf="@+id/text_address_add_share_parking_lot" />
 
                     <EditText
                         android:id="@+id/edit_text_price_add_share_parking_lot"
-                        android:layout_width="80dp"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
+                        android:background="#00FFFFFF"
                         android:ems="10"
-                        android:gravity="center"
-                        android:hint="주차요금"
+                        android:hint="10000"
                         android:inputType="number"
-                        android:textAlignment="center"
+                        android:maxLength="5"
+                        android:textColorHint="#38000000"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/text_title_price_add_share_parking_lot" />
 
@@ -201,10 +208,10 @@
                         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/layout_add_picture_add_share_parking_lot"
+                        android:id="@+id/recycler_view_add_picture_add_share_parking_lot"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
+                        android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
                         android:orientation="horizontal"
@@ -225,7 +232,7 @@
                         android:textSize="24sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/layout_add_picture_add_share_parking_lot" />
+                        app:layout_constraintTop_toBottomOf="@+id/recycler_view_add_picture_add_share_parking_lot" />
 
                     <EditText
                         android:id="@+id/edit_text_additional_info_add_share_parking_lot"
@@ -234,9 +241,11 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginBottom="16dp"
+                        android:background="#00FFFFFF"
                         android:ems="10"
                         android:hint="특이사항을 기재해주세요."
                         android:inputType="textMultiLine"
+                        android:textColorHint="#38000000"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/text_title_additional_info_add_share_parking_lot" />

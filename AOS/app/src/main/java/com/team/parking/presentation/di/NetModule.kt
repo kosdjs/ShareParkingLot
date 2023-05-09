@@ -1,8 +1,7 @@
 package com.team.parking.presentation.di
 
 import com.team.parking.BuildConfig
-import com.team.parking.data.api.MapAPIService
-import com.team.parking.data.api.SearchAPIService
+import com.team.parking.data.api.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -65,6 +64,18 @@ class NetModule {
 
     @Singleton
     @Provides
+    fun provideShareLotService(@MapRetrofit mapRetrofit:Retrofit):ShareLotAPIService{
+        return mapRetrofit.create(ShareLotAPIService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCarService(@MapRetrofit mapRetrofit:Retrofit):CarAPIService{
+        return mapRetrofit.create(CarAPIService::class.java)
+    }
+
+    @Singleton
+    @Provides
     @UserRetrofit
     fun provideUserRetrofit():Retrofit{
         return Retrofit.Builder()
@@ -79,5 +90,9 @@ class NetModule {
 //        return userRetrofit.create(SearchAPIService::class.java)
 //    }
 
-
+    @Singleton
+    @Provides
+    fun providePointService(@UserRetrofit userRetrofit:Retrofit):PointAPIService{
+        return userRetrofit.create(PointAPIService::class.java)
+    }
 }

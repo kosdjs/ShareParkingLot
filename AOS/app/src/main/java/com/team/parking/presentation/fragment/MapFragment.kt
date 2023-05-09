@@ -185,6 +185,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      * 화면이 꽉 차면 끌어올리는 아이콘 사라짐
      */
     private fun setBottomSheetListener(){
+        // 검색으로 이동
         clickBottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if(newState==BottomSheetBehavior.STATE_EXPANDED){
@@ -201,16 +202,23 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
 
         })
+        // 하눈에 보기로 이동
         listBottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                TODO("Not yet implemented")
+                if(newState==BottomSheetBehavior.STATE_COLLAPSED){
+
+                }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                TODO("Not yet implemented")
+
             }
 
         })
+    }
+
+    private fun getAllParkingLotData(){
+
     }
 
     /**
@@ -286,7 +294,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
 
 
     /**
-     * 주차장 데이터 가져오기
+     * 주차장 데이터 가져오기(마커 등록)
      */
     private fun getMapData(mapRequest: MapRequest){
         mapViewModel.getMapDatas(mapRequest)
@@ -412,6 +420,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             if(currentZoom>=13.8&&currentZoom<17.2){
                 toast.cancel()
                 if(currentZoom<15f){
+                    fragmentMapBinding.btnFragmentMapOpen.visibility = View.GONE
                     removeClusteringMapData()
                     removeNoClusteringMapData()
                     val mapRequest = MapRequest(
@@ -425,6 +434,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     )
                     getMapData(mapRequest)
                 }else{
+                    fragmentMapBinding.btnFragmentMapOpen.visibility = View.VISIBLE
                     removeClusteringMapData()
                     removeNoClusteringMapData()
                     val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)

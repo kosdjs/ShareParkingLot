@@ -65,8 +65,8 @@ public class Ticket {
     private boolean sell_confirm;
 
     public static TicketBuilder builder(ShareLot shareLot, User buyer, TicketCreateRequestDto ticketCreateRequestDto){
-        int[] typeToHour = new int[]{2, 6, 10, 48};
-        int cost = typeToHour[ticketCreateRequestDto.getType()]*shareLot.getShaFee();
+        int[] typeToHour = new int[]{1, 3, 5, 24};
+        int cost = typeToHour[ticketCreateRequestDto.getType()]*shareLot.getSha_fee();
 
         return TicketBuilder()
                 .shareLot(shareLot)

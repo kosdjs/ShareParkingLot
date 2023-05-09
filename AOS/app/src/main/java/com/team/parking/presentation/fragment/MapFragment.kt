@@ -204,7 +204,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     }
 
     /**
-     * 주차장 상세 데이터 가져오기
+     * 일반 주차장 상세 데이터 가져오기
      */
     
     private fun getMapDetailData(lotId:Int){
@@ -562,9 +562,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 R.id.item_trasaction -> {
                     findNavController().navigate(R.id.action_map_fragment_to_transactionHistoryFragment)
                 }
+                R.id.item_my_ticket ->{
+                    findNavController().navigate(R.id.action_map_fragment_to_myTicketFragment)
+                }
                 else -> {
                     findNavController().navigate(R.id.action_map_fragment_to_favoriteFragment)
                 }
+
             }
             activity.navigationDrawer.closeDrawer(GravityCompat.START)
             true

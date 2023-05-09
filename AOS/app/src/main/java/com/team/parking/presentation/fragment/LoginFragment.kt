@@ -67,7 +67,7 @@ class LoginFragment : Fragment() {
             lifecycleOwner = this@LoginFragment
             viewModel = userViewModel
         }
-        findNavController().navigate(R.id.action_loginFragment_to_mapFragment)
+//        findNavController().navigate(R.id.action_loginFragment_to_mapFragment)
     }
 
     override fun onAttach(context: Context) {

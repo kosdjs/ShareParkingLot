@@ -40,8 +40,13 @@ class ParkingOrderByAdapter : RecyclerView.Adapter<ParkingOrderByAdapter.Parking
 
         fun bind(data:MapOrderResponse){
             var tickets = ArrayList<String>()
-            for(i in 0 until 3)
-                tickets.add("${i+1}시간 ${data.feeBasic*(i+1)}원")
+            if(data.feeBasic==0){
+                tickets.add("무료")
+            }
+            else{
+                for(i in 0 until 3)
+                    tickets.add("${i+1}시간 ${data.feeBasic*(i+1)}원")
+            }
             parkingOrderTicketAdapter = ParkingOrderTicketAdapter(tickets)
             binding.rvItemParkingTickets.adapter = parkingOrderTicketAdapter
             binding.rvItemParkingTickets.layoutManager = LinearLayoutManager(binding.rvItemParkingTickets.context,LinearLayoutManager.HORIZONTAL,false)

@@ -2,9 +2,7 @@ package com.team.parking.presentation.di
 
 import com.team.parking.domain.repository.MapRepository
 import com.team.parking.domain.repository.SearchRepository
-import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.domain.usecase.GetMapDetailDataUseCase
-import com.team.parking.domain.usecase.GetSearchDataUseCase
+import com.team.parking.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,5 +38,21 @@ class UsecaseModule {
         return GetSearchDataUseCase(searchRepository)
     }
 
+    @Singleton
+    @Provides
+    fun provideGetParkingOrderByDistanceUseCase(
+        mapRepository: MapRepository
+    ) : GetParkingOrderByDistanceDataUseCase{
+        return GetParkingOrderByDistanceDataUseCase(mapRepository)
+    }
+
+
+    @Singleton
+    @Provides
+    fun provideGetParkingOrderByPriceUseCase(
+        mapRepository: MapRepository
+    ) : GetParkingOrderByPriceDataUseCase{
+        return GetParkingOrderByPriceDataUseCase(mapRepository)
+    }
 
 }

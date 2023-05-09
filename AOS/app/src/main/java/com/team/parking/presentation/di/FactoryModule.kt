@@ -1,9 +1,7 @@
 package com.team.parking.presentation.di
 
 import android.app.Application
-import com.team.parking.domain.usecase.GetMapDataUseCase
-import com.team.parking.domain.usecase.GetMapDetailDataUseCase
-import com.team.parking.domain.usecase.GetSearchDataUseCase
+import com.team.parking.domain.usecase.*
 import com.team.parking.presentation.viewmodel.MapViewModelFactory
 import com.team.parking.presentation.viewmodel.SearchViewModelFactory
 import dagger.Module
@@ -19,9 +17,12 @@ class FactoryModule {
     @Singleton
     @Provides
     fun provideMapViewModelFactory(
-        app:Application,getMapDataUseCase: GetMapDataUseCase,getMapDetailDataUseCase: GetMapDetailDataUseCase
+        app:Application,getMapDataUseCase: GetMapDataUseCase,
+        getMapDetailDataUseCase: GetMapDetailDataUseCase,
+        getMapOrderByDistanceDataUseCase: GetParkingOrderByDistanceDataUseCase,
+        getMapOrderByPriceDataUseCase: GetParkingOrderByPriceDataUseCase
     ):MapViewModelFactory{
-        return MapViewModelFactory(app,getMapDataUseCase,getMapDetailDataUseCase)
+        return MapViewModelFactory(app,getMapDataUseCase,getMapDetailDataUseCase,getMapOrderByDistanceDataUseCase, getMapOrderByPriceDataUseCase)
     }
 
 

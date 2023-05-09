@@ -2,6 +2,7 @@ package com.team.parking.data.repository.dataSourceImpl
 
 import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.model.map.MapDetailResponse
+import com.team.parking.data.model.map.MapOrderResponse
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.model.map.MapResponse
 import com.team.parking.data.repository.dataSource.MapRemoteDataSource
@@ -16,6 +17,14 @@ class MapRemoteDataSourceImpl(
 
     override suspend fun getParkingLotDetail(parkId: Int): Response<MapDetailResponse> {
         return mapAPIService.getMapDetailData(parkId)
+    }
+
+    override suspend fun getParkingLotOrderByDistance(mapRequest: MapRequest): Response<List<MapOrderResponse>> {
+        return mapAPIService.getParkingOrderByDistance(mapRequest)
+    }
+
+    override suspend fun getParkingLotOrderByPrice(mapRequest: MapRequest): Response<List<MapOrderResponse>> {
+        return mapAPIService.getParkingOrderByPrice(mapRequest)
     }
 
 

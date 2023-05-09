@@ -1,6 +1,7 @@
 package com.team.parking.data.repository
 
 import com.team.parking.data.model.map.MapDetailResponse
+import com.team.parking.data.model.map.MapOrderResponse
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.model.map.MapResponse
 import com.team.parking.data.repository.dataSource.MapRemoteDataSource
@@ -20,6 +21,24 @@ class MapRepositoryImpl(
     override suspend fun getParkingLotDetail(parkId: Int): Resource<MapDetailResponse> {
         return responseToMapDetailResource(mapRemoteDatasource.getParkingLotDetail(parkId))
     }
+
+    override suspend fun getParkingLotOrderByDistance(mapRequest: MapRequest): Resource<List<MapOrderResponse>> {
+        return responseToMapOrderResource(mapRemoteDatasource.getParkingLotOrderByDistance(mapRequest))
+    }
+
+    override suspend fun getParkingLotOrderByPrice(mapRequest: MapRequest): Resource<List<MapOrderResponse>> {
+        return responseToMapOrderResource(mapRemoteDatasource.getParkingLotOrderByPrice(mapRequest))
+    }
+
+    private fun responseToMapOrderResource(response:Response<List<MapOrderResponse>>): Resource<List<MapOrderResponse>> {
+        if(response.isSuccessful){
+            response.body()?.let {result->
+                return Resource.Success(result)
+            }
+        }
+        return Resource.Error(response.message())
+    }
+
 
     private fun responseToMapDetailResource(response:Response<MapDetailResponse>): Resource<MapDetailResponse> {
         if(response.isSuccessful){

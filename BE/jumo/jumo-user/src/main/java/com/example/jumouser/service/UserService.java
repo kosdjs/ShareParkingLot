@@ -20,5 +20,5 @@ public interface UserService {
 
     Boolean sendAuthMessage(String phone);
 
-    Boolean authorizePhone(String phone,String code);
+    Boolean certificatePhone(String phone,String code);
 }

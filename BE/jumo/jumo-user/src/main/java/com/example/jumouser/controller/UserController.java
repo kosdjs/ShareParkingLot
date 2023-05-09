@@ -57,14 +57,14 @@ public class UserController {
     }
 
     @PostMapping("/phone")
-    public Boolean sendAuthMessage(@RequestBody String phone) {
-        userService.sendAuthMessage(phone);
+    public Boolean sendAuthMessage(@RequestBody PhoneDto phone) {
+        userService.sendAuthMessage(phone.getPhone());
         return true;
     }
 
     @GetMapping("/phone/auth")
-    public Boolean authorizePhone(@RequestParam String phone,String code){
-        return userService.authorizePhone(phone,code);
+    public Boolean certificatePhone(@RequestParam String phone,String code){
+        return userService.certificatePhone(phone,code);
     }
 
     @ApiOperation(value = "회원가입", notes = "카카오,네이버 회원가입 -> 주모")

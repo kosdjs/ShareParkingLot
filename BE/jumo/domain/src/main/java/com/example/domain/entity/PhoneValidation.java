@@ -20,5 +20,10 @@ public class PhoneValidation {
     @Id
     private String phone;
     private String validation_value;
+    private Boolean flag;
 
+    public PhoneValidation changeFlag(){
+        this.flag =!flag;
+        return this;
+    }
 }

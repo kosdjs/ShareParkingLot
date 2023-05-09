@@ -59,8 +59,6 @@ public class UserServiceImpl implements UserService {
         messageService = NurigoApp
                 .INSTANCE
                 .initialize(Cool_API_KEY, Cool_SECRET, "https://api.coolsms.co.kr");
-        System.out.println(Cool_API_KEY+" "+Cool_SECRET);
-        System.out.println(Cool_API_KEY.length());
     }
 
     @Transactional
@@ -133,33 +131,36 @@ public class UserServiceImpl implements UserService {
     public Boolean sendAuthMessage(String phone) {
         Message message = new Message();
 
-        message.setFrom("01012341234");
+        message.setFrom("01083623107");
         message.setTo(phone);
-        Random random = new Random();
+
         String code="";
-        // 인증 코드에 난수들을 넣는다.(6자리)
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
         for(int i = 0; i < 6; i++) {
-            int ranNum = Integer.parseInt(String.valueOf(System.currentTimeMillis()).substring(String.valueOf(System.currentTimeMillis()).length() - 1)) + i;
-            ranNum = random.nextInt(10) % ranNum;
-            code += String.valueOf(ranNum);
+            int ranNum = (int) (Math.random()*36);
+
+            code += possible.charAt(ranNum);
         }
         message.setText("안녕하세요. 주차장의 모든것 인증번호는 [ " +code + "] 입니다.");
 
-        validationRepo.save(new PhoneValidation(phone, code));
 
         SingleMessageSentResponse response = messageService.sendOne(new SingleMessageSendingRequest(message));
+        validationRepo.save(new PhoneValidation(phone, code, true));
 
 
         return true;
     }
 
     @Override
-    public Boolean authorizePhone(String phone, String code) {
+    public Boolean certificatePhone(String phone, String code) {
         Optional<PhoneValidation> phoneValidation = validationRepo.findById(phone);
         if(phoneValidation.isPresent()){
             if(phoneValidation.get().getValidation_value().equals(code)){
+                validationRepo.save(phoneValidation.get().changeFlag());
                 return true;
             }else{
+
                 return false;
             }
         }

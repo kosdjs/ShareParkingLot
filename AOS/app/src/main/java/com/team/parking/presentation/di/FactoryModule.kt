@@ -66,4 +66,14 @@ class FactoryModule {
     ) : PointViewModelFactory{
         return PointViewModelFactory(app, getCurrentPointUseCase, putChargePointUseCase)
     }
+
+    @Singleton
+    @Provides
+    fun provideTransactionHistoryViewModelFactory(
+        app:Application,
+        getEarnedPointUseCase: GetEarnedPointUseCase,
+        getSpentPointUseCase: GetSpentPointUseCase
+    ) : TransactionHistoryViewModelFactory{
+        return TransactionHistoryViewModelFactory(app, getEarnedPointUseCase, getSpentPointUseCase)
+    }
 }

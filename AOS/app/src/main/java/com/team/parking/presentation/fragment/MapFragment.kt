@@ -201,6 +201,16 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
 
         })
+        listBottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     /**
@@ -610,6 +620,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             .beginTransaction()
             .replace(R.id.fl_map_bottom_sheet, fragment)
             .commit()
+    }
+
+    // 전체 주차장 보기
+    fun showAllParkingLot(){
+        fragmentMapBinding.btnFragmentMapOpen.setOnClickListener {
+            listBottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+        }
     }
 }
 

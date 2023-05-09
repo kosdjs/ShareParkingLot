@@ -114,6 +114,7 @@
             android:background="@drawable/map_show_all_background"
             android:fontFamily="@font/baemin"
             android:text="@string/button_fragment_map_total"
+            android:onClick="@{()->handlers.showAllParkingLot()}"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"

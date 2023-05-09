@@ -103,4 +103,20 @@ class UsecaseModule {
     ) : PutChargePointUseCase{
         return PutChargePointUseCase(pointRepository)
     }
+
+    @Singleton
+    @Provides
+    fun provideGetEarnedPointUseCase(
+        pointRepository: PointRepository
+    ) : GetEarnedPointUseCase{
+        return GetEarnedPointUseCase(pointRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetSpentPointUseCase(
+        pointRepository: PointRepository
+    ) : GetSpentPointUseCase{
+        return GetSpentPointUseCase(pointRepository)
+    }
 }

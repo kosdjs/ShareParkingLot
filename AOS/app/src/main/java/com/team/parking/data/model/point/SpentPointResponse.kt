@@ -4,5 +4,6 @@ data class SpentPointResponse(
     val creditId: Int,
     val lotName: String,
     val ptLose: Int,
-    val transactionDate: String
+    val transactionDate: String,
+    val type: Int
 )

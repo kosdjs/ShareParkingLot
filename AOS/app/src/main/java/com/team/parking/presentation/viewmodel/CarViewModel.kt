@@ -3,6 +3,7 @@ package com.team.parking.presentation.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.team.parking.data.model.car.CarListResponse
@@ -26,7 +27,7 @@ class CarViewModel(
     val application = app as App
 
     private var _carList = MutableLiveData<List<CarListResponse>>(listOf())
-    val carList get() = _carList
+    val carList : LiveData<List<CarListResponse>> get() = _carList
 
     var selectedCar: CarListResponse? = null
 

@@ -33,7 +33,7 @@ class DaySelectViewModel(
         DayRequest(-1,-1,"Mon",false),
         DayRequest(-1,-1,"Tue",false),
         DayRequest(-1,-1,"Wed",false),
-        DayRequest(-1,-1,"Thurs",false),
+        DayRequest(-1,-1,"Thu",false),
         DayRequest(-1,-1,"Fri",false),
         DayRequest(-1,-1,"Sat",false),
         DayRequest(-1,-1,"Sun",false)
@@ -50,7 +50,7 @@ class DaySelectViewModel(
             DayRequest(-1,-1,"Mon",false),
             DayRequest(-1,-1,"Tue",false),
             DayRequest(-1,-1,"Wed",false),
-            DayRequest(-1,-1,"Thurs",false),
+            DayRequest(-1,-1,"Thu",false),
             DayRequest(-1,-1,"Fri",false),
             DayRequest(-1,-1,"Sat",false),
             DayRequest(-1,-1,"Sun",false)

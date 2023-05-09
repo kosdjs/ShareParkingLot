@@ -52,4 +52,12 @@ class RemoteDataModule {
     ) : CarRemoteDataSource{
         return CarRemoteDataSourceImpl(carAPIService)
     }
+
+    @Singleton
+    @Provides
+    fun provideTicketRemoteDataSource(
+        ticketAPIService: TicketAPIService
+    ) : TicketRemoteDataSource{
+        return TicketRemoteDataSourceImpl(ticketAPIService)
+    }
 }

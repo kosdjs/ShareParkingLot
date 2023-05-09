@@ -95,4 +95,10 @@ class NetModule {
     fun providePointService(@UserRetrofit userRetrofit:Retrofit):PointAPIService{
         return userRetrofit.create(PointAPIService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideTicketService(@UserRetrofit userRetrofit: Retrofit):TicketAPIService{
+        return userRetrofit.create(TicketAPIService::class.java)
+    }
 }

@@ -53,4 +53,12 @@ class RepositoryModule {
     ) : CarRepository{
         return CarRepositoryImpl(carRemoteDataSource)
     }
+
+    @Singleton
+    @Provides
+    fun provideTicketRepository(
+        ticketRemoteDataSource: TicketRemoteDataSource
+    ) : TicketRepository{
+        return TicketRepositoryImpl(ticketRemoteDataSource)
+    }
 }

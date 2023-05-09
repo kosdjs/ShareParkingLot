@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.team.parking.BuildConfig
 import com.team.parking.MainActivity
 import com.team.parking.R
@@ -57,6 +58,10 @@ class PointFragment : Fragment() {
             textCurrentPointPoint.text = "${pointViewModel.ptHas.value} P"
         }
         fragmentPointBinding.apply {
+            Glide.with(requireContext())
+                .load(userViewModel.user!!.profile_img)
+                .error(R.drawable.ic_baseline_person_24)
+                .into(imageProfilePoint)
             select1000Point.isChecked = true
             pointViewModel.setPoint(1000)
             select1000Point.setOnClickListener {

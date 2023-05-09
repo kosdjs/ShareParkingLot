@@ -167,4 +167,20 @@ class UsecaseModule {
     ) : GetSelectedShareLotUseCase{
         return GetSelectedShareLotUseCase(shareLotRepository)
     }
+
+    @Singleton
+    @Provides
+    fun provideGetTicketAvailableUseCase(
+        ticketRepository: TicketRepository
+    ) : GetTicketAvailableUseCase{
+        return GetTicketAvailableUseCase(ticketRepository)
     }
+
+    @Singleton
+    @Provides
+    fun providePostPurchaseTicketUseCase(
+        ticketRepository: TicketRepository
+    ) : PostPurchaseTicketUseCase{
+        return PostPurchaseTicketUseCase(ticketRepository)
+    }
+}

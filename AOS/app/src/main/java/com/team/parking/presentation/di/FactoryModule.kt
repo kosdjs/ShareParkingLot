@@ -94,4 +94,14 @@ class FactoryModule {
     ) : CarViewModelFactory{
         return CarViewModelFactory(app, setRepCarUseCase, getCarListUseCase, postCarUseCase)
     }
+
+    @Singleton
+    @Provides
+    fun providePurchaseTicketViewModelFactory(
+        app:Application,
+        getTicketAvailableUseCase: GetTicketAvailableUseCase,
+        postPurchaseTicketUseCase: PostPurchaseTicketUseCase
+    ) : PurchaseTicketViewModelFactory{
+        return PurchaseTicketViewModelFactory(app, getTicketAvailableUseCase, postPurchaseTicketUseCase)
+    }
 }

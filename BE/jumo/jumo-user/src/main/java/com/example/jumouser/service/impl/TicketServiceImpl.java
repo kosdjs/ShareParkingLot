@@ -210,7 +210,7 @@ public class TicketServiceImpl implements TicketService {
             */
                 // 구매자 거래 내역 저장
                 Transaction buy_transaction = new Transaction(
-                        buyer.get(), shareLot.get().getSha_name(), 0, ptLose, shareLot.get().getShaId()
+                        buyer.get(), shareLot.get().getSha_name(), 0, ptLose, shareLot.get().getShaId(), type
                 );
                 transactionRepo.save(buy_transaction);
 
@@ -238,7 +238,7 @@ public class TicketServiceImpl implements TicketService {
 
                 // 판매자 거래 내역 저장
                 Transaction sell_transaction = new Transaction(
-                        seller.get(), shareLot.get().getSha_name(), ptLose, 0, shareLot.get().getShaId()
+                        seller.get(), shareLot.get().getSha_name(), ptLose, 0, shareLot.get().getShaId(), type
                 );
                 transactionRepo.save(sell_transaction);
                 /*-----------판매자 끝-----------*/

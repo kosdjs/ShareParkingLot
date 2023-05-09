@@ -12,6 +12,7 @@ public class PointEarnedResponseDto {
     private Long creditId;
     private String lotName;
     private String transactionDate;
+    private int type;
     private int ptGet;
 
     @Builder
@@ -19,6 +20,7 @@ public class PointEarnedResponseDto {
         this.creditId = transaction.getCredit_id();
         this.lotName = transaction.getLot_name();
         this.transactionDate = transaction.getTransactionDate();
+        this.type = transaction.getType();
         this.ptGet = transaction.getPtGet();
     }
 }

@@ -189,11 +189,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if(newState==BottomSheetBehavior.STATE_EXPANDED){
                     fragmentMapBinding.bottomSheetOpen.btnDetailUp.visibility = View.INVISIBLE
-                    if(currentType==1){
-                        fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.visibility = View.INVISIBLE
-                    }else{
-                        fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.visibility = View.VISIBLE
-                    }
                 }
                 else{
                     fragmentMapBinding.bottomSheetOpen.btnDetailUp.visibility = View.VISIBLE
@@ -218,10 +213,9 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             when (response){
                 is Resource.Success ->{
                     mapViewModel.updatePark(response.data!!)
+                    mapViewModel.updateSelectedPark(0)
                     Glide.with(this).load(R.drawable.icon_no_image).skipMemoryCache(true).diskCacheStrategy(
                             DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
-                    Log.i(TAG, "getMapDetailData: 1111")
-                    fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.visibility = View.INVISIBLE
                     clickBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
                 is Resource.Error ->{
@@ -244,6 +238,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             when (response){
                 is Resource.Success ->{
                     mapViewModel.updatePark(response.data!!)
+                    mapViewModel.updateSelectedPark(1)
                     if(response.data.imageUrl.size>0){
                         Glide.with(this).load(response.data.imageUrl[0]).skipMemoryCache(true).diskCacheStrategy(
                             DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
@@ -251,7 +246,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                         Glide.with(this).load(R.drawable.icon_no_image).skipMemoryCache(true).diskCacheStrategy(
                             DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
                     }
-                    fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.visibility = View.VISIBLE
                     clickBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
                 is Resource.Error ->{
@@ -314,7 +308,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                     noClusteringCache.add(marker)
                                     marker.position = LatLng(data[i].lat,data[i].lng)
                                     marker.map = naverMap
-
                                     if(data[i].parkType==0){
                                         marker.setOnClickListener {
                                             getMapDetailData(data[i].parkId)

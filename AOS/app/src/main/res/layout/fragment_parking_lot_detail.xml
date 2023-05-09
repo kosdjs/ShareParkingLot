@@ -2,9 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="android.view.View"/>
         <variable
             name="vm"
             type="com.team.parking.presentation.viewmodel.MapViewModel" />
+
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -155,7 +157,7 @@
             android:layout_marginBottom="8dp"
             android:backgroundTint="@color/main_color2"
             android:text="주차권 구매"
-            android:visibility="@{vm.park.}"
+            android:visibility="@{vm.selectedPark==0?View.INVISIBLE:View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

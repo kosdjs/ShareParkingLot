@@ -19,6 +19,7 @@ import com.team.parking.domain.usecase.*
 import com.team.parking.presentation.utils.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.apache.commons.lang3.mutable.Mutable
 
 private const val TAG = "MapViewModel_지훈"
 class MapViewModel(
@@ -44,6 +45,12 @@ class MapViewModel(
     private var _park : MutableLiveData<MapDetailResponse> = MutableLiveData()
     val park : LiveData<MapDetailResponse> get() = _park
 
+
+    //일반 : 0, 공유 : 1
+    private var _selectedPark : MutableLiveData<Int> = MutableLiveData()
+    val selectedPark : LiveData<Int> get() = _selectedPark
+
+    //공유 주차장
     private var _sharedPark : MutableLiveData<Resource<MapDetailResponse>> = MutableLiveData()
     val sharedPark : LiveData<Resource<MapDetailResponse>> get() = _sharedPark
 
@@ -58,6 +65,15 @@ class MapViewModel(
 
 
     private var _marker : MutableLiveData<Marker> = MutableLiveData()
+
+
+    /**
+     * 현재 선택된 주차장
+     */
+    fun updateSelectedPark(type: Int){
+        _selectedPark.postValue(type)
+    }
+
 
     /**
      * 주차장 상세 데이터 갱신(DetailFragment)
@@ -81,7 +97,7 @@ class MapViewModel(
                 _sharedPark.postValue(Resource.Error("인터넷 사용 불가"))
             }
         }catch(e : Exception){
-            _sharedPark.postValue(Resource.Error(e.toMessage().toString()))
+            _sharedPark.postValue(Resource.Error(e.message.toString()))
         }
     }
 

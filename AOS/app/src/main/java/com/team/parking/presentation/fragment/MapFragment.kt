@@ -28,10 +28,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.naver.maps.geometry.GeoConstants.EARTH_RADIUS
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraUpdate
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
@@ -121,7 +118,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         parkingOrderByAdapter = ParkingOrderByAdapter()
         parkingOrderByAdapter.setOnParkingItemClickListener(object : ParkingOrderByAdapter.ParkingItemClickListener{
             override fun onClick(view: View, position: Int, data: MapOrderResponse) {
-
+                listBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+                naverMap.cameraPosition = CameraPosition(LatLng(data.lat,data.lng),15.5)
             }
         })
         fragmentMapBinding.fragmentMapShowAll.rvOrderList.apply {

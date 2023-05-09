@@ -7,6 +7,9 @@ import com.example.jumouser.provider.LoginProvider;
 import com.example.jumouser.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.example.domain.entity.User;
@@ -53,6 +56,17 @@ public class UserController {
 
     }
 
+    @PostMapping("/phone")
+    public Boolean sendAuthMessage(@RequestBody String phone) {
+        userService.sendAuthMessage(phone);
+        return true;
+    }
+
+    @GetMapping("/phone/auth")
+    public Boolean authorizePhone(@RequestParam String phone,String code){
+        return userService.authorizePhone(phone,code);
+    }
+
     @ApiOperation(value = "회원가입", notes = "카카오,네이버 회원가입 -> 주모")
     @PostMapping("/sign")
     public User signUp(@RequestBody SignUpRequestDto signUpRequestDto) {
@@ -60,6 +74,8 @@ public class UserController {
         Optional<User> user = userService.signUp(signUpRequestDto);
         return user.get();
     }
+
+
 
     @GetMapping("/email")
     public boolean emailCheck(@RequestParam String email) {

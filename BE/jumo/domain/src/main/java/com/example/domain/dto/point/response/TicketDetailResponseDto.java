@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -28,7 +29,7 @@ public class TicketDetailResponseDto {
     private int inTiming;
     private int outTime;
     private int cost;
-    private List<Image> images;
+    private List<String> images;
     private boolean sellConfirm;
     private boolean buyConfirm;
 
@@ -44,7 +45,12 @@ public class TicketDetailResponseDto {
         this.inTiming = ticket.getIn_timing();
         this.outTime = outTiming.OutTimingMethod(ticket.getIn_timing(), ticket.getType());
         this.cost = ticket.getCost();
-        this.images = ticket.getShareLot().getImages();
+        List<Image> images = ticket.getShareLot().getImages();
+        List<String> imageUrl = new ArrayList<>();
+        for (Image image :images){
+            imageUrl.add(image.getUrl());
+        }
+        this.images = imageUrl;
         this.sellConfirm = ticket.isSell_confirm();
         this.buyConfirm = ticket.isBuy_confirm();
     }

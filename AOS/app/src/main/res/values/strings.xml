@@ -27,5 +27,10 @@
     <string name="dialog_password_invalid">적절하지 않은 패스워드입니다</string>
     <string name="dialog_email_invalid">적절한 이메일을 입력해주세요</string>
 
+    <string name="distance_low">보고있는 지역이 너무 넓습니다.\n지도를 확대해주세요.</string>
+    <string name="distance_high">보고있는 지역이 너무 좁습니다.\n지도를 축소해주세요.</string>
+    <string name="map_tab_price">가격순</string>
+    <string name="map_tab_distance">거리순</string>
+
     <string name="fragment_map_search_hint">목적지 혹은 주소 검색</string>
 </resources>

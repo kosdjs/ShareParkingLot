@@ -122,13 +122,14 @@
             app:layout_constraintRight_toRightOf="parent"
             tools:ignore="TouchTargetSizeCheck" />
 
-        <include
-            android:id="@+id/cl_fragment_map_slide_layout"
-            layout="@layout/layout_bottom_sheet"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
+
+    <include
+        android:id="@+id/fragment_map_show_all"
+        layout="@layout/bottom_sheet_tab"/>
 
     <include layout="@layout/fragment_parking_lot_detail"
         android:id="@+id/bottom_sheet_open"

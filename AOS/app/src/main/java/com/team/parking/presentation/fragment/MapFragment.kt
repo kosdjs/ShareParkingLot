@@ -53,7 +53,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var mapViewModel: MapViewModel
     private lateinit var searchViewModel: SearchViewModel
     private val permissionList = Manifest.permission.ACCESS_FINE_LOCATION
-    private lateinit var bottomSheetBehavior  : BottomSheetBehavior<View>
+    private lateinit var clickBottomSheet  : BottomSheetBehavior<View>
+    private lateinit var listBottomSheet : BottomSheetBehavior<View>
     private lateinit var memoryCache : LinkedHashMap<String,OverlayImage>
     private lateinit var memoryClurChche : LinkedHashMap<String,OverlayImage>
     private lateinit var icon : OverlayImage
@@ -161,8 +162,18 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      * BottomSheet 생성 (초기에는 보이지 않음)
      */
     private fun setBottomSheet(){
-        bottomSheetBehavior = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        clickBottomSheet = BottomSheetBehavior.from(fragmentMapBinding.bottomSheetOpen.root)
+        clickBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+        listBottomSheet = BottomSheetBehavior.from(fragmentMapBinding.fragmentMapShowAll.root)
+        listBottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+    private fun setTabLayout(){
+        val tab = fragmentMapBinding.fragmentMapShowAll.tlMapBottomSheet
+        tab.apply {
+            addTab(this.newTab().setText(R.string.map_tab_price))
+            addTab(this.newTab().setText(R.string.map_tab_distance))
+        }
+
     }
 
     /**
@@ -170,7 +181,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      * 화면이 꽉 차면 끌어올리는 아이콘 사라짐
      */
     private fun setBottomSheetListener(){
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+        clickBottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if(newState==BottomSheetBehavior.STATE_EXPANDED){
                     fragmentMapBinding.bottomSheetOpen.btnDetailUp.visibility = View.INVISIBLE
@@ -200,7 +211,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     mapViewModel.updatePark(response.data!!)
                     Glide.with(this).load(R.drawable.icon_no_image).skipMemoryCache(true).diskCacheStrategy(
                         DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
-                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    clickBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
                 is Resource.Error ->{
                     Log.i(TAG, "서버와 통신이 원활하지 않습니다.")
@@ -385,14 +396,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 val view = layoutInflater.inflate(R.layout.toast_map,null)
                 val tv = view.findViewById<TextView>(R.id.toast_text)
                 if(currentZoom<13.8){
-                    tv.text = "보고있는 지역이 너무 넓습니다.\n지도를 확대해주세요."
+                    tv.text = resources.getString(R.string.distance_low)
                     toast.duration = Toast.LENGTH_SHORT
                     toast.setGravity(Gravity.CENTER,0,-600)
                     toast.view = view
                     toast.show()
                 }else{
-                    tv.text = "보고있는 지역이 너무 좁습니다.\n" +
-                            "지도를 축소해주세요."
+                    tv.text = resources.getString(R.string.distance_high)
                     toast.duration= Toast.LENGTH_SHORT
                     toast.setGravity(Gravity.CENTER,0,-600)
                     toast.view = view
@@ -435,6 +445,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         setBottomSheet()
         setBottomSheetListener()
         initMarkerData()
+        setTabLayout()
+        changeFrameLayout(SortPriceFragment())
     }
 
     /**
@@ -546,7 +558,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         findNavController().navigate(R.id.action_map_fragment_to_searchFragment)
     }
 
-
+    // frameLayout 화면 전환
+    private fun changeFrameLayout(fragment: Fragment){
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fl_map_bottom_sheet, fragment)
+            .commit()
+    }
 }
 
 

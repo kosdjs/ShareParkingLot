@@ -7,9 +7,9 @@ data class MapOrderResponse(
     @SerializedName("feeBasic")
     val feeBasic: Int,
     @SerializedName("lat")
-    val lat: Int,
+    val lat: Double,
     @SerializedName("lng")
-    val lng: Int,
+    val lng: Double,
     @SerializedName("meter")
     val meter: Int,
     @SerializedName("parkId")

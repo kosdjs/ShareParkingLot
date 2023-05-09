@@ -10,16 +10,15 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,9 +35,11 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.team.parking.MainActivity
 import com.team.parking.R
+import com.team.parking.data.model.map.MapOrderResponse
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
+import com.team.parking.presentation.adapter.ParkingOrderByAdapter
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.SearchViewModel
 import java.util.*
@@ -65,6 +66,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var ncCustomView : View
     private lateinit var textView : TextView
     private lateinit var ncTextView : TextView
+    private lateinit var requestAllMapRequest : MapRequest
+    private lateinit var parkingOrderByAdapter: ParkingOrderByAdapter
     private var currentType : Int = -1
 
 
@@ -108,7 +111,21 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
         init()
+        fragmentMapBinding.btnFragmentMapOpen.bringToFront()
 
+    }
+
+    private fun initAdapter(){
+        parkingOrderByAdapter = ParkingOrderByAdapter()
+        parkingOrderByAdapter.setOnParkingItemClickListener(object : ParkingOrderByAdapter.ParkingItemClickListener{
+            override fun onClick(view: View, position: Int, data: MapOrderResponse) {
+
+            }
+        })
+        fragmentMapBinding.fragmentMapShowAll.rvOrderList.apply {
+            adapter = parkingOrderByAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
     }
 
     /**
@@ -130,6 +147,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         cIcon = OverlayImage.fromView(ncCustomView)
         //memoryClurChche = LinkedHashMap()
     }
+
 
     /**
      * Cache로부터 데이터 가져오기
@@ -206,10 +224,11 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         listBottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if(newState==BottomSheetBehavior.STATE_COLLAPSED){
-
+                    Log.i(TAG, "onStateChanged: ")
+                }else if(newState==BottomSheetBehavior.STATE_EXPANDED){
+                    Log.i(TAG, "onStateChanged: ")
                 }
             }
-
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
             }
@@ -217,8 +236,45 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         })
     }
 
-    private fun getAllParkingLotData(){
+    /**
+     * 주차장 전체 가격순 데이터
+     */
+    private fun getParkingOrderByPrice(mapRequest: MapRequest){
+        mapViewModel.getParkingOrderByDistance(mapRequest)
+        mapViewModel.parkingOrder.observe(viewLifecycleOwner){ response->
+            when(response){
+                is Resource.Success ->{
+                    parkingOrderByAdapter.differ.submitList(response.data)
+                }
+                is Resource.Error ->{
+                    //Log.i(TAG, "서버와 통신이 원활하지 않습니다.")
+                }
+                else ->{
+                    //Log.i(TAG, "getMapDetailDataL: ")
+                }
+            }
+        }
+    }
 
+    /**
+     * 주차장 전체 거리순 데이터
+     */
+    private fun getParkingOrderByDistance(mapRequest: MapRequest){
+        mapViewModel.getParkingOrderByDistance(mapRequest)
+        mapViewModel.parkingOrder.observe(viewLifecycleOwner){ response->
+            when(response){
+                is Resource.Success ->{
+                    parkingOrderByAdapter.differ.submitList(response.data)
+                }
+                is Resource.Error ->{
+                    Log.i(TAG, "$mapRequest")
+                    Log.i(TAG, "${response.message}")
+                }
+                else ->{
+                    Log.i(TAG, "getMapDetailDataL: ")
+                }
+            }
+        }
     }
 
     /**
@@ -448,6 +504,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                             naverMap.contentBounds.southWest.longitude ,
                             naverMap.cameraPosition.zoom
                         )
+                        requestAllMapRequest = mapRequest
                         getMapData(mapRequest)
 
                 }
@@ -508,7 +565,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         setBottomSheetListener()
         initMarkerData()
         setTabLayout()
-        changeFrameLayout(SortPriceFragment())
+        initAdapter()
     }
 
     /**
@@ -624,18 +681,12 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         findNavController().navigate(R.id.action_map_fragment_to_searchFragment)
     }
 
-    // frameLayout 화면 전환
-    private fun changeFrameLayout(fragment: Fragment){
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fl_map_bottom_sheet, fragment)
-            .commit()
-    }
-
     // 전체 주차장 보기
     fun showAllParkingLot(){
         fragmentMapBinding.btnFragmentMapOpen.setOnClickListener {
             listBottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+            getParkingOrderByDistance(requestAllMapRequest)
+            return@setOnClickListener
         }
     }
 }

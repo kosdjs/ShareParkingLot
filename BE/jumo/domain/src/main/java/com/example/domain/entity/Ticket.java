@@ -66,7 +66,7 @@ public class Ticket {
 
     public static TicketBuilder builder(ShareLot shareLot, User buyer, TicketCreateRequestDto ticketCreateRequestDto){
         int[] typeToHour = new int[]{1, 3, 5, 24};
-        int cost = typeToHour[ticketCreateRequestDto.getType()]*shareLot.getSha_fee();
+        int cost = typeToHour[ticketCreateRequestDto.getType()]*shareLot.getShaFee();
 
         return TicketBuilder()
                 .shareLot(shareLot)

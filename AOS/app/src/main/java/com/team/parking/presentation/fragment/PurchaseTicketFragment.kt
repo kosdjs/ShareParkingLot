@@ -178,6 +178,7 @@ class PurchaseTicketFragment : Fragment() {
     fun showTimePickerDialog(onTimeSetListener: OnTimeSetListener){
         val timePickerDialog = TimePickerDialog.newInstance(onTimeSetListener, false)
         timePickerDialog.enableMinutes(false)
+        timePickerDialog.setMinTime(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + 1, 0, 0)
         timePickerDialog.show(parentFragmentManager, "")
     }
 

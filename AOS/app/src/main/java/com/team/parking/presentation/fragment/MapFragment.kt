@@ -41,8 +41,12 @@ import com.team.parking.databinding.FragmentMapBinding
 import com.team.parking.presentation.adapter.ParkingOrderByAdapter
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.SearchViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.LinkedHashMap
+import kotlin.system.measureTimeMillis
 
 
 private const val TAG = "MapFragment_지훈"
@@ -81,8 +85,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
         }
     }
-    private var clusteringCache = LinkedList<Marker>()
-    private var noClusteringCache = LinkedList<Marker>()
+    private var clusteringCache = ArrayList<Marker>()
+    private var noClusteringCache = ArrayList<Marker>()
     private var currentZoom:Double = 0.0
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1000
@@ -135,14 +139,17 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         val cacheSize = maxMemory / 8
 
         ncCustomView = layoutInflater.inflate(R.layout.marker_clustering,null)
-        val civ = ncCustomView.findViewById<ImageView>(R.id.marker_circle)
-        Glide.with(ncCustomView).load(R.drawable.background_circle).skipMemoryCache(true).into(civ)
-        cIcon = OverlayImage.fromView(ncCustomView)
+        val civ = ncCustomView.findViewById<ImageView>(R.id.marker_circle2)
+        Glide.with(ncCustomView).load(R.drawable.background_circle).diskCacheStrategy(
+            DiskCacheStrategy.ALL).skipMemoryCache(true).into(civ)
+        ncTextView = ncCustomView.findViewById(R.id.clur_tv)
         memoryClurChche = LinkedHashMap()
+
 
         customView = layoutInflater.inflate(R.layout.item_marker,null)
         val iv = customView.findViewById<ImageView>(R.id.marker_id)
-        Glide.with(customView).load(R.drawable.ic_marker_no_clustering).skipMemoryCache(true).into(iv)
+        Glide.with(customView).load(R.drawable.ic_marker_no_clustering).diskCacheStrategy(
+            DiskCacheStrategy.ALL).skipMemoryCache(true).into(iv)
         textView = customView.findViewById(R.id.marker_text)
         memoryCache = LinkedHashMap()
 
@@ -165,6 +172,24 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             icon = getMarkerFromMemCache(price)!!
         }
     }
+
+    private fun loadMarkerFromMemClurCache(count:String){
+        val oi : OverlayImage? = getClurMarkerFromMemCache(count)
+        if(oi!=null){
+            cIcon = oi
+        }else{
+            val noi = insertClurMarkerToCache(count)
+            cIcon = getClurMarkerFromMemCache(count)!!
+        }
+    }
+
+    private fun insertClurMarkerToCache(count: String){
+        ncTextView.text = count
+        val oi = OverlayImage.fromView(ncCustomView)
+        memoryClurChche.put(count,oi)
+    }
+
+    private fun getClurMarkerFromMemCache(count: String): OverlayImage? = memoryClurChche[count]
 
 
     /**
@@ -353,7 +378,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         }
     }
 
-    /**
+    /**FF5722
      * SearchFragment 검색후 해당 장소로 좌표이동 후 마커생성
      */
     private fun changeLocation(){
@@ -369,7 +394,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     }
 
 
-
     /**
      * 주차장 데이터 가져오기(마커 등록)
      */
@@ -382,19 +406,21 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     response.data.let{ data->
                         if(data!!.size>0){
                             if(data!![0].parkId==-1){
-                                for(i in 0 until data!!.size){
-                                    removeNoClusteringMapData()
+                                for(i in 0 until data.size){
+                                    //removeNoClusteringMapData()
                                     val marker = Marker()
+                                    marker.alpha = 0.5F
+                                    loadMarkerFromMemClurCache(data[i].clusteringCnt.toString())
                                     marker.width = 150
                                     marker.height = 150
                                     marker.icon = cIcon
-                                    clusteringCache.add(marker)
                                     marker.position = LatLng(data[i].lat,data[i].lng)
                                     marker.map = naverMap
+                                    clusteringCache.add(marker)
                                 }
                             }else{
-                                for(i in 0 until data!!.size){
-                                    removeClusteringMapData()
+                                for(i in 0 until data.size){
+                                    //removeClusteringMapData()
                                     val marker = Marker()
                                     loadMarkerFromMemCache(data[i].feeBasic.toString())
                                     marker.width = 130
@@ -429,6 +455,80 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
         }
     }
+
+    /**
+     * 맵 화면 이동 리스너
+     * CameraChange : 카메라 이동시 마다 호출
+     * CameraIdle : 카메라 이동 끝날시 호출
+     */
+    @SuppressLint("SetTextI18n")
+    private fun getMapDataFromRemote(){
+
+        naverMap.addOnCameraChangeListener { i, b ->
+        }
+        naverMap.addOnCameraIdleListener {
+            currentZoom =  naverMap.cameraPosition.zoom
+            val toast = Toast(context)
+            if(currentZoom>=13.8&&currentZoom<17.2){
+                toast.cancel()
+                if(currentZoom<15f){
+                    fragmentMapBinding.btnFragmentMapOpen.visibility = View.GONE
+                    removeClusteringMapData()
+                    removeNoClusteringMapData()
+                    val mapRequest = MapRequest(
+                        naverMap.cameraPosition.target.latitude,
+                        naverMap.cameraPosition.target.longitude,
+                        naverMap.contentBounds.northWest.latitude,
+                        naverMap.contentBounds.northEast.longitude,
+                        naverMap.contentBounds.southWest.latitude,
+                        naverMap.contentBounds.southWest.longitude,
+                        naverMap.cameraPosition.zoom
+                    )
+                    getMapData(mapRequest)
+                }else{
+                    fragmentMapBinding.btnFragmentMapOpen.visibility = View.VISIBLE
+                    removeClusteringMapData()
+                    removeNoClusteringMapData()
+                    val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
+                    val dist = nowLocation.distanceTo(beforeCenterLocation)
+                    val mapRequest = MapRequest(
+                        naverMap.cameraPosition.target.latitude,
+                        naverMap.cameraPosition.target.longitude,
+                        naverMap.contentBounds.northWest.latitude,
+                        naverMap.contentBounds.northEast.longitude ,
+                        naverMap.contentBounds.southWest.latitude ,
+                        naverMap.contentBounds.southWest.longitude ,
+                        naverMap.cameraPosition.zoom
+                    )
+                    requestAllMapRequest = mapRequest
+                    getMapData(mapRequest)
+                    Log.i(TAG, "getMapDataFromRemote: ")
+                }
+
+            }else{
+                removeClusteringMapData()
+                removeNoClusteringMapData()
+                val view = layoutInflater.inflate(R.layout.toast_map,null)
+                val tv = view.findViewById<TextView>(R.id.toast_text)
+                if(currentZoom<13.8){
+                    tv.text = resources.getString(R.string.distance_low)
+                    toast.duration = Toast.LENGTH_SHORT
+                    toast.setGravity(Gravity.CENTER,0,-600)
+                    toast.view = view
+                    toast.show()
+                }else{
+                    tv.text = resources.getString(R.string.distance_high)
+                    toast.duration= Toast.LENGTH_SHORT
+                    toast.setGravity(Gravity.CENTER,0,-600)
+                    toast.view = view
+                    toast.show()
+                }
+            }
+
+        }
+    }
+
+
 
     /**
      * 이미지 크기 구하기
@@ -479,98 +579,22 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     }
 
     /**
-     * 맵 화면 이동 리스너
-     * CameraChange : 카메라 이동시 마다 호출
-     * CameraIdle : 카메라 이동 끝날시 호출
-     */
-    @SuppressLint("SetTextI18n")
-    private fun getMapDataFromRemote(){
-
-        naverMap.addOnCameraChangeListener { i, b ->
-
-        }
-        naverMap.addOnCameraIdleListener {
-            /*removeClusteringMapData()
-            removeNoClusteringMapData()*/
-            currentZoom =  naverMap.cameraPosition.zoom
-            val toast = Toast(context)
-            if(currentZoom>=13.8&&currentZoom<17.2){
-                toast.cancel()
-                if(currentZoom<15f){
-                    fragmentMapBinding.btnFragmentMapOpen.visibility = View.GONE
-                    removeClusteringMapData()
-                    removeNoClusteringMapData()
-                    val mapRequest = MapRequest(
-                        naverMap.cameraPosition.target.latitude,
-                        naverMap.cameraPosition.target.longitude,
-                        naverMap.contentBounds.northWest.latitude,
-                        naverMap.contentBounds.northEast.longitude,
-                        naverMap.contentBounds.southWest.latitude,
-                        naverMap.contentBounds.southWest.longitude,
-                        naverMap.cameraPosition.zoom
-                    )
-                    getMapData(mapRequest)
-                }else{
-                    fragmentMapBinding.btnFragmentMapOpen.visibility = View.VISIBLE
-                    removeClusteringMapData()
-                    removeNoClusteringMapData()
-                    val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
-                    val dist = nowLocation.distanceTo(beforeCenterLocation)
-                        val mapRequest = MapRequest(
-                            naverMap.cameraPosition.target.latitude,
-                            naverMap.cameraPosition.target.longitude,
-                            naverMap.contentBounds.northWest.latitude,
-                            naverMap.contentBounds.northEast.longitude ,
-                            naverMap.contentBounds.southWest.latitude ,
-                            naverMap.contentBounds.southWest.longitude ,
-                            naverMap.cameraPosition.zoom
-                        )
-                        requestAllMapRequest = mapRequest
-                        getMapData(mapRequest)
-
-                }
-
-            }else{
-                removeClusteringMapData()
-                removeNoClusteringMapData()
-                val view = layoutInflater.inflate(R.layout.toast_map,null)
-                val tv = view.findViewById<TextView>(R.id.toast_text)
-                if(currentZoom<13.8){
-                    tv.text = resources.getString(R.string.distance_low)
-                    toast.duration = Toast.LENGTH_SHORT
-                    toast.setGravity(Gravity.CENTER,0,-600)
-                    toast.view = view
-                    toast.show()
-                }else{
-                    tv.text = resources.getString(R.string.distance_high)
-                    toast.duration= Toast.LENGTH_SHORT
-                    toast.setGravity(Gravity.CENTER,0,-600)
-                    toast.view = view
-                    toast.show()
-                }
-            }
-
-        }
-    }
-
-
-
-    /**
      * 지도 이동시 기존 좌표 삭제
      */
     private fun removeClusteringMapData(){
-        for(i in 0 until clusteringCache.size){
-            clusteringCache[i].map = null
-            clusteringCache[i].onClickListener = null
+        Log.i(TAG, "removeClusteringMapData: ")
+        for(marker in clusteringCache){
+            marker.map = null
+            marker.onClickListener = null
         }
     }
     /**
      * 지도 이동시 기존 좌표 삭제
      */
     private fun removeNoClusteringMapData(){
-        for(i in 0 until noClusteringCache.size){
-            noClusteringCache[i].map = null
-            noClusteringCache[i].onClickListener = null
+        for(marker in noClusteringCache){
+            marker.map = null
+            marker.onClickListener = null
         }
     }
 
@@ -584,8 +608,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         initMap()
         setBottomSheet()
         setBottomSheetListener()
-        initMarkerData()
         setTabLayout()
+        initMarkerData()
         initAdapter()
     }
 

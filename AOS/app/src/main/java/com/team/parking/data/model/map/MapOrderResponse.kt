@@ -10,6 +10,8 @@ data class MapOrderResponse(
     val lat: Double,
     @SerializedName("lng")
     val lng: Double,
+    @SerializedName("jibun")
+    val jibun: String,
     @SerializedName("meter")
     val meter: Int,
     @SerializedName("parkId")

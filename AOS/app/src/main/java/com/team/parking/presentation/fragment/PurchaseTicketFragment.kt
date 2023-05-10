@@ -57,6 +57,34 @@ class PurchaseTicketFragment : Fragment() {
                 select3HourTicket.isEnabled = it.threeHours
                 select5HourTicket.isEnabled = it.fiveHours
                 selectAllDayTicket.isEnabled = it.allDay
+                if(!it.oneHour){
+                    select1HourTicket.isChecked = false
+                    if(purchaseTicketViewModel.ticketCreateRequest.type == 0){
+                        purchaseTicketViewModel.ticketCreateRequest.type = -1
+                        purchaseTicketViewModel.setExpectedPrice(0)
+                    }
+                }
+                if(!it.threeHours){
+                    select3HourTicket.isChecked = false
+                    if(purchaseTicketViewModel.ticketCreateRequest.type == 1){
+                        purchaseTicketViewModel.ticketCreateRequest.type = -1
+                        purchaseTicketViewModel.setExpectedPrice(0)
+                    }
+                }
+                if(!it.fiveHours){
+                    select5HourTicket.isChecked = false
+                    if(purchaseTicketViewModel.ticketCreateRequest.type == 2){
+                        purchaseTicketViewModel.ticketCreateRequest.type = -1
+                        purchaseTicketViewModel.setExpectedPrice(0)
+                    }
+                }
+                if(!it.allDay){
+                    selectAllDayTicket.isChecked = false
+                    if(purchaseTicketViewModel.ticketCreateRequest.type == 3){
+                        purchaseTicketViewModel.ticketCreateRequest.type = -1
+                        purchaseTicketViewModel.setExpectedPrice(0)
+                    }
+                }
             }
         }
         purchaseTicketViewModel.startHour.observe(viewLifecycleOwner){

@@ -114,4 +114,15 @@ class FactoryModule {
     ) : MyTicketViewModelFactory{
         return MyTicketViewModelFactory(app, getTicketBoughtListUseCase, getTicketSoldListUseCase)
     }
+
+    @Singleton
+    @Provides
+    fun provideTicketDetailViewModelFactory(
+        app:Application,
+        getTicketDetailUseCase: GetTicketDetailUseCase,
+        putTicketBuyConfirmUseCase: PutTicketBuyConfirmUseCase,
+        putTicketSellConfirmUseCase: PutTicketSellConfirmUseCase
+    ) : TicketDetailViewModelFactory{
+        return TicketDetailViewModelFactory(app, getTicketDetailUseCase, putTicketBuyConfirmUseCase, putTicketSellConfirmUseCase)
+    }
 }

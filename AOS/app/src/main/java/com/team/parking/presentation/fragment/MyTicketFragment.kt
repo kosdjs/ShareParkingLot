@@ -5,8 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.team.parking.MainActivity
+import com.team.parking.R
 import com.team.parking.data.model.ticket.TicketBoughtListResponse
 import com.team.parking.data.model.ticket.TicketSoldListResponse
 import com.team.parking.databinding.FragmentMyTicketBinding
@@ -14,6 +16,7 @@ import com.team.parking.presentation.adapter.BoughtTicketAdapter
 import com.team.parking.presentation.adapter.SoldTicketAdapter
 import com.team.parking.presentation.viewmodel.MyTicketViewModel
 import com.team.parking.presentation.viewmodel.ShareParkingLotViewModel
+import com.team.parking.presentation.viewmodel.TicketDetailViewModel
 import com.team.parking.presentation.viewmodel.UserViewModel
 
 class MyTicketFragment : Fragment() {
@@ -24,6 +27,7 @@ class MyTicketFragment : Fragment() {
     private lateinit var shareParkingLotViewModel: ShareParkingLotViewModel
     private lateinit var boughtTicketAdapter: BoughtTicketAdapter
     private lateinit var soldTicketAdapter: SoldTicketAdapter
+    private lateinit var ticketDetailViewModel: TicketDetailViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,17 +42,21 @@ class MyTicketFragment : Fragment() {
         myTicketViewModel = (activity as MainActivity).myTicketViewModel
         userViewModel = (activity as MainActivity).userViewModel
         shareParkingLotViewModel = (activity as MainActivity).shareParkingLotViewModel
+        ticketDetailViewModel = (activity as MainActivity).ticketDetailViewModel
         boughtTicketAdapter = BoughtTicketAdapter()
         boughtTicketAdapter.setOnBoughtTicketClickListener(object : BoughtTicketAdapter.BoughtTicketClickListener{
             override fun onClick(view: View, position: Int, data: TicketBoughtListResponse) {
-                data.ticketId
-                //send ticket id to ticket detail view model
+                ticketDetailViewModel.ticketId = data.ticketId
+                ticketDetailViewModel.buyer = true
+                findNavController().navigate(R.id.action_myTicketFragment_to_ticketDetailFragment)
             }
         })
         soldTicketAdapter = SoldTicketAdapter()
         soldTicketAdapter.setOnSoldTicketClickListener(object : SoldTicketAdapter.SoldTicketClickListener{
             override fun onClick(view: View, position: Int, data: TicketSoldListResponse) {
-                //same as bought listener
+                ticketDetailViewModel.ticketId = data.ticketId
+                ticketDetailViewModel.buyer = false
+                findNavController().navigate(R.id.action_myTicketFragment_to_ticketDetailFragment)
             }
         })
         if(myTicketViewModel.bought){

@@ -194,9 +194,33 @@ class UsecaseModule {
 
     @Singleton
     @Provides
-    fun provideGetTicketSoldListUseCaseUseCase(
+    fun provideGetTicketSoldListUseCase(
         ticketRepository: TicketRepository
     ) : GetTicketSoldListUseCase{
         return GetTicketSoldListUseCase(ticketRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetTicketDetailUseCase(
+        ticketRepository: TicketRepository
+    ) : GetTicketDetailUseCase{
+        return GetTicketDetailUseCase(ticketRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun providePutTicketBuyConfirmUseCase(
+        ticketRepository: TicketRepository
+    ) : PutTicketBuyConfirmUseCase{
+        return PutTicketBuyConfirmUseCase(ticketRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun providePutTicketSellConfirmUseCase(
+        ticketRepository: TicketRepository
+    ) : PutTicketSellConfirmUseCase{
+        return PutTicketSellConfirmUseCase(ticketRepository)
     }
 }

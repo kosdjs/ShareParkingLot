@@ -98,4 +98,5 @@ public class UserController {
     public Boolean updateFcmToken(@RequestBody UpdateFcmRequestDto requestDto) {
         return userService.updateFcmToken(requestDto.getUser_id(), requestDto.getFcm_token());
     }
+
 }

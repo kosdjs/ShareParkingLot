@@ -159,9 +159,13 @@ class PurchaseTicketFragment : Fragment() {
                 if(checkAgreementPurchaseTicket.isChecked){
                     //purchase
                     if(purchaseTicketViewModel.ticketCreateRequest.type != -1){
-                        purchaseTicketViewModel.postTicketAvailable(userViewModel.user!!.user_id)
-                        Toast.makeText(requireContext(), "주차권이 구매되었습니다.", Toast.LENGTH_SHORT).show()
-                        requireActivity().onBackPressed()
+                        if(purchaseTicketViewModel.expectedPrice.value!! < userViewModel.user!!.pt_has){
+                            purchaseTicketViewModel.postTicketAvailable(userViewModel.user!!.user_id)
+                            Toast.makeText(requireContext(), "주차권이 구매되었습니다.", Toast.LENGTH_SHORT).show()
+                            requireActivity().onBackPressed()
+                        } else {
+                            Toast.makeText(requireContext(), "포인트 잔액이 부족합니다.", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(requireContext(), "주차권을 선택해주세요.", Toast.LENGTH_SHORT).show()
                     }

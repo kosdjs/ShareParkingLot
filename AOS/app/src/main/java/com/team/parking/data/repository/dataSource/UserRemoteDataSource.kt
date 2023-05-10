@@ -1,12 +1,10 @@
 package com.team.parking.data.repository.dataSource
 
 import com.team.parking.data.model.user.*
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface UserRemoteDataSource {
 
@@ -32,5 +30,9 @@ interface UserRemoteDataSource {
     suspend fun  sendAuthMessage(phone : PhoneRequest) : Response<Boolean>
 
 
-    suspend fun certificatePhone(phone : String, code : String) : Response<Boolean>
+    suspend fun confirmPhone(phone : String, code : String) : Response<Boolean>
+
+    suspend fun getUserInfo(user_id : Long) : Response<UserProfileResponse>
+
+    suspend fun updateProfileImg(file: MultipartBody.Part, user_id : String) : Response<String>
 }

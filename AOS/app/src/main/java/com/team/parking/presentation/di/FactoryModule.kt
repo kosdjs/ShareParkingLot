@@ -41,9 +41,18 @@ class FactoryModule {
         postUserUseCase: PostUserUseCase,
         putFcmTokenUseCase : PutFcmTokenUseCase,
         postAuthMessageUseCase: PostAuthMessageUseCase,
-        getAuthMessageUseCase: PostAuthMessageUseCase,
+        getAuthMessageUseCase: GetAuthMessageUseCase,
         getEmailUseCase: GetEmailUseCase,
+        putProfileImageUseCase: PutProfileImageUseCase,
+        getUserInfoUseCase: GetUserInfoUseCase
         ) : UserViewModelFactory {
-        return UserViewModelFactory(app,getUserUseCase)
+        return UserViewModelFactory(app,getUserUseCase,
+        getEmailUseCase,
+        postAuthMessageUseCase,
+        postUserUseCase,
+        putFcmTokenUseCase,
+        getAuthMessageUseCase,
+        putProfileImageUseCase,
+        getUserInfoUseCase)
     }
 }

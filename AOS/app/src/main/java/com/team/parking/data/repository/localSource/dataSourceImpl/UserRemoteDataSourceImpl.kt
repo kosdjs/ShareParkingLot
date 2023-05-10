@@ -3,6 +3,7 @@ package com.team.parking.data.repository.localSource.dataSourceImpl
 import com.team.parking.data.api.UserAPIService
 import com.team.parking.data.model.user.*
 import com.team.parking.data.repository.dataSource.UserRemoteDataSource
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
 
@@ -38,8 +39,19 @@ class UserRemoteDataSourceImpl (
         return userAPIService.sendAuthMessage(phone)
     }
 
-    override suspend fun certificatePhone(phone: String, code: String): Response<Boolean> {
-        return userAPIService.certificatePhone(phone,code)
+    override suspend fun confirmPhone(phone: String, code: String): Response<Boolean> {
+        return userAPIService.confirmPhone(phone,code)
+    }
+
+    override suspend fun getUserInfo(user_id: Long): Response<UserProfileResponse> {
+        return userAPIService.getUserInfo(user_id)
+    }
+
+    override suspend fun updateProfileImg(
+        file: MultipartBody.Part,
+        user_id: String
+    ): Response<String> {
+        return userAPIService.updateProfileImg(file, user_id)
     }
 
 }

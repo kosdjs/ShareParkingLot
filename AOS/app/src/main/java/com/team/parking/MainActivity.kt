@@ -15,12 +15,8 @@ import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.team.parking.databinding.ActivityMainBinding
-import com.team.parking.presentation.viewmodel.UserViewModel
-import com.team.parking.presentation.viewmodel.MapViewModel
-import com.team.parking.presentation.viewmodel.MapViewModelFactory
-import com.team.parking.presentation.viewmodel.SearchViewModel
-import com.team.parking.presentation.viewmodel.SearchViewModelFactory
 import com.team.parking.databinding.SideHeaderBinding
+import com.team.parking.presentation.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -35,6 +31,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var searchViewModelFactory: SearchViewModelFactory
     lateinit var searchViewModel: SearchViewModel
+
+    @Inject
+    lateinit var userViewModelFactory: UserViewModelFactory
 
     private lateinit var binding : ActivityMainBinding
     lateinit var userViewModel: UserViewModel
@@ -55,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         setNavigationDrawerInit()
         setOnClickNavigationDrawerItem()
         //setFullScreen()
-        userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+        userViewModel = ViewModelProvider(this,userViewModelFactory)[UserViewModel::class.java]
         initMapViewModel()
         onLoginSuccess()
 

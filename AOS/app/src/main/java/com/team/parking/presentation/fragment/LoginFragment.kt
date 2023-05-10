@@ -65,11 +65,12 @@ class LoginFragment : Fragment() {
             viewModel = userViewModel
         }
 
+
         userViewModel.loginResponse.observe(viewLifecycleOwner, Observer {
             when (it.data?.type) {
                 "kakao" -> {
                     if (it.data?.user_id == null) {
-                        userViewModel._profileImage = it.data?.profile_img.toString()
+                        userViewModel._profileImage.postValue(it.data?.profile_img.toString())
                         userViewModel._social_id = it.data?.social_id.toString()
                         userViewModel._type = it.data?.type.toString()
                         requireActivity().runOnUiThread {
@@ -84,7 +85,7 @@ class LoginFragment : Fragment() {
                 }
                 "naver" -> {
                     if (it.data?.user_id == null) {
-                        userViewModel._profileImage = it.data?.profile_img.toString()
+                        userViewModel._profileImage.postValue(it.data?.profile_img.toString())
                         userViewModel._social_id = it.data?.social_id.toString()
                         userViewModel._userName = it.data?.name.toString()
                         userViewModel._type = it.data?.type.toString()

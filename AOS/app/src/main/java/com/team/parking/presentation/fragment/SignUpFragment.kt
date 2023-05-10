@@ -54,6 +54,18 @@ class SignUpFragment : Fragment() {
             checkPassword(it)
         })
 
+
+        userViewModel._check_email.observe(viewLifecycleOwner, Observer {
+            if (userViewModel._email.value.isNullOrBlank()) {
+                fragmentSignUpBinding.emailInput.error =
+                    resources.getString(R.string.dialog_email_blank)
+            }
+            if(!it){
+
+                fragmentSignUpBinding.emailInput.error = "이메일 중복"
+            }
+        })
+
         fragmentSignUpBinding.certificationBtn.setOnClickListener {
             Log.i(TAG, "onViewCreated: ${userViewModel._email}")
         }
@@ -61,6 +73,7 @@ class SignUpFragment : Fragment() {
             Log.i(TAG, "OnViewCreate: $it")
             signUp()
         }
+
     }
 
     override fun onAttach(context: Context) {
@@ -71,60 +84,38 @@ class SignUpFragment : Fragment() {
 
 
     fun checkEmail(email: String) {
-        if (email!!.isBlank()) {
-            fragmentSignUpBinding.emailInput.error =
-                resources.getString(R.string.dialog_email_blank)
 
-        } else {
-            CoroutineScope(Dispatchers.IO).launch {
-                Log.d(TAG, "checkEmail123: $email")
-                val response = App.userRetrofit.create(UserAPIService::class.java).checkEmail(email)
-                Log.d(TAG, "checkEmail: ${response.isSuccessful}")
-                if (response.isSuccessful) {
-
-                    if (response.body() == true) {
-                        requireActivity().runOnUiThread {
-                            userViewModel._check_email = true
-                        }
-                    } else {
-                        requireActivity().runOnUiThread {
-                            userViewModel._check_email = false
-                            fragmentSignUpBinding.emailInput.error =
-                                resources.getString(R.string.dialog_email_duplicated)
-                        }
-                    }
-                }
-            }
-        }
-
-
+            userViewModel.checkEmail(email)
     }
 
-    fun checkPassword(password:String) {
+    fun checkPassword(password: String) {
 
-        val passwordPattern = "^(?=.*[a-zA-Z])(?=.*[!@#\$%\\^&\\*\\.])(?=.*[0-9]).{8,20}\$".toRegex()
+        val passwordPattern =
+            "^(?=.*[a-zA-Z])(?=.*[!@#\$%\\^&\\*\\.])(?=.*[0-9]).{8,20}\$".toRegex()
         val isPasswordValid = passwordPattern.matches(password)
         Log.d(TAG, "checkPassword: $isPasswordValid")
-        if(!isPasswordValid){
-            fragmentSignUpBinding.passwordInput.error = "${resources.getString(R.string.dialog_password_invalid)}"
-            userViewModel._check_password=false
-        }else{
-            userViewModel._check_password=true
+        if (!isPasswordValid) {
+            fragmentSignUpBinding.passwordInput.error =
+                "${resources.getString(R.string.dialog_password_invalid)}"
+            userViewModel._check_password = false
+        } else {
+            userViewModel._check_password = true
         }
     }
 
     fun signUp() {
 
         if (userViewModel._userName.equals("")) {
-            fragmentSignUpBinding.nameInput.error = "${resources.getString(R.string.dialog_name_blank)}"
+            fragmentSignUpBinding.nameInput.error =
+                "${resources.getString(R.string.dialog_name_blank)}"
             return
         } else if (!userViewModel._check_password) {
-            fragmentSignUpBinding.passwordInput.error = "${resources.getString(R.string.dialog_password_fail)}"
+            fragmentSignUpBinding.passwordInput.error =
+                "${resources.getString(R.string.dialog_password_fail)}"
             return
         }
 
-        if (!userViewModel._check_email) {
-            fragmentSignUpBinding.emailInput.error="${resources.getString(R.string.dialog_email_invalid)}"
+        if (userViewModel.check_email.value == false) {
             return
         }
         if (!userViewModel._check_phone) {
@@ -133,31 +124,14 @@ class SignUpFragment : Fragment() {
             return
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        userViewModel.signUp()
 
-            val response = App.userRetrofit.create(UserAPIService::class.java).signUp(
-                SignUpRequest(
-                    userViewModel._userName, userViewModel._phone,
-                    userViewModel._email.value!!, userViewModel._type,
-                    userViewModel._profileImage, userViewModel._password.value!!,
-                    userViewModel._social_id
-                )
-            )
-
-            if (response.isSuccessful) {
-                Log.d(TAG, "signUp: SignUpSuccess")
-                requireActivity().runOnUiThread {
-                    userViewModel.signReset()
-                    findNavController().navigate(R.id.action_signUpFragment_to_login_fragment)
-                }
-
-            }
-        }
-
+        findNavController().navigate(R.id.action_signUpFragment_to_login_fragment)
     }
 
 
-    fun checkPhone(){
-
+    fun checkPhone() {
+        Log.d(TAG,"asd")
+        userViewModel.sendAuthMessage()
     }
 }

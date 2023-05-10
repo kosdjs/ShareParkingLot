@@ -6,7 +6,7 @@ import com.team.parking.domain.repository.UserRepository
 class GetEmailUseCase (
     private val userRepository: UserRepository
         ){
-    suspend fun checkEmail(email: String): Resource<Boolean> {
+    suspend fun execute(email: String): Resource<Boolean> {
         return userRepository.checkEmail(email)
     }
 }

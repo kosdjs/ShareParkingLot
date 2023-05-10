@@ -8,7 +8,7 @@ import retrofit2.Response
 class PostAuthMessageUseCase (
     private val userRepository: UserRepository
         ){
-    suspend fun sendAuthMessage(phone: PhoneRequest): Resource<Boolean> {
+    suspend fun execute(phone: PhoneRequest): Resource<Boolean> {
         return userRepository.sendAuthMessage(phone)
     }
 }

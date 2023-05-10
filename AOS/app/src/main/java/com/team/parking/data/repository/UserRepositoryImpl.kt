@@ -5,7 +5,10 @@ import com.team.parking.data.model.user.*
 import com.team.parking.data.repository.dataSource.UserRemoteDataSource
 import com.team.parking.data.util.Resource
 import com.team.parking.domain.repository.UserRepository
+import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Part
+import retrofit2.http.Query
 
 class UserRepositoryImpl (
     private val userRemoteDataSource : UserRemoteDataSource
@@ -39,8 +42,16 @@ class UserRepositoryImpl (
         return responseToResource(userRemoteDataSource.sendAuthMessage(phone))
     }
 
-    override suspend fun certificatePhone(phone: String, code: String): Resource<Boolean> {
-        return responseToResource(userRemoteDataSource.certificatePhone(phone, code))
+    override suspend fun confirmPhone(phone: String, code: String): Resource<Boolean> {
+        return responseToResource(userRemoteDataSource.confirmPhone(phone, code))
+    }
+
+    override suspend fun getUserInfo(user_id : Long) : Resource<UserProfileResponse>{
+        return responseToResource(userRemoteDataSource.getUserInfo(user_id))
+    }
+
+    override suspend fun updateProfileImg(file: MultipartBody.Part, user_id : String) : Resource<String>{
+        return responseToResource(userRemoteDataSource.updateProfileImg(file,user_id))
     }
 
     private fun <T> responseToResource(response: Response<out T>): Resource<T> {

@@ -8,7 +8,7 @@ import retrofit2.Response
 class PutFcmTokenUseCase (
     private val userRepository : UserRepository
 ){
-    suspend fun updateFcmToken(updateFcmTokenRequest: UpdateFcmTokenRequest): Resource<Boolean> {
+    suspend fun execute(updateFcmTokenRequest: UpdateFcmTokenRequest): Resource<Boolean> {
         return userRepository.updateFcmToken(updateFcmTokenRequest)
     }
 }

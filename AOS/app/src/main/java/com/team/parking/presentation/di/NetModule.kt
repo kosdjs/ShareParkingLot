@@ -3,6 +3,8 @@ package com.team.parking.presentation.di
 import com.team.parking.BuildConfig
 import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.api.SearchAPIService
+import com.team.parking.data.api.UserAPIService
+import com.team.parking.data.model.user.User
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,6 +73,11 @@ class NetModule {
             .baseUrl("${BuildConfig.BASE_URL}8081/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+    @Singleton
+    @Provides
+    fun provideUserService(@UserRetrofit userRetrofit:Retrofit): UserAPIService {
+        return userRetrofit.create(UserAPIService::class.java)
     }
 
 //    @Singleton

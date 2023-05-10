@@ -1,12 +1,10 @@
 package com.team.parking.data.api
 
 import com.team.parking.data.model.user.*
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface UserAPIService {
     @GET("user/login")
@@ -33,6 +31,13 @@ interface UserAPIService {
     suspend fun  sendAuthMessage(@Body phone : PhoneRequest) : Response<Boolean>
 
     @GET("user/phone/auth")
-    suspend fun certificatePhone(@Query("phone") phone : String, @Query("code") code : String) : Response<Boolean>
+    suspend fun confirmPhone(@Query("phone") phone : String, @Query("code") code : String) : Response<Boolean>
+
+    @GET("user/info")
+    suspend fun getUserInfo(@Query("user_id") user_id : Long) : Response<UserProfileResponse>
+
+    @Multipart
+    @PUT("user/profile-img")
+    suspend fun updateProfileImg(@Part("image") file: MultipartBody.Part , @Part("user_id") user_id : String) : Response<String>
 
 }

@@ -85,4 +85,18 @@ class UsecaseModule {
     ) : GetAuthMessageUseCase {
         return GetAuthMessageUseCase(userRepository)
     }
+    @Singleton
+    @Provides
+    fun providePutProfileImageUsecase(
+        userRepository: UserRepository
+    ) : PutProfileImageUseCase {
+        return PutProfileImageUseCase(userRepository)
+    }
+    @Singleton
+    @Provides
+    fun provideGetUserInfoUsecase(
+        userRepository: UserRepository
+    ) : GetUserInfoUseCase {
+        return GetUserInfoUseCase(userRepository)
+    }
 }

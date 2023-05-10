@@ -7,7 +7,7 @@ import retrofit2.Response
 class GetAuthMessageUseCase (
     private val userRepository: UserRepository
         ){
-    suspend fun certificatePhone(phone: String, code: String): Resource<Boolean> {
-        return userRepository.certificatePhone(phone,code)
+    suspend fun execute(phone: String, code: String): Resource<Boolean> {
+        return userRepository.confirmPhone(phone,code)
     }
 }

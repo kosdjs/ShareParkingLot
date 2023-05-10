@@ -71,6 +71,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var ncTextView : TextView
     private lateinit var requestAllMapRequest : MapRequest
     private lateinit var parkingOrderByAdapter: ParkingOrderByAdapter
+    private lateinit var toast : Toast
     private var currentType : Int = -1
 
 
@@ -114,7 +115,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
         init()
-
+        toast = Toast(context)
     }
 
     private fun initAdapter(){
@@ -496,10 +497,26 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun getMapDataFromRemote(){
 
         naverMap.addOnCameraChangeListener { i, b ->
+            /*val zoom = naverMap.cameraPosition.zoom
+
+            val view = layoutInflater.inflate(R.layout.toast_map,null)
+            val tv = view.findViewById<TextView>(R.id.toast_text)
+            if(zoom<13.8){
+                tv.text = resources.getString(R.string.distance_low)
+                toast.duration = Toast.LENGTH_SHORT
+                toast.setGravity(Gravity.CENTER,0,-600)
+                toast.view = view
+                toast.show()
+            }else{
+                tv.text = resources.getString(R.string.distance_high)
+                toast.duration= Toast.LENGTH_SHORT
+                toast.setGravity(Gravity.CENTER,0,-600)
+                toast.view = view
+                toast.show()
+            }*/
         }
         naverMap.addOnCameraIdleListener {
             currentZoom =  naverMap.cameraPosition.zoom
-            val toast = Toast(context)
             if(currentZoom>=13.8&&currentZoom<17.2){
                 toast.cancel()
                 if(currentZoom<15f){
@@ -545,21 +562,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     removeNoClusteringMapData()
                     clusteringCache.clear()
                 }
-                val view = layoutInflater.inflate(R.layout.toast_map,null)
-                val tv = view.findViewById<TextView>(R.id.toast_text)
-                if(currentZoom<13.8){
-                    tv.text = resources.getString(R.string.distance_low)
-                    toast.duration = Toast.LENGTH_SHORT
-                    toast.setGravity(Gravity.CENTER,0,-600)
-                    toast.view = view
-                    toast.show()
-                }else{
-                    tv.text = resources.getString(R.string.distance_high)
-                    toast.duration= Toast.LENGTH_SHORT
-                    toast.setGravity(Gravity.CENTER,0,-600)
-                    toast.view = view
-                    toast.show()
-                }
+
             }
 
         }

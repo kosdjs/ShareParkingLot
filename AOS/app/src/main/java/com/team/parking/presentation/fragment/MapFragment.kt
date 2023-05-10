@@ -405,11 +405,10 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     //Log.i(TAG, "서버로부터 주차장 데이터를 가져오는데 성공했습니다.")
                     response.data.let{ data->
                         if(data!!.size>0){
+                            //클러스러팅 마커
                             if(data!![0].parkId==-1){
                                 for(i in 0 until data.size){
-                                    //removeNoClusteringMapData()
                                     val marker = Marker()
-                                    marker.alpha = 0.5F
                                     loadMarkerFromMemClurCache(data[i].clusteringCnt.toString())
                                     marker.width = 150
                                     marker.height = 150
@@ -420,7 +419,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 }
                             }else{
                                 for(i in 0 until data.size){
-                                    //removeClusteringMapData()
                                     val marker = Marker()
                                     loadMarkerFromMemCache(data[i].feeBasic.toString())
                                     marker.width = 130
@@ -471,10 +469,12 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             val toast = Toast(context)
             if(currentZoom>=13.8&&currentZoom<17.2){
                 toast.cancel()
-                if(currentZoom<15f){
-                    fragmentMapBinding.btnFragmentMapOpen.visibility = View.GONE
+                CoroutineScope(Dispatchers.Main).launch {
                     removeClusteringMapData()
                     removeNoClusteringMapData()
+                }
+                if(currentZoom<15f){
+                    fragmentMapBinding.btnFragmentMapOpen.visibility = View.GONE
                     val mapRequest = MapRequest(
                         naverMap.cameraPosition.target.latitude,
                         naverMap.cameraPosition.target.longitude,
@@ -487,8 +487,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     getMapData(mapRequest)
                 }else{
                     fragmentMapBinding.btnFragmentMapOpen.visibility = View.VISIBLE
-                    removeClusteringMapData()
-                    removeNoClusteringMapData()
                     val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
                     val dist = nowLocation.distanceTo(beforeCenterLocation)
                     val mapRequest = MapRequest(
@@ -506,8 +504,10 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 }
 
             }else{
-                removeClusteringMapData()
-                removeNoClusteringMapData()
+                CoroutineScope(Dispatchers.Main).launch {
+                    removeClusteringMapData()
+                    removeNoClusteringMapData()
+                }
                 val view = layoutInflater.inflate(R.layout.toast_map,null)
                 val tv = view.findViewById<TextView>(R.id.toast_text)
                 if(currentZoom<13.8){

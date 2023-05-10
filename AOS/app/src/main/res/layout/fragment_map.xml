@@ -96,6 +96,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
         <fragment
             android:id="@+id/fragment_fragment_map_maps"
             android:layout_width="match_parent"
@@ -103,8 +104,7 @@
             android:layout_marginTop="30dp"
             app:layout_constraintTop_toBottomOf="@id/constraintlayout_fragment_map_appbar"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:name="com.naver.maps.map.MapFragment">
-        </fragment>
+            android:name="com.naver.maps.map.MapFragment"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_fragment_map_open"
@@ -120,9 +120,7 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:ignore="TouchTargetSizeCheck" />
-
+            app:layout_constraintRight_toRightOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

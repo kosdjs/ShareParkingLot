@@ -110,7 +110,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapViewModel = (activity as MainActivity).mapViewModel
         searchViewModel = (activity as MainActivity).searchViewModel
         init()
-        fragmentMapBinding.btnFragmentMapOpen.bringToFront()
 
     }
 
@@ -134,6 +133,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun initMarkerData(){
         val maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
         val cacheSize = maxMemory / 8
+
+        ncCustomView = layoutInflater.inflate(R.layout.marker_clustering,null)
+        val civ = ncCustomView.findViewById<ImageView>(R.id.marker_circle)
+        Glide.with(ncCustomView).load(R.drawable.background_circle).skipMemoryCache(true).into(civ)
+        cIcon = OverlayImage.fromView(ncCustomView)
+        memoryClurChche = LinkedHashMap()
+
         customView = layoutInflater.inflate(R.layout.item_marker,null)
         val iv = customView.findViewById<ImageView>(R.id.marker_id)
         Glide.with(customView).load(R.drawable.ic_marker_no_clustering).skipMemoryCache(true).into(iv)
@@ -141,11 +147,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         memoryCache = LinkedHashMap()
 
 
-        ncCustomView = layoutInflater.inflate(R.layout.marker_clustering,null)
-        val civ = ncCustomView.findViewById<ImageView>(R.id.marker_circle)
-        Glide.with(ncCustomView).load(R.drawable.background_circle).skipMemoryCache(true).into(civ)
-        cIcon = OverlayImage.fromView(ncCustomView)
-        //memoryClurChche = LinkedHashMap()
     }
 
 
@@ -240,7 +241,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
 
         })
-        // 하눈에 보기로 이동
+        // 한눈에 보기로 이동
         listBottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if(newState==BottomSheetBehavior.STATE_COLLAPSED){
@@ -703,12 +704,10 @@ class MapFragment : Fragment() , OnMapReadyCallback{
 
     // 전체 주차장 보기
     fun showAllParkingLot(){
-        fragmentMapBinding.btnFragmentMapOpen.setOnClickListener {
             listBottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
             getParkingOrderByPrice(requestAllMapRequest)
-            return@setOnClickListener
-        }
     }
+
 }
 
 

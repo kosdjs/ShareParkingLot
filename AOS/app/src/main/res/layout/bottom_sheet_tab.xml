@@ -33,7 +33,7 @@
         android:id="@+id/tv_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@{String.valueOf(vm.parkingOrder.data.size())+`개 주차장이 있습니다.`}"
+        android:text="@{`주변에 `+String.valueOf(vm.parkingOrder.data.size())+`개 주차장이 있습니다.`}"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:layout_margin="16dp"

@@ -25,6 +25,7 @@ class PurchaseTicketFragment : Fragment() {
     private lateinit var userViewModel: UserViewModel
     private lateinit var mapViewModel: MapViewModel
     private lateinit var carViewModel: CarViewModel
+    private var carAvailable = false
 
     @Inject
     lateinit var purchaseTicketViewModelFactory: PurchaseTicketViewModelFactory
@@ -49,6 +50,7 @@ class PurchaseTicketFragment : Fragment() {
         carViewModel.carList.observe(viewLifecycleOwner){
             if (it.isNotEmpty()){
                 purchaseTicketViewModel.ticketCreateRequest.carNumber = carViewModel.carList.value!![0].carStr
+                carAvailable = true
             }
         }
         purchaseTicketViewModel.ticketAvailable.observe(viewLifecycleOwner){
@@ -159,9 +161,13 @@ class PurchaseTicketFragment : Fragment() {
                 if(checkAgreementPurchaseTicket.isChecked){
                     //purchase
                     if(purchaseTicketViewModel.ticketCreateRequest.type != -1){
-                        purchaseTicketViewModel.postTicketAvailable(userViewModel.user!!.user_id)
-                        Toast.makeText(requireContext(), "주차권이 구매되었습니다.", Toast.LENGTH_SHORT).show()
-                        requireActivity().onBackPressed()
+                        if(carAvailable){
+                            purchaseTicketViewModel.postTicketAvailable(userViewModel.user!!.user_id)
+                            Toast.makeText(requireContext(), "주차권이 구매되었습니다.", Toast.LENGTH_SHORT).show()
+                            requireActivity().onBackPressed()
+                        } else {
+                            Toast.makeText(requireContext(), "차량을 등록해주세요.", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(requireContext(), "주차권을 선택해주세요.", Toast.LENGTH_SHORT).show()
                     }

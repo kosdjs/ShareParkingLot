@@ -40,10 +40,7 @@ import com.team.parking.R
 import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
-import com.team.parking.presentation.viewmodel.MapViewModel
-import com.team.parking.presentation.viewmodel.MyTicketViewModel
-import com.team.parking.presentation.viewmodel.SearchViewModel
-import com.team.parking.presentation.viewmodel.UserViewModel
+import com.team.parking.presentation.viewmodel.*
 import java.util.*
 import kotlin.collections.LinkedHashMap
 
@@ -59,6 +56,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var searchViewModel: SearchViewModel
     private lateinit var myTicketViewModel: MyTicketViewModel
     private lateinit var userViewModel: UserViewModel
+    private lateinit var favoriteViewModel: FavoriteViewModel
     private val permissionList = Manifest.permission.ACCESS_FINE_LOCATION
     private lateinit var clickBottomSheet  : BottomSheetBehavior<View>
     private lateinit var listBottomSheet : BottomSheetBehavior<View>
@@ -114,12 +112,17 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         searchViewModel = (activity as MainActivity).searchViewModel
         myTicketViewModel = (activity as MainActivity).myTicketViewModel
         userViewModel = (activity as MainActivity).userViewModel
+        favoriteViewModel = (activity as MainActivity).favoriteViewModel
         init()
         fragmentMapBinding.bottomSheetOpen.buttonPurchaseParkingLotDetail.setOnClickListener {
             findNavController().navigate(R.id.action_map_fragment_to_purchaseTicketFragment)
         }
         fragmentMapBinding.bottomSheetOpen.imageFavoriteParkingLotDetail.setOnClickListener {
             //set favorite
+            favoriteViewModel.setFavorite(mapViewModel.park.value!!.parkId.toLong(), mapViewModel.selectedPark.value!!, userViewModel.user!!.user_id)
+        }
+        favoriteViewModel.favorite.observe(viewLifecycleOwner){
+            setFavoriteDrawable(it)
         }
     }
 
@@ -229,20 +232,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     Glide.with(this).load(R.drawable.icon_no_image).skipMemoryCache(true).diskCacheStrategy(
                             DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
                     mapViewModel.park.observe(viewLifecycleOwner){
-                        fragmentMapBinding.bottomSheetOpen.imageFavoriteParkingLotDetail.background =
-                        if(it.favorite){
-                            ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.icon_star_filled,
-                                null
-                            )
-                        } else {
-                            ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.icon_star_outline,
-                                null
-                            )
-                        }
+                        setFavoriteDrawable(it.favorite)
                     }
                     clickBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
@@ -275,20 +265,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                             DiskCacheStrategy.NONE).into(fragmentMapBinding.bottomSheetOpen.imageView2)
                     }
                     mapViewModel.park.observe(viewLifecycleOwner){
-                        fragmentMapBinding.bottomSheetOpen.imageFavoriteParkingLotDetail.background =
-                            if(it.favorite){
-                                ResourcesCompat.getDrawable(
-                                    resources,
-                                    R.drawable.icon_star_filled,
-                                    null
-                                )
-                            } else {
-                                ResourcesCompat.getDrawable(
-                                    resources,
-                                    R.drawable.icon_star_outline,
-                                    null
-                                )
-                            }
+                        setFavoriteDrawable(it.favorite)
                     }
                     clickBottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
@@ -655,6 +632,23 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             .beginTransaction()
             .replace(R.id.fl_map_bottom_sheet, fragment)
             .commit()
+    }
+
+    private fun setFavoriteDrawable(value :Boolean){
+        fragmentMapBinding.bottomSheetOpen.imageFavoriteParkingLotDetail.background =
+            if(value){
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.icon_star_filled,
+                    null
+                )
+            } else {
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.icon_star_outline,
+                    null
+                )
+            }
     }
 }
 

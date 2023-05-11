@@ -125,4 +125,14 @@ class FactoryModule {
     ) : TicketDetailViewModelFactory{
         return TicketDetailViewModelFactory(app, getTicketDetailUseCase, putTicketBuyConfirmUseCase, putTicketSellConfirmUseCase)
     }
+
+    @Singleton
+    @Provides
+    fun provideFavoriteViewModelFactory(
+        app:Application,
+        setFavoriteUseCase: SetFavoriteUseCase,
+        getFavoriteListUseCase: GetFavoriteListUseCase
+    ) : FavoriteViewModelFactory{
+        return FavoriteViewModelFactory(app, setFavoriteUseCase, getFavoriteListUseCase)
+    }
 }

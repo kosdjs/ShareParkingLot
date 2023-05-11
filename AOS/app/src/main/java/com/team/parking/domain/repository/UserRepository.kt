@@ -32,5 +32,5 @@ interface UserRepository {
 
     suspend fun getUserInfo(user_id : Long) : Resource<UserProfileResponse>
 
-    suspend fun updateProfileImg(file: MultipartBody.Part, user_id : String) : Resource<String>
+    suspend fun updateProfileImg(file: MultipartBody.Part, user_id : Long) : Resource<UpdateProfileImageResponse>
 }

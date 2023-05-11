@@ -46,33 +46,151 @@ class SignUpFragment : Fragment() {
             viewModel = userViewModel
         }
         Log.i(TAG, "onViewCreated: ${userViewModel._email}")
+        fragmentSignUpBinding.nameText.visibility=View.VISIBLE
+        fragmentSignUpBinding.nameInput.visibility=View.VISIBLE
+
+        userViewModel._userName.observe(viewLifecycleOwner, Observer {
+            if(!it.isNullOrBlank()){
+                fragmentSignUpBinding.emailText.visibility = View.VISIBLE
+                fragmentSignUpBinding.emailInput.visibility = View.VISIBLE
+                fragmentSignUpBinding.emailDesc.visibility= View.VISIBLE
+            }else{
+                fragmentSignUpBinding.emailText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.emailInput.visibility=View.INVISIBLE
+                fragmentSignUpBinding.emailDesc.visibility=View.INVISIBLE
+                fragmentSignUpBinding.passwordText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.passwordInput.visibility=View.INVISIBLE
+                fragmentSignUpBinding.passwordDesc.visibility=View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberText.visibility = View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberInput.visibility = View.INVISIBLE
+                fragmentSignUpBinding.signUpBtn.visibility = View.INVISIBLE
+                fragmentSignUpBinding.messageBtn.visibility = View.INVISIBLE
+                fragmentSignUpBinding.callText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.callInput.visibility=View.INVISIBLE
+                fragmentSignUpBinding.remainTimeText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.remainTime.visibility=View.INVISIBLE
+            }
+        })
+
         userViewModel._email.observe(viewLifecycleOwner, Observer {
             Log.i(TAG, "onViewCreated: $it")
-            checkEmail(it)
+            if(!it.isNullOrBlank()) {
+                checkEmail(it)
+                fragmentSignUpBinding.passwordText.visibility = View.VISIBLE
+                fragmentSignUpBinding.passwordInput.visibility = View.VISIBLE
+                fragmentSignUpBinding.passwordDesc.visibility = View.VISIBLE
+            }else{
+
+                fragmentSignUpBinding.passwordText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.passwordInput.visibility=View.INVISIBLE
+                fragmentSignUpBinding.passwordDesc.visibility=View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberText.visibility = View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberInput.visibility = View.INVISIBLE
+                fragmentSignUpBinding.signUpBtn.visibility = View.INVISIBLE
+                fragmentSignUpBinding.messageBtn.visibility = View.INVISIBLE
+                fragmentSignUpBinding.callText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.callInput.visibility=View.INVISIBLE
+                fragmentSignUpBinding.remainTimeText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.remainTime.visibility=View.INVISIBLE
+            }
+        })
+        userViewModel._check_email.observe(viewLifecycleOwner, Observer {
+            if(!it){
+                fragmentSignUpBinding.emailInput.error =
+                    resources.getString(R.string.dialog_email_duplicated)
+                fragmentSignUpBinding.passwordText.visibility =View.INVISIBLE
+                fragmentSignUpBinding.passwordInput.visibility= View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberText.visibility = View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberInput.visibility = View.INVISIBLE
+                fragmentSignUpBinding.signUpBtn.visibility = View.INVISIBLE
+                fragmentSignUpBinding.messageBtn.visibility = View.INVISIBLE
+                fragmentSignUpBinding.passwordDesc.visibility=View.INVISIBLE
+                fragmentSignUpBinding.callText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.callInput.visibility=View.INVISIBLE
+                fragmentSignUpBinding.remainTimeText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.remainTime.visibility=View.INVISIBLE
+            }
+            else if(it==null){
+
+            }
+            else{
+                fragmentSignUpBinding.passwordText.visibility =View.VISIBLE
+                fragmentSignUpBinding.passwordInput.visibility= View.VISIBLE
+            }
         })
         userViewModel._password.observe(viewLifecycleOwner, Observer {
-            checkPassword(it)
+            if(!it.isNullOrBlank()) {
+                checkPassword(it)
+                fragmentSignUpBinding.callText.visibility = View.VISIBLE
+                fragmentSignUpBinding.callInput.visibility = View.VISIBLE
+                if(userViewModel._phone.value?.length == 11){
+                    fragmentSignUpBinding.messageBtn.visibility = View.VISIBLE
+                }
+
+            }else{
+                fragmentSignUpBinding.messageBtn.visibility = View.INVISIBLE
+                fragmentSignUpBinding.callText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.callInput.visibility=View.INVISIBLE
+            }
+        })
+
+        userViewModel._phone.observe(viewLifecycleOwner, Observer {
+
+            if(it.length == 11){
+                fragmentSignUpBinding.messageBtn.visibility = View.VISIBLE
+            }else{
+                fragmentSignUpBinding.messageBtn.visibility = View.INVISIBLE
+            }
+        })
+
+        userViewModel._changePhone.observe(viewLifecycleOwner, Observer {
+            if(it){
+                fragmentSignUpBinding.certificationNumberText.visibility = View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberInput.visibility = View.INVISIBLE
+                fragmentSignUpBinding.signUpBtn.visibility = View.INVISIBLE
+
+            }else{
+                fragmentSignUpBinding.certificationNumberText.visibility = View.VISIBLE
+                fragmentSignUpBinding.certificationNumberInput.visibility = View.VISIBLE
+            }
         })
 
 
-        userViewModel._check_email.observe(viewLifecycleOwner, Observer {
-            if (userViewModel._email.value.isNullOrBlank()) {
-                fragmentSignUpBinding.emailInput.error =
-                    resources.getString(R.string.dialog_email_blank)
-            }
+
+
+        userViewModel._check_password.observe(viewLifecycleOwner,Observer{
             if(!it){
-
-                fragmentSignUpBinding.emailInput.error = "이메일 중복"
+                fragmentSignUpBinding.callText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.callInput.visibility=View.INVISIBLE
+                fragmentSignUpBinding.messageBtn.visibility=View.INVISIBLE
+                fragmentSignUpBinding.remainTimeText.visibility=View.INVISIBLE
+                fragmentSignUpBinding.remainTime.visibility=View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberText.visibility = View.INVISIBLE
+                fragmentSignUpBinding.certificationNumberInput.visibility = View.INVISIBLE
+                fragmentSignUpBinding.certificationBtn.visibility = View.INVISIBLE
+                fragmentSignUpBinding.signUpBtn.visibility = View.INVISIBLE
+            }else{
+                fragmentSignUpBinding.callText.visibility=View.VISIBLE
+                fragmentSignUpBinding.callInput.visibility=View.VISIBLE
             }
         })
+        fragmentSignUpBinding.messageBtn.setOnClickListener(){
+            userViewModel.sendAuthMessage()
+            fragmentSignUpBinding.certificationNumberText.visibility = View.VISIBLE
+            fragmentSignUpBinding.certificationNumberInput.visibility = View.VISIBLE
+            fragmentSignUpBinding.certificationBtn.visibility = View.VISIBLE
+        }
+
 
         fragmentSignUpBinding.certificationBtn.setOnClickListener {
-            Log.i(TAG, "onViewCreated: ${userViewModel._email}")
+            userViewModel.confirmAuthMessage()
+            fragmentSignUpBinding.signUpBtn.visibility = View.VISIBLE
         }
         fragmentSignUpBinding.signUpBtn.setOnClickListener {
             Log.i(TAG, "OnViewCreate: $it")
             signUp()
         }
+
 
     }
 
@@ -97,9 +215,9 @@ class SignUpFragment : Fragment() {
         if (!isPasswordValid) {
             fragmentSignUpBinding.passwordInput.error =
                 "${resources.getString(R.string.dialog_password_invalid)}"
-            userViewModel._check_password = false
+            userViewModel._check_password.postValue(false)
         } else {
-            userViewModel._check_password = true
+            userViewModel._check_password.postValue(true)
         }
     }
 
@@ -109,7 +227,7 @@ class SignUpFragment : Fragment() {
             fragmentSignUpBinding.nameInput.error =
                 "${resources.getString(R.string.dialog_name_blank)}"
             return
-        } else if (!userViewModel._check_password) {
+        } else if (!userViewModel.check_password.value!!) {
             fragmentSignUpBinding.passwordInput.error =
                 "${resources.getString(R.string.dialog_password_fail)}"
             return
@@ -118,9 +236,9 @@ class SignUpFragment : Fragment() {
         if (userViewModel.check_email.value == false) {
             return
         }
-        if (!userViewModel._check_phone) {
+        if (!userViewModel.check_phone.value!!) {
             Log.d(TAG, "signUp: check_phone_false")
-            userViewModel._check_phone = true
+            userViewModel._check_phone.postValue(true)
             return
         }
 

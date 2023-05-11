@@ -1,5 +1,6 @@
 package com.team.parking.presentation.di
 
+import com.google.gson.GsonBuilder
 import com.team.parking.BuildConfig
 import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.api.SearchAPIService

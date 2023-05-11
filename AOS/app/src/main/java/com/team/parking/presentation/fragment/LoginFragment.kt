@@ -87,7 +87,7 @@ class LoginFragment : Fragment() {
                     if (it.data?.user_id == null) {
                         userViewModel._profileImage.postValue(it.data?.profile_img.toString())
                         userViewModel._social_id = it.data?.social_id.toString()
-                        userViewModel._userName = it.data?.name.toString()
+                        userViewModel._userName.postValue(it.data?.name.toString())
                         userViewModel._type = it.data?.type.toString()
                         requireActivity().runOnUiThread {
                             findNavController().navigate(R.id.action_login_fragment_to_signUpFragment)

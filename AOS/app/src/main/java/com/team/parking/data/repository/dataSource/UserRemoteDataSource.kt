@@ -34,5 +34,5 @@ interface UserRemoteDataSource {
 
     suspend fun getUserInfo(user_id : Long) : Response<UserProfileResponse>
 
-    suspend fun updateProfileImg(file: MultipartBody.Part, user_id : String) : Response<String>
+    suspend fun updateProfileImg(file: MultipartBody.Part, user_id : Long) : Response<UpdateProfileImageResponse>
 }

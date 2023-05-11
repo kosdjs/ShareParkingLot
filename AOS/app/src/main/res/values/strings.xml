@@ -28,4 +28,5 @@
     <string name="dialog_email_invalid">적절한 이메일을 입력해주세요</string>
 
     <string name="fragment_map_search_hint">목적지 혹은 주소 검색</string>
+
 </resources>

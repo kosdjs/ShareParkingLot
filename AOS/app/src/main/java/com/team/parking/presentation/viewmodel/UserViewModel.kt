@@ -1,8 +1,17 @@
 package com.team.parking.presentation.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.content.ContentResolver
+import android.content.Intent
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.team.parking.data.model.user.LoginResponse
@@ -15,6 +24,13 @@ import com.team.parking.presentation.utils.App
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okio.BufferedSink
+import okio.source
+
 
 private val TAG = "userviewmodel종건"
 
@@ -32,11 +48,13 @@ class UserViewModel(
     val application = App()
 
 
-    var _userName: String = ""
+    var _userName: MutableLiveData<String> = MutableLiveData()
+    val userName : LiveData<String> get() = _userName
     var _type: String = ""
     var _profileImage : MutableLiveData<String> = MutableLiveData()
     val profileImage: LiveData<String> get() = _profileImage
-    var _phone: String = ""
+    var _phone: MutableLiveData<String> = MutableLiveData()
+    val phone : LiveData<String> get() = _phone
     var _code : String = ""
     var _password: MutableLiveData<String> = MutableLiveData()
     val password: LiveData<String> get() = _password
@@ -44,14 +62,17 @@ class UserViewModel(
     val email: LiveData<String> get() = _email
     var _check_email: MutableLiveData<Boolean> = MutableLiveData()
     val check_email: LiveData<Boolean> get() = _check_email
-    var _check_phone: Boolean = false
-    var _check_password: Boolean = false
+    var _check_phone: MutableLiveData<Boolean> = MutableLiveData(false)
+    val check_phone:LiveData<Boolean> get() = _check_phone
+    var _check_password: MutableLiveData<Boolean> = MutableLiveData(false)
+    val check_password : LiveData<Boolean> = _check_password
     var _login_email: String = ""
     var _login_password: String = ""
     var _social_id: String = ""
     var validTime: MutableLiveData<String> = MutableLiveData()
     val timeLiveData: LiveData<String> get() = validTime
-    var changePhone : Boolean =false
+    var _changePhone : MutableLiveData<Boolean> = MutableLiveData(true)
+    val changePhone : LiveData<Boolean> = _changePhone
     var `try`: Int = 0
     var rep_car : MutableLiveData<String> = MutableLiveData()
     var total_transaction : MutableLiveData<Int> = MutableLiveData()
@@ -146,18 +167,18 @@ class UserViewModel(
     }
 
     fun signReset() {
-        _userName = ""
-        _phone = ""
+        _userName = MutableLiveData()
+        _phone = MutableLiveData()
         _email = MutableLiveData()
         _type = ""
         _profileImage = MutableLiveData()
         _password = MutableLiveData()
         _social_id = ""
-        changePhone = false
+        _changePhone = MutableLiveData(true)
         `try` = 0
         _check_email = MutableLiveData()
-        _check_phone = false
-        _check_password = false
+        _check_phone = MutableLiveData(false)
+        _check_password = MutableLiveData(false)
     }
 
     fun checkEmail(email: String) = viewModelScope.launch(Dispatchers.IO) {
@@ -178,7 +199,7 @@ class UserViewModel(
 
         val result = postUserUseCase.execute(
             SignUpRequest(
-                _userName, _phone,
+                userName.value!!, phone.value!!,
                 _email.value!!, _type,
                 _profileImage.value, _password.value!!,
                 _social_id
@@ -229,20 +250,21 @@ class UserViewModel(
     }
 
     fun sendAuthMessage() = viewModelScope.launch (Dispatchers.IO){
-        postAuthMessageUseCase.execute(PhoneRequest(_phone))
-        changePhone =true
+        val response = postAuthMessageUseCase.execute(PhoneRequest(phone.value!!))
+        Log.d(TAG, "sendAuthMessage: ${response}")
+        _changePhone.postValue(false)
     }
 
     fun confirmAuthMessage() = viewModelScope.launch(Dispatchers.IO) {
-        val result = getAuthMessageUseCase.execute(_phone,_code)
+        val result = getAuthMessageUseCase.execute(phone.value!!,_code)
         if(result.data == true){
-            _check_phone=true
+            _check_phone.postValue(true)
         }
         else{
             if(++`try` == 3){
                 `try` = 0
-                changePhone = false
-                _check_phone=false
+                _changePhone.postValue(true)
+                _check_phone.postValue(false)
             }
         }
     }
@@ -259,9 +281,14 @@ class UserViewModel(
         total_transaction.postValue(result.data?.total_transaction)
     }
 
-    fun updateProfileImage()=viewModelScope.launch (Dispatchers.IO){
-        
+    fun updateProfileImage(image : MultipartBody.Part)=viewModelScope.launch (Dispatchers.IO){
+
+        val result = putProfileImageUseCase.execute(image, userLiveData.value!!.user_id)
+
+        userLiveData.value!!.profile_img = result.data!!.image
     }
+
+
 
 
 }

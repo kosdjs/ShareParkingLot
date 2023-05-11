@@ -50,7 +50,7 @@ class UserRepositoryImpl (
         return responseToResource(userRemoteDataSource.getUserInfo(user_id))
     }
 
-    override suspend fun updateProfileImg(file: MultipartBody.Part, user_id : String) : Resource<String>{
+    override suspend fun updateProfileImg(file: MultipartBody.Part, user_id : Long) : Resource<UpdateProfileImageResponse>{
         return responseToResource(userRemoteDataSource.updateProfileImg(file,user_id))
     }
 

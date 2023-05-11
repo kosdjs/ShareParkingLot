@@ -49,8 +49,8 @@ class UserRemoteDataSourceImpl (
 
     override suspend fun updateProfileImg(
         file: MultipartBody.Part,
-        user_id: String
-    ): Response<String> {
+        user_id: Long
+    ): Response<UpdateProfileImageResponse> {
         return userAPIService.updateProfileImg(file, user_id)
     }
 

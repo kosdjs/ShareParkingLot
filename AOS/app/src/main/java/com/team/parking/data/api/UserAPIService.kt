@@ -38,6 +38,7 @@ interface UserAPIService {
 
     @Multipart
     @PUT("user/profile-img")
-    suspend fun updateProfileImg(@Part("image") file: MultipartBody.Part , @Part("user_id") user_id : String) : Response<String>
+    suspend fun updateProfileImg(@Part file: MultipartBody.Part , @Part("user_id") user_id : Long) : Response<UpdateProfileImageResponse>
+
 
 }

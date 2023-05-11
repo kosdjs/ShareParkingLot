@@ -51,6 +51,10 @@ public class TicketServiceImpl implements TicketService {
         
 
         if (currShareLot.isPresent()) {
+            if (startTime == -1 && endTime == -1) {
+                return new TypeResponseDto(false, false, false, false);
+            }
+
             // 해당하는 공유 주차장의 모든 당일 티켓 가져오기
             List<Ticket> existingTickets = ticketRepo.findAllByShareLotAndParkingDate(currShareLot.get(), date);
 

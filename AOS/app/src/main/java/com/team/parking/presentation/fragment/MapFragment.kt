@@ -562,9 +562,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                         marker.width = 130
                                         marker.height = 130
                                         marker.icon = icon
-                                        noClusteringCache.add(marker)
-                                        marker.position = LatLng(data[i].lat,data[i].lng)
-                                        marker.map = naverMap
                                         if(data[i].parkType==0){
                                             marker.setOnClickListener {
                                                 getMapDetailData(data[i].parkId)
@@ -575,7 +572,11 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                                 getSharedLotDetail(data[i].parkId.toLong())
                                                 false
                                             }
+                                            marker.iconTintColor = Color.DKGRAY
                                         }
+                                        noClusteringCache.add(marker)
+                                        marker.position = LatLng(data[i].lat,data[i].lng)
+                                        marker.map = naverMap
                                     }
                                 }
 

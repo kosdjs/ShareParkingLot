@@ -39,8 +39,7 @@ class TicketDetailFragment : Fragment() {
                 textParkingLotNameTicketDetail.text = it.parkingRegion
                 textNameCustomerInfoTicketDetail.text = it.nickname
                 textCarCustomerInfoTicketDetail.text = it.carNumber
-//                address information is missing
-//                textAddressTicketDetail.text =
+                textAddressTicketDetail.text = it.address
                 textPriceTicketDetail.text = "${it.cost}원"
                 textTypeTicketDetail.text = when(it.type){
                     0 -> "1시간"

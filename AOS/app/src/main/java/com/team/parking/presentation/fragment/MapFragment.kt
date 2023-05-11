@@ -430,6 +430,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun changeLocation(){
         searchViewModel.searchedPlace.observe(viewLifecycleOwner){
             searchFlag = true
+            val marker = Marker()
+            val oi = OverlayImage.fromResource(R.drawable.ic_search_mark)
+            marker.height = 130
+            marker.width= 110
+            marker.icon = oi
+            marker.position = LatLng(it.y.toDouble(),it.x.toDouble())
+            marker.map = naverMap
             naverMap.cameraPosition = CameraPosition(LatLng(it.y.toDouble(),it.x.toDouble()),15.2)
         }
     }

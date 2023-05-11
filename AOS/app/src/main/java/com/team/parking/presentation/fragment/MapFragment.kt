@@ -45,8 +45,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.LinkedHashMap
-import kotlin.system.measureTimeMillis
 
 
 private const val TAG = "MapFragment_지훈"
@@ -542,7 +540,32 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     fragmentMapBinding.btnFragmentMapOpen.visibility = View.VISIBLE
                     val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
                     val dist = nowLocation.distanceTo(beforeCenterLocation)
-                    val mapRequest = MapRequest(
+                    Log.i(TAG, "거리 : ${dist}")
+                    //현재 중심점이 이전 중심점보다 1km 차이가 나면 갱신
+                    if(dist>800){
+                        val mForLatitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180)) / 1000)*3000
+
+                        val mForLongitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180) * Math.cos(
+                            Math.toRadians(nowLocation.latitude)
+                        )) / 1000) * 3000
+                        Log.i(TAG, "${mForLatitude},${mForLongitude}")
+
+                        var mapRequest = MapRequest(
+                            naverMap.cameraPosition.target.latitude,
+                            naverMap.cameraPosition.target.longitude,
+                            naverMap.contentBounds.northWest.latitude+mForLatitude,
+                            naverMap.contentBounds.northEast.longitude+mForLongitude,
+                            naverMap.contentBounds.southWest.latitude-mForLatitude,
+                            naverMap.contentBounds.southWest.longitude-mForLongitude,
+                            naverMap.cameraPosition.zoom
+                        )
+                        getMapData(mapRequest)
+                        beforeCenterLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            removeNoClusteringMapData()
+                        }
+                    }
+                    var currentRequest = MapRequest(
                         naverMap.cameraPosition.target.latitude,
                         naverMap.cameraPosition.target.longitude,
                         naverMap.contentBounds.northWest.latitude,
@@ -551,9 +574,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                         naverMap.contentBounds.southWest.longitude ,
                         naverMap.cameraPosition.zoom
                     )
-                    requestAllMapRequest = mapRequest
-                    getMapData(mapRequest)
-                    
+                    requestAllMapRequest = currentRequest
                 }
 
             }else{

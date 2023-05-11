@@ -70,8 +70,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var requestAllMapRequest : MapRequest
     private lateinit var parkingOrderByAdapter: ParkingOrderByAdapter
     private lateinit var toast : Toast
-    private var currentType : Int = -1
 
+    private var searchFlag : Boolean = false
 
     var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
     //GPS 권한 생성
@@ -115,6 +115,10 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         init()
         toast = Toast(context)
     }
+
+    /**
+     * 한눈에 보기 어댑터 설정
+     */
 
     private fun initAdapter(){
         parkingOrderByAdapter = ParkingOrderByAdapter()
@@ -382,13 +386,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      */
     private fun changeLocation(){
         searchViewModel.searchedPlace.observe(viewLifecycleOwner){
-            val zoomUpdate = CameraUpdate.zoomTo(15.0)
-            val cameraUpdate = CameraUpdate.scrollTo(LatLng(it.y.toDouble(),it.x.toDouble()))
-            val marker = Marker(LatLng(it.y.toDouble(),it.x.toDouble()))
-            marker.iconTintColor = Color.MAGENTA
-            marker.map = naverMap
-            naverMap.moveCamera(cameraUpdate)
-            naverMap.moveCamera(zoomUpdate)
+            searchFlag = true
+            naverMap.cameraPosition = CameraPosition(LatLng(it.y.toDouble(),it.x.toDouble()),15.2)
         }
     }
 
@@ -404,9 +403,9 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     //Log.i(TAG, "서버로부터 주차장 데이터를 가져오는데 성공했습니다.")
                     response.data.let{ data->
                         if(data!!.size>0){
+                            val beforeMarkerSize = clusteringCache.size
                             //클러스러팅 마커
                             if(data!![0].parkId==-1){
-                                val beforeMarkerSize = clusteringCache.size
                                 //이전 마커들이 더 많은경우 재사용후 남은것들은 삭제
                                 if(data.size<beforeMarkerSize){
                                     for(i in 0 until data.size){
@@ -450,27 +449,90 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 }
 
                             }else{
-                                for(i in 0 until data.size){
-                                    val marker = Marker()
-                                    loadMarkerFromMemCache(data[i].feeBasic.toString())
-                                    marker.width = 130
-                                    marker.height = 130
-                                    marker.icon = icon
-                                    noClusteringCache.add(marker)
-                                    marker.position = LatLng(data[i].lat,data[i].lng)
-                                    marker.map = naverMap
-                                    if(data[i].parkType==0){
-                                        marker.setOnClickListener {
-                                            getMapDetailData(data[i].parkId)
-                                            false
+
+                                //이전 마커보다 현재 마커가 더 적은경우
+                                if(data.size<beforeMarkerSize){
+                                    for(i in 0 until data.size){
+                                        loadMarkerFromMemCache(data[i].feeBasic.toString())
+                                        noClusteringCache[i].icon = icon
+                                        noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
+                                        clusteringCache[i].map = naverMap
+                                        if(data[i].parkType==0) {
+                                            noClusteringCache[i].setOnClickListener {
+                                                getMapDetailData(data[i].parkId)
+                                                false
+                                            }
                                         }
-                                    }else{
-                                        marker.setOnClickListener {
-                                            getSharedLotDetail(data[i].parkId.toLong())
-                                            false
+                                        else{
+                                            noClusteringCache[i].setOnClickListener {
+                                                getSharedLotDetail(data[i].parkId.toLong())
+                                                false
+                                            }
                                         }
                                     }
                                 }
+                                //이전 마커들과 현재 마커가 같은경우
+                                else if(data.size==beforeMarkerSize){
+                                    for(i in 0 until data.size){
+                                        loadMarkerFromMemClurCache(data[i].feeBasic.toString())
+                                        noClusteringCache[i].icon = icon
+                                        noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
+                                        clusteringCache[i].map = naverMap
+                                        if(data[i].parkType==0){
+                                            noClusteringCache[i].setOnClickListener {
+                                                getMapDetailData(data[i].parkId)
+                                                false
+                                            }
+                                        }
+                                        else{
+                                            noClusteringCache[i].setOnClickListener {
+                                                getSharedLotDetail(data[i].parkId.toLong())
+                                                false
+                                            }
+                                        }
+                                    }
+                                }
+                                //현재 마커가 이전 마커들보다 많은 경우
+                                else{
+                                    for(i in 0 until beforeMarkerSize){
+                                        loadMarkerFromMemClurCache(data[i].feeBasic.toString())
+                                        noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
+                                        noClusteringCache[i].icon = icon
+                                        clusteringCache[i].map = naverMap
+                                        noClusteringCache[i].setOnClickListener {
+                                            if(data[i].parkType==0){
+                                                getMapDetailData(data[i].parkId)
+                                                false
+                                            }else{
+                                                getSharedLotDetail(data[i].parkId.toLong())
+                                                false
+                                            }
+                                        }
+
+                                    }
+                                    for(i in beforeMarkerSize until data.size){
+                                        val marker = Marker()
+                                        loadMarkerFromMemCache(data[i].feeBasic.toString())
+                                        marker.width = 130
+                                        marker.height = 130
+                                        marker.icon = icon
+                                        noClusteringCache.add(marker)
+                                        marker.position = LatLng(data[i].lat,data[i].lng)
+                                        marker.map = naverMap
+                                        if(data[i].parkType==0){
+                                            marker.setOnClickListener {
+                                                getMapDetailData(data[i].parkId)
+                                                false
+                                            }
+                                        }else{
+                                            marker.setOnClickListener {
+                                                getSharedLotDetail(data[i].parkId.toLong())
+                                                false
+                                            }
+                                        }
+                                    }
+                                }
+
                         }
 
                         }
@@ -520,6 +582,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 if(currentZoom<15f){
                     CoroutineScope(Dispatchers.Main).launch {
                         removeNoClusteringMapData()
+                        noClusteringCache.clear()
+                        beforeCenterLocation = LatLng(0.0,0.0)
                     }
                     fragmentMapBinding.btnFragmentMapOpen.visibility = View.GONE
                     val mapRequest = MapRequest(
@@ -540,31 +604,28 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     fragmentMapBinding.btnFragmentMapOpen.visibility = View.VISIBLE
                     val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
                     val dist = nowLocation.distanceTo(beforeCenterLocation)
-                    Log.i(TAG, "거리 : ${dist}")
                     //현재 중심점이 이전 중심점보다 1km 차이가 나면 갱신
-                    if(dist>800){
-                        val mForLatitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180)) / 1000)*3000
-
-                        val mForLongitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180) * Math.cos(
-                            Math.toRadians(nowLocation.latitude)
-                        )) / 1000) * 3000
-                        Log.i(TAG, "${mForLatitude},${mForLongitude}")
-
-                        var mapRequest = MapRequest(
-                            naverMap.cameraPosition.target.latitude,
-                            naverMap.cameraPosition.target.longitude,
-                            naverMap.contentBounds.northWest.latitude+mForLatitude,
-                            naverMap.contentBounds.northEast.longitude+mForLongitude,
-                            naverMap.contentBounds.southWest.latitude-mForLatitude,
-                            naverMap.contentBounds.southWest.longitude-mForLongitude,
-                            naverMap.cameraPosition.zoom
-                        )
-                        getMapData(mapRequest)
-                        beforeCenterLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
-                        CoroutineScope(Dispatchers.Main).launch {
-                            removeNoClusteringMapData()
-                        }
+                    CoroutineScope(Dispatchers.Main).launch {
+                        removeNoClusteringMapData()
                     }
+                    val mForLatitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180)) / 1000)*2000
+                    val mForLongitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180) * Math.cos(
+                        Math.toRadians(nowLocation.latitude)
+                    )) / 1000) * 2000
+                    Log.i(TAG, "${mForLatitude},${mForLongitude}")
+
+                    var mapRequest = MapRequest(
+                        naverMap.cameraPosition.target.latitude,
+                        naverMap.cameraPosition.target.longitude,
+                        naverMap.contentBounds.northWest.latitude+mForLatitude,
+                        naverMap.contentBounds.northEast.longitude+mForLongitude,
+                        naverMap.contentBounds.southWest.latitude-mForLatitude,
+                        naverMap.contentBounds.southWest.longitude-mForLongitude,
+                        naverMap.cameraPosition.zoom
+                    )
+                    getMapData(mapRequest)
+                    beforeCenterLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
+
                     var currentRequest = MapRequest(
                         naverMap.cameraPosition.target.latitude,
                         naverMap.cameraPosition.target.longitude,
@@ -589,7 +650,15 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         }
     }
 
-
+    private fun getMapRequest(
+        centerLatitude : Double,
+        centerLongitude : Double,
+        endLatitude : Double,
+        endLongitude : Double,
+        startLatitude : Double,
+        startLongitude : Double,
+        zoomLevel : Double
+    ) : MapRequest = MapRequest(centerLatitude,centerLongitude,endLatitude,endLongitude,startLatitude,startLongitude,zoomLevel)
 
     /**
      * 이미지 크기 구하기

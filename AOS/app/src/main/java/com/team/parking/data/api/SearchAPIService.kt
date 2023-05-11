@@ -1,5 +1,6 @@
 package com.team.parking.data.api
 
+import com.team.parking.data.model.map.SearchAddressResponse
 import com.team.parking.data.model.map.SearchKeyWordResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -14,4 +15,9 @@ interface SearchAPIService {
         @Query("query") query : String
     ) : Response<SearchKeyWordResponse>
 
+    @GET("v2/local/search/address.json")
+    suspend fun getSearchAddress(
+        @Header("Authorization") key : String,
+        @Query("query") query : String
+    ) : Response<SearchAddressResponse>
 }

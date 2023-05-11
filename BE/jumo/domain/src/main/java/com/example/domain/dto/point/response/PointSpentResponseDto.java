@@ -13,6 +13,7 @@ public class PointSpentResponseDto {
     private String lotName;
     private String transactionDate;
     private int ptLose;
+    private int type;
 
     @Builder
     public PointSpentResponseDto(Transaction transaction) {
@@ -20,5 +21,6 @@ public class PointSpentResponseDto {
         this.lotName = transaction.getLot_name();
         this.transactionDate = transaction.getTransactionDate();
         this.ptLose = transaction.getPtLose();
+        this.type = transaction.getType();
     }
 }

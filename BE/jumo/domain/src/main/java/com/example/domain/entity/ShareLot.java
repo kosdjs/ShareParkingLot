@@ -1,7 +1,7 @@
 package com.example.domain.entity;
 
 
-import com.example.domain.dto.ShareSaveDto;
+import com.example.domain.dto.parking.ShareSaveDto;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +37,8 @@ public class ShareLot {
 
     private int sha_field;
 
-    private int sha_fee;
+    @Column(name = "sha_fee")
+    private int shaFee;
 
     @Column(columnDefinition="TEXT")
     private String sha_prop;
@@ -46,23 +47,28 @@ public class ShareLot {
 
     private float longitude;
 
+    @Builder.Default
     @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
     private List<Favorite> favoriteList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
     private List<DayData> dayDataList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "shareLot", cascade = CascadeType.ALL)
     private List<Ticket> ticketList = new ArrayList<>();
 
     public static ShareLotBuilder builder(ShareSaveDto shareSaveDto, User user) {
         return ShareLotBuilder()
+                .user(user)
                 .latitude(shareSaveDto.getLatitude())
                 .longitude(shareSaveDto.getLongitude())
-                .sha_fee(shareSaveDto.getShaFee())
+                .shaFee(shareSaveDto.getShaFee())
                 .sha_field(shareSaveDto.getShaField())
                 .sha_jibun(shareSaveDto.getJibun())
                 .sha_road(shareSaveDto.getRoad())

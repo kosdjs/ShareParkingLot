@@ -41,15 +41,18 @@ public class Transaction {
     @Column(name = "sha_id")
     private Long sha_id;
 
+    private int type;
+
     @Builder
-    public Transaction(User user, String name, int get, int lose, Long sha_id)
+    public Transaction(User user, String name, int get, int lose, Long shaId, int type)
     {
         this.user = user;
         this.transactionDate = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         this.lot_name = name;
         this.ptGet = get;
         this.ptLose = lose;
-        this.sha_id = sha_id;
+        this.sha_id = shaId;
+        this.type = type;
     }
 
 }

@@ -56,7 +56,8 @@ public class ParkingLot {
 
     private int fee_basic;
 
-    private int per_basic;
+    @Column(name = "per_basic")
+    private int perBasic;
 
     private int plus_time;
 
@@ -70,6 +71,7 @@ public class ParkingLot {
 
     private String special_prop;
 
+    @Builder.Default
     @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL)
     private List<Favorite> favoriteList = new ArrayList<>();
 

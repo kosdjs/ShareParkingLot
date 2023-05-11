@@ -1,4 +1,4 @@
-package com.example.domain.dto;
+package com.example.domain.dto.parking;
 
 
 import lombok.AllArgsConstructor;
@@ -15,6 +15,7 @@ public class ShareSaveDto {
 
     private int shaType;
     private String shaName;
+    private Long userId;
     private String jibun;
     private String road;
     private int shaField;

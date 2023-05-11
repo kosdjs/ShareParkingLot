@@ -1,7 +1,8 @@
 package com.example.jumoparking.service.impl;
 
-import com.example.domain.dto.*;
+import com.example.domain.dto.parking.*;
 import com.example.domain.entity.*;
+import com.example.domain.etc.DayName;
 import com.example.domain.repo.*;
 import com.example.jumoparking.service.ShareLotService;
 import com.google.cloud.storage.Acl;
@@ -10,7 +11,6 @@ import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -29,6 +29,8 @@ public class ShareLotServiceImpl implements ShareLotService {
 
     private final UserRepo userRepo;
 
+    private final DayDataRepo dayDataRepo;
+
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String drawingStorage;
 
@@ -36,16 +38,9 @@ public class ShareLotServiceImpl implements ShareLotService {
 
 
     @Override
-    public Long saveShareLot(ShareSaveDto shareSaveDto,Long userId, List<MultipartFile> files) throws IOException {
-
-        Optional<User> user = userRepo.findById(userId);
+    public Long saveShareLot(ShareSaveDto shareSaveDto, List<MultipartFile> files) throws IOException {
+        Optional<User> user = userRepo.findById(shareSaveDto.getUserId());
         ShareLot shareLot = ShareLot.builder(shareSaveDto, user.get()).build();
-
-        System.out.println(shareLot.getSha_jibun());
-
-        if(files == null){
-            System.out.println("파일 아예 null");
-        }
 
         if(files == null || files.size() == 0){
             shareLot = shareLotRepo.save(shareLot);
@@ -54,11 +49,21 @@ public class ShareLotServiceImpl implements ShareLotService {
 
                 return -1L;
             }
+            for (DayName dayName : DayName.values()){
+                DayData dayData = DayData.DayDataBuilder()
+                        .shareLot(shareLot)
+                        .dayStr(dayName)
+                        .day_start(-1)
+                        .day_end(-1)
+                        .enable(false)
+                        .build();
+
+                dayDataRepo.save(dayData);
+            }
+
             return shareLot.getShaId();
         }
         else{
-            System.out.println(files.size() + "파일이 들어오긴 하네?");
-
             shareLot = shareLotRepo.save(shareLot);
 
             for (MultipartFile file : files){
@@ -82,6 +87,18 @@ public class ShareLotServiceImpl implements ShareLotService {
 
                 image = imageRepo.save(image);
 
+            }
+
+            for (DayName dayName : DayName.values()){
+                DayData dayData = DayData.DayDataBuilder()
+                        .shareLot(shareLot)
+                        .dayStr(dayName)
+                        .day_start(-1)
+                        .day_end(-1)
+                        .enable(false)
+                        .build();
+
+                dayDataRepo.save(dayData);
             }
 
 
@@ -110,8 +127,17 @@ public class ShareLotServiceImpl implements ShareLotService {
     }
 
     @Override
-    public ParkingDetailDto getDetail(Long parkId) {
-        return new ParkingDetailDto(shareLotRepo.findById(parkId).get());
+    public ParkingDetailDto getDetail(Long parkId, Long userId) {
+        ShareLot shareLot = shareLotRepo.findById(parkId).get();
+        List<Favorite> favorites = shareLot.getFavoriteList();
+        boolean isFavorite = false;
+        for (Favorite favorite: favorites){
+            if (favorite.getUser().getUserId() == userId){
+                isFavorite = true;
+                break;
+            }
+        }
+        return new ParkingDetailDto(shareLot, isFavorite);
     }
 
     @Override
@@ -139,6 +165,5 @@ public class ShareLotServiceImpl implements ShareLotService {
 
         return shareLots.stream().map(shareLot -> new MyShareListDto(shareLot.getShaId(), shareLot.getSha_name())).collect(Collectors.toList());
     }
-
 
 }

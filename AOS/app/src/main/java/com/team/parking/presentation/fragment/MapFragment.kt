@@ -77,6 +77,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var parkingOrderByAdapter: ParkingOrderByAdapter
     private lateinit var toast : Toast
 
+    private var watchFlag = false
     private var searchFlag : Boolean = false
 
     var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
@@ -285,11 +286,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         // 한눈에 보기로 이동
         listBottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if(newState==BottomSheetBehavior.STATE_COLLAPSED){
-                    Log.i(TAG, "onStateChanged: ")
-                }else if(newState==BottomSheetBehavior.STATE_EXPANDED){
-                    Log.i(TAG, "onStateChanged: ")
-                }
+                watchFlag = newState != BottomSheetBehavior.STATE_HIDDEN
+
             }
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
@@ -498,7 +496,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 //이전 마커보다 현재 마커가 더 적은경우
                                 if(data.size<beforeMarkerSize){
                                     for(i in 0 until data.size){
-                                        loadMarkerFromMemCache(data[i].feeBasic.toString())
+                                        if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
+                                        else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         noClusteringCache[i].icon = icon
                                         noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
                                         clusteringCache[i].map = naverMap
@@ -540,7 +539,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 //현재 마커가 이전 마커들보다 많은 경우
                                 else{
                                     for(i in 0 until beforeMarkerSize){
-                                        loadMarkerFromMemClurCache(data[i].feeBasic.toString())
+                                        if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
+                                        else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
                                         noClusteringCache[i].icon = icon
                                         clusteringCache[i].map = naverMap
@@ -557,7 +557,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                     }
                                     for(i in beforeMarkerSize until data.size){
                                         val marker = Marker()
-                                        loadMarkerFromMemCache(data[i].feeBasic.toString())
+                                        if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
+                                        else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         marker.width = 130
                                         marker.height = 130
                                         marker.icon = icon
@@ -785,6 +786,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         setTabLayout()
         initMarkerData()
         initAdapter()
+
     }
 
     /**
@@ -808,6 +810,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         mapSetting()
         getMapDataFromRemote()
         changeLocation()
+        onCkickMapListener()
     }
 
 
@@ -907,6 +910,12 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             getParkingOrderByPrice(requestAllMapRequest)
     }
 
+    // 한눈에 보기중 맵 클릭시 한눈에 보기 닫기
+    fun onCkickMapListener(){
+        naverMap.setOnMapClickListener { pointF, latLng ->
+            if(watchFlag) listBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+    }
 }
 
 

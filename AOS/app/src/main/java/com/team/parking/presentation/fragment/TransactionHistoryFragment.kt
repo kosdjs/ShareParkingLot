@@ -56,25 +56,31 @@ class TransactionHistoryFragment : Fragment() {
         transactionHistoryViewModel.month.observe(viewLifecycleOwner){
             calendar.set(Calendar.MONTH, it-1)
             setMonthText()
-            if(transactionHistoryViewModel.earned){
-                transactionHistoryViewModel.getEarnedPoint(userViewModel.userLiveData.value!!.user_id)
-            } else {
-                transactionHistoryViewModel.getSpentPoint(userViewModel.userLiveData.value!!.user_id)
-            }
+            getList()
         }
         transactionHistoryViewModel.year.observe(viewLifecycleOwner){
             calendar.set(Calendar.YEAR, it)
             setMonthText()
-            if(transactionHistoryViewModel.earned){
-                transactionHistoryViewModel.getEarnedPoint(userViewModel.userLiveData.value!!.user_id)
-            } else {
-                transactionHistoryViewModel.getSpentPoint(userViewModel.userLiveData.value!!.user_id)
-            }
+            getList()
         }
         transactionHistoryViewModel.earnedPointList.observe(viewLifecycleOwner){
+            var total = 0
+            if(transactionHistoryViewModel.earned){
+                for (response in it){
+                    total += response.ptGet
+                }
+                fragmentTransactionHistoryBinding.textTotalPriceTransactionHistory.text = "${total}"
+            }
             earnedPointAdapter.differ.submitList(it)
         }
         transactionHistoryViewModel.spentPointList.observe(viewLifecycleOwner){
+            var total = 0
+            if(!transactionHistoryViewModel.earned){
+                for (response in it){
+                    total += response.ptLose
+                }
+                fragmentTransactionHistoryBinding.textTotalPriceTransactionHistory.text = "${total}"
+            }
             spentPointAdapter.differ.submitList(it)
         }
         transactionHistoryViewModel.setMonth(calendar.get(Calendar.MONTH) + 1)
@@ -95,6 +101,7 @@ class TransactionHistoryFragment : Fragment() {
                 //recyclerview
                 transactionHistoryViewModel.earned = false
                 recyclerViewTransactionHistory.adapter = spentPointAdapter
+                getList()
             }
             layoutSellTransactionHistory.setOnClickListener {
                 textTitlePurchaseTransactionHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
@@ -106,6 +113,7 @@ class TransactionHistoryFragment : Fragment() {
                 //recyclerview
                 transactionHistoryViewModel.earned = true
                 recyclerViewTransactionHistory.adapter = earnedPointAdapter
+                getList()
             }
             imageLeftMonthTransactionHistory.setOnClickListener {
                 transactionHistoryViewModel.setPreviousMonth()
@@ -122,6 +130,14 @@ class TransactionHistoryFragment : Fragment() {
         fragmentTransactionHistoryBinding.apply {
             val formatter = SimpleDateFormat("yyyy.MM")
             textMonthTransactionHistory.text = formatter.format(calendar.time)
+        }
+    }
+
+    fun getList(){
+        if(transactionHistoryViewModel.earned){
+            transactionHistoryViewModel.getEarnedPoint(userViewModel.userLiveData.value!!.user_id)
+        } else {
+            transactionHistoryViewModel.getSpentPoint(userViewModel.userLiveData.value!!.user_id)
         }
     }
 }

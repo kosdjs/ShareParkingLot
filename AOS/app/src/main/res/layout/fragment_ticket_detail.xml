@@ -149,27 +149,27 @@
             android:id="@+id/text_title_type_ticket_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
             android:text="이용 시간"
             android:textColor="@color/black"
             android:textSize="24sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/text_title_price_ticket_detail"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_address_ticket_detail" />
+            app:layout_constraintTop_toTopOf="@+id/text_title_price_ticket_detail" />
 
         <TextView
             android:id="@+id/text_type_ticket_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
             android:text="3시간"
             android:textColor="#38000000"
             android:textSize="24sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/text_price_ticket_detail"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_title_type_ticket_detail" />
+            app:layout_constraintTop_toTopOf="@+id/text_price_ticket_detail" />
 
         <TextView
             android:id="@+id/text_title_picture_ticket_detail"
@@ -243,14 +243,14 @@
             android:id="@+id/text_car_customer_info_ticket_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="24dp"
             android:text="차 번호"
             android:textColor="#38000000"
             android:textSize="24sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/text_name_customer_info_ticket_detail"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_title_customer_info_ticket_detail" />
+            app:layout_constraintTop_toTopOf="@+id/text_name_customer_info_ticket_detail" />
 
         <TextView
             android:id="@+id/text_status_ticket_detail"

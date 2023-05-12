@@ -70,6 +70,7 @@ class UserViewModel(
     var _login_email: String = ""
     var _login_password: String = ""
     var _social_id: String = ""
+
     var validTime: MutableLiveData<String> = MutableLiveData()
     val timeLiveData: LiveData<String> get() = validTime
     var _changePhone : MutableLiveData<Boolean> = MutableLiveData(true)

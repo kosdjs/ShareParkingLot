@@ -3,7 +3,6 @@ package com.example.jumouser.service.impl;
 import com.example.domain.dto.PushNotiDto;
 import com.example.domain.dto.point.request.TicketCreateRequestDto;
 import com.example.domain.dto.point.response.*;
-import com.example.domain.dto.user.UserInfoDto;
 import com.example.domain.entity.*;
 import com.example.domain.etc.DayName;
 import com.example.domain.etc.OutTiming;
@@ -11,21 +10,14 @@ import com.example.domain.repo.*;
 import com.example.error.exception.InputException;
 import com.example.error.exception.SaveException;
 import com.example.jumouser.service.TicketService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.validation.constraints.AssertFalse;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,23 +37,25 @@ public class TicketServiceImpl implements TicketService {
     private final OutTiming outTiming;
     private final DayDataRepo dayDataRepo;
 
-    private static TypeResponseDto calcuateAvailability(boolean[] occupied, int time, boolean allDay) {
+    // 유효 주차권 계산 메서드
+    private static TypeResponseDto calculateAvailability(boolean[] occupied, int time, boolean allDay) {
         if (!occupied[time]) {
             return new TypeResponseDto(false, false, false, false);
         } else {
-            // 다른 경우 1시간 권 무조건 가능
             boolean oneHour = true;
             boolean threeHours = true;
             boolean fiveHours = true;
             for (int j = 1; j < 6; j++) {
-                // 3시간 이내 주차불가 시 3시간 5시간 권 사용 불가
+                // 1시간 권 불가 시 나머지 이용권 불가
                 if (!occupied[time + j]) {
                     if (j == 1) {
                         oneHour = false;
                         threeHours = false;
                         fiveHours = false;
                         break;
-                    } else if (j < 4) {
+                    }
+                    // 3시간 권 불가 시 5시간 권 불가
+                    else if (j < 4) {
                         threeHours = false;
                         fiveHours = false;
                         break;
@@ -108,7 +102,7 @@ public class TicketServiceImpl implements TicketService {
 
             // 먼저 발권한 티켓이 없다면 종일권 가능
             if (existingTickets.isEmpty()) {
-                return calcuateAvailability(occupied, time, true);
+                return calculateAvailability(occupied, time, true);
                 } else {
 
                 // 모든 선행 티켓에서 예약된 시간 false 만들기
@@ -121,7 +115,7 @@ public class TicketServiceImpl implements TicketService {
                     }
                 }
                 // 선행 티켓 존재 시 종일권 불가능
-                return calcuateAvailability(occupied, time, false);
+                return calculateAvailability(occupied, time, false);
             }
         }
         return null;
@@ -192,7 +186,12 @@ public class TicketServiceImpl implements TicketService {
         Optional<Ticket> currTicket = ticketRepo.findById(ticketId);
 
         if (currTicket.isPresent()) {
-            return new TicketDetailResponseDto(outTiming, currTicket.get());
+            String buyerNumber = currTicket.get().getBuyer().getPhone();
+            Long sellerId = currTicket.get().getSellerId();
+            Optional<User> seller = userRepo.findById(sellerId);
+            String sellerNumber = seller.get().getPhone();
+
+            return new TicketDetailResponseDto(outTiming, currTicket.get(), buyerNumber, sellerNumber);
         }
         throw new IllegalStateException();
     }

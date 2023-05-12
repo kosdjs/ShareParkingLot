@@ -33,9 +33,11 @@ public class TicketDetailResponseDto {
     private List<String> images;
     private boolean sellConfirm;
     private boolean buyConfirm;
+    private String buyerNumber;
+    private String sellerNumber;
 
     @Builder
-    public TicketDetailResponseDto(OutTiming outTiming, Ticket ticket) {
+    public TicketDetailResponseDto(OutTiming outTiming, Ticket ticket, String buyerNumber, String sellerNumber) {
         this.outTiming = outTiming;
         this.ticketId = ticket.getTicket_id();
         this.parkingRegion = ticket.getParkingRegion();
@@ -55,5 +57,7 @@ public class TicketDetailResponseDto {
         this.images = imageUrl;
         this.sellConfirm = ticket.isSell_confirm();
         this.buyConfirm = ticket.isBuy_confirm();
+        this.buyerNumber = buyerNumber;
+        this.sellerNumber = sellerNumber;
     }
 }

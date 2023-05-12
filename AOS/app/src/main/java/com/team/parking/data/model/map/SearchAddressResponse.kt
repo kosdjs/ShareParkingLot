@@ -7,8 +7,8 @@ data class SearchAddressResponse (
 data class AddressResponse (
     var y: String,
     var x: String,
-    var address: Address,
-    var road_address: RoadAddress
+    var address: Address?,
+    var road_address: RoadAddress?
 )
 
 data class Address(

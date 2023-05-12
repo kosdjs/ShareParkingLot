@@ -45,54 +45,59 @@ class PurchaseTicketFragment : Fragment() {
         userViewModel = (activity as MainActivity).userViewModel
         carViewModel = (activity as MainActivity).carViewModel
         carViewModel.getCarList(userViewModel.userLiveData.value!!.user_id)
-        purchaseTicketViewModel = ViewModelProvider(this, purchaseTicketViewModelFactory)[PurchaseTicketViewModel::class.java]
-        purchaseTicketViewModel.ticketCreateRequest.shaId = mapViewModel.sharedPark.value!!.data!!.parkId.toLong()
-        carViewModel.carList.observe(viewLifecycleOwner){
-            if (it.isNotEmpty()){
-                purchaseTicketViewModel.ticketCreateRequest.carNumber = carViewModel.carList.value!![0].carStr
+        purchaseTicketViewModel = ViewModelProvider(
+            this,
+            purchaseTicketViewModelFactory
+        )[PurchaseTicketViewModel::class.java]
+        purchaseTicketViewModel.ticketCreateRequest.shaId =
+            mapViewModel.sharedPark.value!!.data!!.parkId.toLong()
+        carViewModel.carList.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                purchaseTicketViewModel.ticketCreateRequest.carNumber =
+                    carViewModel.carList.value!![0].carStr
                 carAvailable = true
             }
         }
-        purchaseTicketViewModel.ticketAvailable.observe(viewLifecycleOwner){
+        purchaseTicketViewModel.ticketAvailable.observe(viewLifecycleOwner) {
             binding.apply {
                 select1HourTicket.isEnabled = it.oneHour
                 select3HourTicket.isEnabled = it.threeHours
                 select5HourTicket.isEnabled = it.fiveHours
                 selectAllDayTicket.isEnabled = it.allDay
-                if(!it.oneHour){
+                if (!it.oneHour) {
                     select1HourTicket.isChecked = false
-                    if(purchaseTicketViewModel.ticketCreateRequest.type == 0){
+                    if (purchaseTicketViewModel.ticketCreateRequest.type == 0) {
                         purchaseTicketViewModel.ticketCreateRequest.type = -1
                         purchaseTicketViewModel.setExpectedPrice(0)
                     }
                 }
-                if(!it.threeHours){
+                if (!it.threeHours) {
                     select3HourTicket.isChecked = false
-                    if(purchaseTicketViewModel.ticketCreateRequest.type == 1){
+                    if (purchaseTicketViewModel.ticketCreateRequest.type == 1) {
                         purchaseTicketViewModel.ticketCreateRequest.type = -1
                         purchaseTicketViewModel.setExpectedPrice(0)
                     }
                 }
-                if(!it.fiveHours){
+                if (!it.fiveHours) {
                     select5HourTicket.isChecked = false
-                    if(purchaseTicketViewModel.ticketCreateRequest.type == 2){
+                    if (purchaseTicketViewModel.ticketCreateRequest.type == 2) {
                         purchaseTicketViewModel.ticketCreateRequest.type = -1
                         purchaseTicketViewModel.setExpectedPrice(0)
                     }
                 }
-                if(!it.allDay){
+                if (!it.allDay) {
                     selectAllDayTicket.isChecked = false
-                    if(purchaseTicketViewModel.ticketCreateRequest.type == 3){
+                    if (purchaseTicketViewModel.ticketCreateRequest.type == 3) {
                         purchaseTicketViewModel.ticketCreateRequest.type = -1
                         purchaseTicketViewModel.setExpectedPrice(0)
                     }
                 }
             }
         }
-        purchaseTicketViewModel.startHour.observe(viewLifecycleOwner){
+        purchaseTicketViewModel.startHour.observe(viewLifecycleOwner) {
             binding.textStartTimePurchaseTicket.text = "${it}:00"
         }
-        purchaseTicketViewModel.expectedPrice.observe(viewLifecycleOwner){
+        purchaseTicketViewModel.expectedPrice.observe(viewLifecycleOwner) {
             binding.textExpectedPricePurchaseTicket.text = "${it} P"
         }
         binding.apply {
@@ -101,7 +106,7 @@ class PurchaseTicketFragment : Fragment() {
             val calendar = Calendar.getInstance()
             val dayFormatter = SimpleDateFormat("yyyy-MM-dd")
             textTimePurchaseTicket.text = "${dayFormatter.format(calendar.time)} ${
-                when(calendar.get(Calendar.DAY_OF_WEEK)){
+                when (calendar.get(Calendar.DAY_OF_WEEK)) {
                     1 -> "일요일"
                     2 -> "월요일"
                     3 -> "화요일"
@@ -125,32 +130,32 @@ class PurchaseTicketFragment : Fragment() {
                     purchaseTicketViewModel.getTicketAvailable(mapViewModel.sharedPark.value!!.data!!.parkId.toLong())
                 }
             }
-            select1HourTicket.setOnCheckedChangeListener {it, checked ->
-                if(checked){
+            select1HourTicket.setOnCheckedChangeListener { it, checked ->
+                if (checked) {
                     clearCheck()
                     it.isChecked = true
                     purchaseTicketViewModel.ticketCreateRequest.type = 0
                     purchaseTicketViewModel.setExpectedPrice(mapViewModel.sharedPark.value!!.data!!.feeBasic)
                 }
             }
-            select3HourTicket.setOnCheckedChangeListener {it, checked ->
-                if(checked){
+            select3HourTicket.setOnCheckedChangeListener { it, checked ->
+                if (checked) {
                     clearCheck()
                     it.isChecked = true
                     purchaseTicketViewModel.ticketCreateRequest.type = 1
                     purchaseTicketViewModel.setExpectedPrice(mapViewModel.sharedPark.value!!.data!!.feeBasic * 3)
                 }
             }
-            select5HourTicket.setOnCheckedChangeListener {it, checked ->
-                if(checked){
+            select5HourTicket.setOnCheckedChangeListener { it, checked ->
+                if (checked) {
                     clearCheck()
                     it.isChecked = true
                     purchaseTicketViewModel.ticketCreateRequest.type = 2
                     purchaseTicketViewModel.setExpectedPrice(mapViewModel.sharedPark.value!!.data!!.feeBasic * 5)
                 }
             }
-            selectAllDayTicket.setOnCheckedChangeListener {it, checked ->
-                if(checked){
+            selectAllDayTicket.setOnCheckedChangeListener { it, checked ->
+                if (checked) {
                     clearCheck()
                     it.isChecked = true
                     purchaseTicketViewModel.ticketCreateRequest.type = 3
@@ -158,19 +163,25 @@ class PurchaseTicketFragment : Fragment() {
                 }
             }
             buttonPurchasePurchaseTicket.setOnClickListener {
-                if(checkAgreementPurchaseTicket.isChecked){
+                if (checkAgreementPurchaseTicket.isChecked) {
                     //purchase
-                    if(purchaseTicketViewModel.ticketCreateRequest.type != -1){
-                        if(purchaseTicketViewModel.expectedPrice.value!! <= userViewModel.userLiveData.value!!.pt_has){
-                            if(carAvailable){
+                    if (purchaseTicketViewModel.ticketCreateRequest.type != -1) {
+                        if (purchaseTicketViewModel.expectedPrice.value!! <= userViewModel.userLiveData.value!!.pt_has) {
+                            if (carAvailable) {
                                 purchaseTicketViewModel.postTicketAvailable(userViewModel.userLiveData.value!!.user_id)
-                                Toast.makeText(requireContext(), "주차권이 구매되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "주차권이 구매되었습니다.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 requireActivity().onBackPressed()
                             } else {
-                                Toast.makeText(requireContext(), "차량을 등록해주세요.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "차량을 등록해주세요.", Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         } else {
-                            Toast.makeText(requireContext(), "포인트 잔액이 부족합니다.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "포인트 잔액이 부족합니다.", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     } else {
                         Toast.makeText(requireContext(), "주차권을 선택해주세요.", Toast.LENGTH_SHORT).show()
@@ -185,14 +196,14 @@ class PurchaseTicketFragment : Fragment() {
         }
     }
 
-    fun showTimePickerDialog(onTimeSetListener: OnTimeSetListener){
+    fun showTimePickerDialog(onTimeSetListener: OnTimeSetListener) {
         val timePickerDialog = TimePickerDialog.newInstance(onTimeSetListener, false)
         timePickerDialog.enableMinutes(false)
         timePickerDialog.setMinTime(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + 1, 0, 0)
         timePickerDialog.show(parentFragmentManager, "")
     }
 
-    fun clearCheck(){
+    fun clearCheck() {
         binding.apply {
             select1HourTicket.isChecked = false
             select3HourTicket.isChecked = false

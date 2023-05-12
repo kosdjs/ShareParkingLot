@@ -45,9 +45,41 @@ public class TicketServiceImpl implements TicketService {
     private final OutTiming outTiming;
     private final DayDataRepo dayDataRepo;
 
+    private static TypeResponseDto calcuateAvailability(boolean[] occupied, int time, boolean allDay) {
+        if (!occupied[time]) {
+            return new TypeResponseDto(false, false, false, false);
+        } else {
+            // 다른 경우 1시간 권 무조건 가능
+            boolean oneHour = true;
+            boolean threeHours = true;
+            boolean fiveHours = true;
+            for (int j = 1; j < 6; j++) {
+                // 3시간 이내 주차불가 시 3시간 5시간 권 사용 불가
+                if (!occupied[time + j]) {
+                    if (j == 1) {
+                        oneHour = false;
+                        threeHours = false;
+                        fiveHours = false;
+                        break;
+                    } else if (j < 4) {
+                        threeHours = false;
+                        fiveHours = false;
+                        break;
+                    }
+                    // 5시간 이내 주차불가 시 5시간 권 사용 불가
+                    else {
+                        fiveHours = false;
+                    }
+                }
+            }
+            return new TypeResponseDto(oneHour, threeHours, fiveHours, allDay);
+        }
+    }
+
     @Override
     @Transactional(readOnly = true)
     public TypeResponseDto getTypeAvailability(Long shaId, int time) {
+
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
         String date = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String day = now.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.US);
@@ -57,7 +89,6 @@ public class TicketServiceImpl implements TicketService {
         
         int startTime = currDayData.get().getDay_start();
         int endTime = currDayData.get().getDay_end();
-        
 
         if (currShareLot.isPresent()) {
             if (startTime == -1 && endTime == -1) {
@@ -71,37 +102,14 @@ public class TicketServiceImpl implements TicketService {
             for (int i = startTime; i < endTime + 1; i++) {
                 occupied[i] = true;
             }
+
             // 해당하는 공유 주차장의 모든 당일 티켓 가져오기
             List<Ticket> existingTickets = ticketRepo.findAllByShareLotAndParkingDate(currShareLot.get(), date);
 
-            // 먼저 발권한 티켓이 없다면
+            // 먼저 발권한 티켓이 없다면 종일권 가능
             if (existingTickets.isEmpty()) {
-                if (!occupied[time]) {
-                    return new TypeResponseDto(false, false, false, false);
+                return calcuateAvailability(occupied, time, true);
                 } else {
-                    // 다른 경우 1시간 권 무조건 가능
-                    boolean oneHour = true;
-                    boolean threeHours = true;
-                    boolean fiveHours = true;
-                    for (int j = 1; j < 6; j++) {
-                        // 3시간 이내 주차불가 시 3시간 5시간 권 사용 불가
-                        if (!occupied[time + j]) {
-                            if (j < 4) {
-                                threeHours = false;
-                                fiveHours = false;
-                                break;
-                            }
-                            // 5시간 이내 주차불가 시 5시간 권 사용 불가
-                            else {
-                                fiveHours = false;
-                            }
-                        }
-                    }
-                    return new TypeResponseDto(oneHour, threeHours, fiveHours, true);
-                }
-            } else {
-                // 선행 티켓 존재 시 종일권 불가능
-                boolean allDay = false;
 
                 // 모든 선행 티켓에서 예약된 시간 false 만들기
                 for (Ticket ticket : existingTickets) {
@@ -112,30 +120,8 @@ public class TicketServiceImpl implements TicketService {
                         occupied[i] = false;
                     }
                 }
-                // 예약된 시간과 겹치면 무조건 불가능
-                if (!occupied[time]) {
-                    return new TypeResponseDto(false, false, false, false);
-                } else {
-                    // 다른 경우 1시간 권 무조건 가능
-                    boolean oneHour = true;
-                    boolean threeHours = true;
-                    boolean fiveHours = true;
-                    for (int j = 1; j < 6; j++) {
-                        // 3시간 이내 주차불가 시 3시간 5시간 권 사용 불가
-                        if (!occupied[time + j]) {
-                            if (j < 4) {
-                                threeHours = false;
-                                fiveHours = false;
-                                break;
-                            }
-                            // 5시간 이내 주차불가 시 5시간 권 사용 불가
-                            else {
-                                fiveHours = false;
-                            }
-                        }
-                    }
-                    return new TypeResponseDto(oneHour, threeHours, fiveHours, allDay);
-                }
+                // 선행 티켓 존재 시 종일권 불가능
+                return calcuateAvailability(occupied, time, false);
             }
         }
         return null;

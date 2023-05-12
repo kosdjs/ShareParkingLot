@@ -1,5 +1,6 @@
 package com.team.parking.presentation.di
 
+
 import com.team.parking.data.api.MapAPIService
 import com.team.parking.data.api.SearchAPIService
 import com.team.parking.data.api.UserAPIService
@@ -9,6 +10,11 @@ import com.team.parking.data.repository.dataSource.UserRemoteDataSource
 import com.team.parking.data.repository.localSource.dataSourceImpl.MapRemoteDataSourceImpl
 import com.team.parking.data.repository.localSource.dataSourceImpl.SearchRemoteDataSourceImpl
 import com.team.parking.data.repository.localSource.dataSourceImpl.UserRemoteDataSourceImpl
+
+import com.team.parking.data.api.*
+import com.team.parking.data.repository.dataSource.*
+import com.team.parking.data.repository.dataSourceImpl.*
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +29,7 @@ class RemoteDataModule {
     @Provides
     fun provideMapRemoteDataSource(
         mapAPIService: MapAPIService
-    ):MapRemoteDataSource{
+    ): MapRemoteDataSource {
         return MapRemoteDataSourceImpl(mapAPIService)
     }
 
@@ -35,12 +41,51 @@ class RemoteDataModule {
         return SearchRemoteDataSourceImpl(searchAPIService)
     }
 
-
     @Singleton
     @Provides
     fun provideUserRemoteDataSource(
         userAPIService: UserAPIService
     ) : UserRemoteDataSource {
         return UserRemoteDataSourceImpl(userAPIService)
+
+    @Singleton
+    @Provides
+    fun provideShareLotRemoteDataSource(
+        shareLotAPIService: ShareLotAPIService
+    ) : ShareLotRemoteDataSource{
+        return ShareLotRemoteDataSourceImpl(shareLotAPIService)
+    }
+
+    @Singleton
+    @Provides
+    fun providePointRemoteDataSource(
+        pointAPIService: PointAPIService
+    ) : PointRemoteDataSource{
+        return PointRemoteDataSourceImpl(pointAPIService)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCarRemoteDataSource(
+        carAPIService: CarAPIService
+    ) : CarRemoteDataSource{
+        return CarRemoteDataSourceImpl(carAPIService)
+    }
+
+    @Singleton
+    @Provides
+    fun provideTicketRemoteDataSource(
+        ticketAPIService: TicketAPIService
+    ) : TicketRemoteDataSource{
+        return TicketRemoteDataSourceImpl(ticketAPIService)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFavoriteRemoteDataSource(
+        favoriteAPIService: FavoriteAPIService
+    ) : FavoriteRemoteDataSource{
+        return FavoriteRemoteDataSourceImpl(favoriteAPIService)
+
     }
 }

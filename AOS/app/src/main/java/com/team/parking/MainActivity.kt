@@ -15,6 +15,9 @@ import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.team.parking.databinding.ActivityMainBinding
+
+
+import com.team.parking.presentation.utils.App
 import com.team.parking.databinding.SideHeaderBinding
 import com.team.parking.presentation.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,8 +35,36 @@ class MainActivity : AppCompatActivity() {
     lateinit var searchViewModelFactory: SearchViewModelFactory
     lateinit var searchViewModel: SearchViewModel
 
+
     @Inject
     lateinit var userViewModelFactory: UserViewModelFactory
+
+    lateinit var searchAddressViewModel: SearchAddressViewModel
+
+    @Inject
+    lateinit var shareParkingLotViewModelFactory: ShareParkingLotViewModelFactory
+    lateinit var shareParkingLotViewModel: ShareParkingLotViewModel
+
+    @Inject
+    lateinit var daySelectViewModelFactory: DaySelectViewModelFactory
+    lateinit var daySelectViewModel: DaySelectViewModel
+
+    @Inject
+    lateinit var pointViewModelFactory: PointViewModelFactory
+    lateinit var pointViewModel: PointViewModel
+
+    @Inject
+    lateinit var carViewModelFactory: CarViewModelFactory
+    lateinit var carViewModel: CarViewModel
+
+    @Inject
+    lateinit var myTicketViewModelFactory: MyTicketViewModelFactory
+    lateinit var myTicketViewModel: MyTicketViewModel
+
+    @Inject
+    lateinit var ticketDetailViewModelFactory: TicketDetailViewModelFactory
+    lateinit var ticketDetailViewModel: TicketDetailViewModel
+
 
     private lateinit var binding : ActivityMainBinding
     lateinit var userViewModel: UserViewModel
@@ -63,7 +94,13 @@ class MainActivity : AppCompatActivity() {
     fun initMapViewModel(){
         mapViewModel = ViewModelProvider(this,mapViewModelFactory)[MapViewModel::class.java]
         userViewModel = ViewModelProvider(this)[UserViewModel::class.java]
+        daySelectViewModel = ViewModelProvider(this, daySelectViewModelFactory)[DaySelectViewModel::class.java]
         searchViewModel = ViewModelProvider(this,searchViewModelFactory)[SearchViewModel::class.java]
+        shareParkingLotViewModel = ViewModelProvider(this, shareParkingLotViewModelFactory)[ShareParkingLotViewModel::class.java]
+        pointViewModel = ViewModelProvider(this,pointViewModelFactory)[PointViewModel::class.java]
+        carViewModel = ViewModelProvider(this,carViewModelFactory)[CarViewModel::class.java]
+        myTicketViewModel = ViewModelProvider(this, myTicketViewModelFactory)[MyTicketViewModel::class.java]
+        ticketDetailViewModel = ViewModelProvider(this, ticketDetailViewModelFactory)[TicketDetailViewModel::class.java]
         setProfileFragmentNavigation()
     }
 
@@ -138,6 +175,10 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.action_map_fragment_to_myShareParkingLotFragment)
             binding.drawer.closeDrawers()
         }
+        headerBinding.textMyCarSideHeader.setOnClickListener {
+            navController.navigate(R.id.action_map_fragment_to_myCarFragment)
+            binding.drawer.closeDrawers()
+        }
     }
 
 
@@ -150,6 +191,16 @@ class MainActivity : AppCompatActivity() {
                     .error(R.drawable.ic_baseline_person_24)
                     .into(headerBinding.imageProfileSideHeader)
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        if(daySelectViewModel.add){
+            daySelectViewModel.add = false
+            super.onBackPressed()
+            super.onBackPressed()
+        } else {
+            super.onBackPressed()
         }
     }
 

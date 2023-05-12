@@ -6,6 +6,9 @@
         <variable
             name="handlers"
             type="com.team.parking.presentation.fragment.MapFragment" />
+        <variable
+            name="vm"
+            type="com.team.parking.presentation.viewmodel.MapViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -93,6 +96,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
         <fragment
             android:id="@+id/fragment_fragment_map_maps"
             android:layout_width="match_parent"
@@ -100,34 +104,36 @@
             android:layout_marginTop="30dp"
             app:layout_constraintTop_toBottomOf="@id/constraintlayout_fragment_map_appbar"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:name="com.naver.maps.map.MapFragment">
-        </fragment>
+            android:name="com.naver.maps.map.MapFragment"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_fragment_map_open"
             android:layout_width="150dp"
             android:layout_height="36dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/map_show_all_background"
-            android:text="@string/button_fragment_map_total"
             android:fontFamily="@font/baemin"
+            android:text="@string/button_fragment_map_total"
+            android:onClick="@{()->handlers.showAllParkingLot()}"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
-            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
-
-        <include
-            android:id="@+id/cl_fragment_map_slide_layout"
-            layout="@layout/layout_bottom_sheet"/>
+            app:layout_constraintRight_toRightOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
 
+    <include
+        android:id="@+id/fragment_map_show_all"
+        layout="@layout/bottom_sheet_tab"
+        app:vm="@{vm}"/>
+
     <include layout="@layout/fragment_parking_lot_detail"
-        android:id="@+id/bottom_sheet_open"/>
+        android:id="@+id/bottom_sheet_open"
+        app:vm ="@{vm}" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

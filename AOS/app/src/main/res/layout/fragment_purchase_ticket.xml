@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout9"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6FCFF" >
+    android:background="#F6FCFF">
 
     <Button
         android:id="@+id/button_purchase_purchase_ticket"
@@ -14,9 +14,10 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/main_color2"
-        android:text="주차권 구매"
+        android:text="결제"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_cancel_purchase_ticket"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout_purchase_info_purchase_ticket" />
 
@@ -27,7 +28,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
-        android:background="@drawable/outline_parking_lot_detail"
+        android:background="@drawable/outline_purchase_ticket"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -68,7 +69,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
-        android:background="@drawable/outline_parking_lot_detail"
+        android:background="@drawable/outline_purchase_ticket"
         app:layout_constraintBottom_toTopOf="@+id/button_purchase_purchase_ticket"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -204,6 +205,16 @@
             app:layout_constraintStart_toEndOf="@+id/text_start_time_title_purchase_ticket"
             app:layout_constraintTop_toTopOf="@+id/text_start_time_title_purchase_ticket">
 
+            <TextView
+                android:id="@+id/text_start_time_purchase_ticket"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -267,4 +278,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/text_expected_price_title_purchase_ticket" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/button_cancel_purchase_ticket"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/main_color2"
+        android:text="취소"
+        app:layout_constraintBottom_toBottomOf="@+id/button_purchase_purchase_ticket"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/button_purchase_purchase_ticket"
+        app:layout_constraintTop_toTopOf="@+id/button_purchase_purchase_ticket" />
 </androidx.constraintlayout.widget.ConstraintLayout>

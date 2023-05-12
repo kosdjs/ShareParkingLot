@@ -507,6 +507,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 if(data.size<beforeMarkerSize){
                                     for(i in 0 until data.size){
                                         if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
+                                        else if(data[i].feeBasic==0) loadMarkerFromMemCache("정보없음")
                                         else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         noClusteringCache[i].icon = icon
                                         noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
@@ -527,21 +528,25 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 }
                                 //이전 마커들과 현재 마커가 같은경우
                                 else if(data.size==beforeMarkerSize){
-                                    for(i in 0 until data.size){
-                                        loadMarkerFromMemClurCache(data[i].feeBasic.toString())
-                                        noClusteringCache[i].icon = icon
-                                        noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
-                                        clusteringCache[i].map = naverMap
-                                        if(data[i].parkType==0){
-                                            noClusteringCache[i].setOnClickListener {
-                                                getMapDetailData(data[i].parkId)
-                                                false
-                                            }
-                                        }
-                                        else{
-                                            noClusteringCache[i].setOnClickListener {
-                                                getSharedLotDetail(data[i].parkId.toLong())
-                                                false
+                                    for(i in 0 until data.size) {
+                                        if (data[i].feeBasic == -1) loadMarkerFromMemCache("무료")
+                                        else if (data[i].feeBasic == 0) loadMarkerFromMemCache("정보없음")
+                                        else {
+                                            loadMarkerFromMemClurCache(data[i].feeBasic.toString())
+                                            noClusteringCache[i].icon = icon
+                                            noClusteringCache[i].position =
+                                                LatLng(data[i].lat, data[i].lng)
+                                            clusteringCache[i].map = naverMap
+                                            if (data[i].parkType == 0) {
+                                                noClusteringCache[i].setOnClickListener {
+                                                    getMapDetailData(data[i].parkId)
+                                                    false
+                                                }
+                                            } else {
+                                                noClusteringCache[i].setOnClickListener {
+                                                    getSharedLotDetail(data[i].parkId.toLong())
+                                                    false
+                                                }
                                             }
                                         }
                                     }
@@ -550,6 +555,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 else{
                                     for(i in 0 until beforeMarkerSize){
                                         if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
+                                        else if(data[i].feeBasic==0) loadMarkerFromMemCache("정보없음")
                                         else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
                                         noClusteringCache[i].icon = icon
@@ -568,6 +574,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                     for(i in beforeMarkerSize until data.size){
                                         val marker = Marker()
                                         if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
+                                        else if(data[i].feeBasic==0) loadMarkerFromMemCache("정보없음")
                                         else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         marker.width = 130
                                         marker.height = 130

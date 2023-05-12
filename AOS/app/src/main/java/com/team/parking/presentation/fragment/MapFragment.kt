@@ -76,7 +76,8 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private lateinit var requestAllMapRequest : MapRequest
     private lateinit var parkingOrderByAdapter: ParkingOrderByAdapter
     private lateinit var toast : Toast
-
+    //검색후 이동시 마커
+    private val searchMarker =  Marker()
     private var watchFlag = false
     private var searchFlag : Boolean = false
 
@@ -430,14 +431,16 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun changeLocation(){
         searchViewModel.searchedPlace.observe(viewLifecycleOwner){
             searchFlag = true
-            val marker = Marker()
+
             val oi = OverlayImage.fromResource(R.drawable.ic_search_mark)
-            marker.height = 130
-            marker.width= 110
-            marker.icon = oi
-            marker.position = LatLng(it.y.toDouble(),it.x.toDouble())
-            marker.map = naverMap
+            searchMarker.height = 130
+            searchMarker.width= 110
+            searchMarker.icon = oi
+            searchMarker.position = LatLng(it.y.toDouble(),it.x.toDouble())
+            searchMarker.map = naverMap
             naverMap.cameraPosition = CameraPosition(LatLng(it.y.toDouble(),it.x.toDouble()),15.2)
+
+
         }
     }
 
@@ -630,6 +633,11 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }*/
         }
         naverMap.addOnCameraIdleListener {
+            if(searchFlag){
+                val dist = searchMarker.position.distanceTo(naverMap.cameraPosition.target)
+                if(dist>500)
+                    searchMarker.map = null
+            }
             currentZoom =  naverMap.cameraPosition.zoom
             if(currentZoom>=13.8&&currentZoom<17.2){
                 toast.cancel()

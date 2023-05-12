@@ -69,8 +69,8 @@ class AddShareParkingLotFragment : Fragment() {
                 shareParkingLotViewModel.post(
                     if (binding.radioButtonEntrancePayAddShareParkingLot.isChecked) 0 else 1,
                     binding.editTextParkingLotNameAddShareParkingLot.text.toString(),
-                    searchAddressViewModel.searchedAddress.value!!.address.address_name,
-                    searchAddressViewModel.searchedAddress.value!!.road_address.address_name,
+                    searchAddressViewModel.searchedAddress.value!!.address!!.address_name,
+                    searchAddressViewModel.searchedAddress.value!!.road_address?.address_name ?: "",
                     binding.editTextPriceAddShareParkingLot.text.toString().toInt(),
                     if(binding.editTextAdditionalInfoAddShareParkingLot.text.isEmpty()) "" else binding.editTextAdditionalInfoAddShareParkingLot.text.toString(),
                     searchAddressViewModel.searchedAddress.value!!.y.toFloat(),
@@ -96,7 +96,7 @@ class AddShareParkingLotFragment : Fragment() {
         searchAddressViewModel.searchedAddress.observe(viewLifecycleOwner){
             requireActivity().runOnUiThread {
                 if(it != null){
-                    binding.textAddressAddShareParkingLot.text = it.address.address_name
+                    binding.textAddressAddShareParkingLot.text = it.address?.address_name ?: "지번 주소가 있는 주소를 검색해주세요."
                 } else {
                     binding.textAddressAddShareParkingLot.text = "눌러서 주소를 검색해주세요."
                 }
@@ -177,6 +177,9 @@ class AddShareParkingLotFragment : Fragment() {
                 return false
             } else if(searchAddressViewModel.searchedAddress.value == null){
                 Toast.makeText(requireContext(), "주차장 주소를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return false
+            } else if(searchAddressViewModel.searchedAddress.value!!.address == null){
+                Toast.makeText(requireContext(), "지번 주소가 있는 주소를 찾아주세요.", Toast.LENGTH_SHORT).show()
                 return false
             } else if(editTextPriceAddShareParkingLot.text.isEmpty()){
                 Toast.makeText(requireContext(), "주차 요금을 입력해주세요.", Toast.LENGTH_SHORT).show()

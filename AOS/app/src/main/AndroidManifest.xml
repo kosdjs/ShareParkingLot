@@ -42,6 +42,9 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
+
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -49,6 +52,8 @@
                 <data android:host="oauth"
                     android:scheme="${KAKAO_CLIENT_KEY}" />
             </intent-filter>
+
+
 
         </activity>
     </application>

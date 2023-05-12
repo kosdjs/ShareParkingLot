@@ -17,7 +17,7 @@ class SearchAddressAdapter : RecyclerView.Adapter<SearchAddressAdapter.SearchVie
 
     private val callback = object : DiffUtil.ItemCallback<AddressResponse>(){
         override fun areItemsTheSame(oldItem: AddressResponse, newItem: AddressResponse): Boolean {
-            return oldItem.address.address_name == newItem.address.address_name
+            return oldItem.x == newItem.x && oldItem.y == newItem.y
         }
 
         override fun areContentsTheSame(oldItem: AddressResponse, newItem: AddressResponse): Boolean {

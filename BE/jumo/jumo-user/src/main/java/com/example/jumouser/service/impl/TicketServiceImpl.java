@@ -63,7 +63,14 @@ public class TicketServiceImpl implements TicketService {
             if (startTime == -1 && endTime == -1) {
                 return new TypeResponseDto(false, false, false, false);
             }
+            // 예약된 시간 배열 생성
+            boolean[] occupied = new boolean[26];
+            Arrays.fill(occupied, false);
 
+            // 운영 가능시간 활성화
+            for (int i = startTime; i < endTime + 1; i++) {
+                occupied[i] = true;
+            }
             // 해당하는 공유 주차장의 모든 당일 티켓 가져오기
             List<Ticket> existingTickets = ticketRepo.findAllByShareLotAndParkingDate(currShareLot.get(), date);
 
@@ -74,15 +81,6 @@ public class TicketServiceImpl implements TicketService {
                 // 선행 티켓 존재 시 종일권 불가능
                 boolean allDay = false;
 
-                // 예약된 시간 배열 생성
-                boolean[] occupied = new boolean[26];
-                Arrays.fill(occupied, false);
-
-                // 운영 가능시간 활성화
-                for (int i = startTime; i < endTime + 1; i++) {
-                    occupied[i] = true;
-                }
-                
                 // 모든 선행 티켓에서 예약된 시간 false 만들기
                 for (Ticket ticket : existingTickets) {
                     int inTiming = ticket.getIn_timing();

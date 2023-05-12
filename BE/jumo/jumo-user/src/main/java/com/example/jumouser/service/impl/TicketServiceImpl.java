@@ -65,9 +65,31 @@ public class TicketServiceImpl implements TicketService {
             // 해당하는 공유 주차장의 모든 당일 티켓 가져오기
             List<Ticket> existingTickets = ticketRepo.findAllByShareLotAndParkingDate(currShareLot.get(), date);
 
-            // 먼저 발권한 티켓이 없다면 모든 시간 가능
+            // 먼저 발권한 티켓이 없다면
             if (existingTickets.isEmpty()) {
-                return new TypeResponseDto(true, true, true, true);
+                if (!occupied[time]) {
+                    return new TypeResponseDto(false, false, false, false);
+                } else {
+                    // 다른 경우 1시간 권 무조건 가능
+                    boolean oneHour = true;
+                    boolean threeHours = true;
+                    boolean fiveHours = true;
+                    for (int j = 1; j < 6; j++) {
+                        // 3시간 이내 주차불가 시 3시간 5시간 권 사용 불가
+                        if (!occupied[time + j]) {
+                            if (j < 4) {
+                                threeHours = false;
+                                fiveHours = false;
+                                break;
+                            }
+                            // 5시간 이내 주차불가 시 5시간 권 사용 불가
+                            else {
+                                fiveHours = false;
+                            }
+                        }
+                    }
+                    return new TypeResponseDto(oneHour, threeHours, fiveHours, true);
+                }
             } else {
                 // 선행 티켓 존재 시 종일권 불가능
                 boolean allDay = false;

@@ -24,7 +24,6 @@ class ExitDialog: DialogFragment() {
     ): View? {
         binding = DialogExitBinding.inflate(inflater, container, false)
         mainActivity = MainActivity.getInstance()!!
-        Log.i("지훈", "onCreateView: ")
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE)
 

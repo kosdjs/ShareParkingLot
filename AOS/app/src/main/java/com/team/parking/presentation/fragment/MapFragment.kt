@@ -949,7 +949,15 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,object : OnBackPressedCallback(true){
                 override fun handleOnBackPressed() {
-                    ExitDialog().show(childFragmentManager,null)
+                    if(listBottomSheet.state!=BottomSheetBehavior.STATE_HIDDEN){
+                        listBottomSheet.state=BottomSheetBehavior.STATE_HIDDEN
+                    }
+                    else if((activity as MainActivity).navigationDrawer.isOpen){
+                        (activity as MainActivity).navigationDrawer.closeDrawers()
+                    }
+                    else{
+                        ExitDialog().show(childFragmentManager,null)
+                    }
                 }
 
             })

@@ -1,5 +1,8 @@
 package com.team.parking.presentation.fragment
 
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -128,8 +131,10 @@ class DaySelectFragment : Fragment() {
         it.background = ResourcesCompat.getDrawable(resources, R.drawable.day_selected_background, null)
     }
 
+    @SuppressLint("ResourceAsColor")
     fun showTimePickerDialog(onTimeSetListener: OnTimeSetListener, min: Boolean){
         val timePickerDialog = TimePickerDialog.newInstance(onTimeSetListener, false)
+        timePickerDialog.setAccentColor(R.color.main_color2)
         timePickerDialog.enableMinutes(false)
         if(!min){
             timePickerDialog.setMinTime(

@@ -46,6 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="내 공유 주차장"
+        android:backgroundTint="@color/main_color2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

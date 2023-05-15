@@ -202,6 +202,7 @@ class PurchaseTicketFragment : Fragment() {
 
     fun showTimePickerDialog(onTimeSetListener: OnTimeSetListener) {
         val timePickerDialog = TimePickerDialog.newInstance(onTimeSetListener, false)
+        timePickerDialog.setAccentColor(R.color.main_color2)
         timePickerDialog.enableMinutes(false)
         timePickerDialog.setMinTime(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + 1, 0, 0)
         timePickerDialog.show(parentFragmentManager, "")

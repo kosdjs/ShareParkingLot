@@ -13,5 +13,7 @@ data class TicketDetailResponse(
     val parkingRegion: String,
     val sellConfirm: Boolean,
     val ticketId: Long,
-    val type: Int
+    val type: Int,
+    val buyerNumber: String,
+    val sellerNumber: String
 )

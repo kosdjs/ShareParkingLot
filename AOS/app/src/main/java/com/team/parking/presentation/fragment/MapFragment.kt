@@ -959,6 +959,9 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     if(listBottomSheet.state!=BottomSheetBehavior.STATE_HIDDEN){
                         listBottomSheet.state=BottomSheetBehavior.STATE_HIDDEN
                     }
+                    else if(clickBottomSheet.state!=BottomSheetBehavior.STATE_HIDDEN){
+                        clickBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+                    }
                     else if((activity as MainActivity).navigationDrawer.isOpen){
                         (activity as MainActivity).navigationDrawer.closeDrawers()
                     }

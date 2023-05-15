@@ -6,8 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.team.parking.MainActivity
+import com.team.parking.R
+import com.team.parking.databinding.DialogCheckBinding
 import com.team.parking.databinding.FragmentPurchaseTicketBinding
 import com.team.parking.presentation.viewmodel.*
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
@@ -176,12 +180,10 @@ class PurchaseTicketFragment : Fragment() {
                                 ).show()
                                 requireActivity().onBackPressed()
                             } else {
-                                Toast.makeText(requireContext(), "차량을 등록해주세요.", Toast.LENGTH_SHORT)
-                                    .show()
+                                showDialog(false)
                             }
                         } else {
-                            Toast.makeText(requireContext(), "포인트 잔액이 부족합니다.", Toast.LENGTH_SHORT)
-                                .show()
+                            showDialog(true)
                         }
                     } else {
                         Toast.makeText(requireContext(), "주차권을 선택해주세요.", Toast.LENGTH_SHORT).show()
@@ -210,5 +212,32 @@ class PurchaseTicketFragment : Fragment() {
             select5HourTicket.isChecked = false
             selectAllDayTicket.isChecked = false
         }
+    }
+
+    fun showDialog(point: Boolean){
+        val builder = AlertDialog.Builder(requireContext())
+        val dialogBinding = DialogCheckBinding.inflate(layoutInflater)
+        builder.setView(dialogBinding.root)
+        val dialog = builder.create()
+        dialogBinding.apply {
+            textTitleCheckDialog.text =
+                if(point){
+                    "포인트가 부족합니다.\n포인트 충전 페이지로 이동하시겠습니까?"
+                } else {
+                    "차량이 등록되지 않았습니다.\n차량 등록 페이지로 이동하시겠습니까?"
+                }
+            buttonCancelCheckDialog.setOnClickListener {
+                dialog.dismiss()
+            }
+            buttonOkCheckDialog.setOnClickListener {
+                if(point){
+                    findNavController().navigate(R.id.action_purchaseTicketFragment_to_pointFragment)
+                } else {
+                    findNavController().navigate(R.id.action_purchaseTicketFragment_to_myCarFragment)
+                }
+                dialog.dismiss()
+            }
+        }
+        dialog.show()
     }
 }

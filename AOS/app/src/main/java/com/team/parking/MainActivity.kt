@@ -76,6 +76,12 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
 
 
+    companion object{
+        private var instance:MainActivity?=null
+        fun getInstance():MainActivity?{
+            return instance
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

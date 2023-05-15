@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.res.ResourcesCompat
@@ -41,6 +42,7 @@ import com.team.parking.data.model.map.MapRequest
 import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
 import com.team.parking.presentation.adapter.ParkingOrderByAdapter
+import com.team.parking.presentation.utils.ExitDialog
 import com.team.parking.presentation.viewmodel.MapViewModel
 import com.team.parking.presentation.viewmodel.MyTicketViewModel
 import com.team.parking.presentation.viewmodel.SearchViewModel
@@ -809,7 +811,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         setTabLayout()
         initMarkerData()
         initAdapter()
-
+        clickBackpressed()
     }
 
     /**
@@ -938,6 +940,19 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         naverMap.setOnMapClickListener { pointF, latLng ->
             if(watchFlag) listBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
         }
+    }
+
+    /**
+     * 뒤로가기 클릭시 나가기 알림생성
+     */
+    private fun clickBackpressed(){
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,object : OnBackPressedCallback(true){
+                override fun handleOnBackPressed() {
+                    ExitDialog().show(childFragmentManager,null)
+                }
+
+            })
     }
 }
 

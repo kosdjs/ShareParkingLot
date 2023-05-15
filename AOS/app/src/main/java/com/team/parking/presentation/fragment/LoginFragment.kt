@@ -369,7 +369,9 @@ class LoginFragment : Fragment() {
 
     fun setOnSignUp() {
         userViewModel._type = "jumo"
+
         findNavController().navigate(R.id.action_login_fragment_to_signUpFragment)
+
     }
 
     private fun getFCMToken(callback: (String?) -> Unit) {

@@ -113,6 +113,7 @@ class ParkingLotDetailFragment : BottomSheetDialogFragment() {
             lifecycleOwner = this@ParkingLotDetailFragment
         }
         binding.apply {
+            btnDetailUp.visibility = View.GONE
             imageFavoriteParkingLotDetail.background = ResourcesCompat.getDrawable(
                 resources,
                 R.drawable.icon_star_filled,

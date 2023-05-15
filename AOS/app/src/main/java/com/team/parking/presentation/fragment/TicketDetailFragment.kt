@@ -36,7 +36,11 @@ class TicketDetailFragment : Fragment() {
         ticketDetailViewModel.getTicketDetail()
         ticketDetailImageAdapter = TicketDetailImageAdapter()
         ticketDetailViewModel.ticketDetail.observe(viewLifecycleOwner){
-            ticketDetailImageAdapter.differ.submitList(it.images)
+            if(it.images.isEmpty()){
+                ticketDetailImageAdapter.differ.submitList(listOf(""))
+            } else {
+                ticketDetailImageAdapter.differ.submitList(it.images)
+            }
             binding.apply {
                 textParkingLotNameTicketDetail.text = it.parkingRegion
                 textNameCustomerInfoTicketDetail.text = it.nickname

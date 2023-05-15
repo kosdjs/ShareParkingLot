@@ -13,6 +13,7 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/main_color2</item>
         <!-- Customize your theme here. -->
+        <item name="android:fontFamily">@font/kakao_otf_regular</item>
     </style>
     <style name="Theme.NavigationDrawer" parent="Theme.MaterialComponents.Light.NoActionBar"/>
 

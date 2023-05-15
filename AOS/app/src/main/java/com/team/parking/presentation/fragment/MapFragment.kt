@@ -630,7 +630,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
             currentZoom =  naverMap.cameraPosition.zoom
             if(currentZoom>=13.8&&currentZoom<17.2){
-                toast.cancel()
+                fragmentMapBinding.tvToastLow.visibility = View.INVISIBLE
                 if(currentZoom<15f){
                     CoroutineScope(Dispatchers.Main).launch {
                         removeNoClusteringMapData()
@@ -696,7 +696,14 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     removeNoClusteringMapData()
                     clusteringCache.clear()
                 }
-
+                if(currentZoom<13.8){
+                    fragmentMapBinding.tvToastLow.text = resources.getString(R.string.distance_low)
+                    fragmentMapBinding.tvToastLow.visibility = View.VISIBLE
+                }
+                else{
+                    fragmentMapBinding.tvToastLow.text = resources.getString(R.string.distance_high)
+                    fragmentMapBinding.tvToastLow.visibility = View.VISIBLE
+                }
             }
 
         }

@@ -414,7 +414,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun changeLocation(){
         searchViewModel.searchedPlace.observe(viewLifecycleOwner){
             searchFlag = true
-
             val oi = OverlayImage.fromResource(R.drawable.ic_search_mark)
             searchMarker.height = 130
             searchMarker.width= 110
@@ -630,7 +629,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
             currentZoom =  naverMap.cameraPosition.zoom
             if(currentZoom>=13.8&&currentZoom<17.2){
-                toast.cancel()
+                fragmentMapBinding.tvToastLow.visibility = View.INVISIBLE
                 if(currentZoom<15f){
                     CoroutineScope(Dispatchers.Main).launch {
                         removeNoClusteringMapData()
@@ -691,12 +690,20 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 }
 
             }else{
+                fragmentMapBinding.btnFragmentMapOpen.visibility = View.INVISIBLE
                 CoroutineScope(Dispatchers.Main).launch {
                     removeClusteringMapData()
                     removeNoClusteringMapData()
                     clusteringCache.clear()
                 }
-
+                if(currentZoom<13.8){
+                    fragmentMapBinding.tvToastLow.text = resources.getString(R.string.distance_low)
+                    fragmentMapBinding.tvToastLow.visibility = View.VISIBLE
+                }
+                else{
+                    fragmentMapBinding.tvToastLow.text = resources.getString(R.string.distance_high)
+                    fragmentMapBinding.tvToastLow.visibility = View.VISIBLE
+                }
             }
 
         }
@@ -800,12 +807,15 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      */
     private fun mapSetting(){
         naverMap.uiSettings.apply {
-            isLocationButtonEnabled = true
+            isLocationButtonEnabled = false
+            isZoomControlEnabled = false
             logoGravity = Gravity.END
             setLogoMargin(0,10,10,0)
         }
         naverMap.minZoom = 8.0
         naverMap.maxZoom = 18.0
+        fragmentMapBinding.zoomcontrolMapFragment.map = naverMap
+        fragmentMapBinding.locationbuttonMapFragment.map = naverMap
     }
 
     override fun onMapReady(naverMap: NaverMap) {

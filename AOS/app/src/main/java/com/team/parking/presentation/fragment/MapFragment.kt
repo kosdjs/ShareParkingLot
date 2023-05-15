@@ -800,12 +800,15 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      */
     private fun mapSetting(){
         naverMap.uiSettings.apply {
-            isLocationButtonEnabled = true
+            isLocationButtonEnabled = false
+            isZoomControlEnabled = false
             logoGravity = Gravity.END
             setLogoMargin(0,10,10,0)
         }
         naverMap.minZoom = 8.0
         naverMap.maxZoom = 18.0
+        fragmentMapBinding.zoomcontrolMapFragment.map = naverMap
+        fragmentMapBinding.locationbuttonMapFragment.map = naverMap
     }
 
     override fun onMapReady(naverMap: NaverMap) {

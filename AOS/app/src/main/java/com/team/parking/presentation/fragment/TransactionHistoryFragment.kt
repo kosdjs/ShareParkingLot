@@ -106,10 +106,10 @@ class TransactionHistoryFragment : Fragment() {
             layoutSellTransactionHistory.setOnClickListener {
                 textTitlePurchaseTransactionHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
                 underlinePurchaseTransactionHistory.visibility = View.GONE
-                textTitleSellTransactionHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.main_color))
+                textTitleSellTransactionHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.sell_color))
                 underlineSellTransactionHistory.visibility = View.VISIBLE
                 textTotalTransactionHistory.text = "누적 판매 금액"
-                textTotalPriceTransactionHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.main_color))
+                textTotalPriceTransactionHistory.setTextColor(ContextCompat.getColor(requireContext(), R.color.sell_color))
                 //recyclerview
                 transactionHistoryViewModel.earned = true
                 recyclerViewTransactionHistory.adapter = earnedPointAdapter

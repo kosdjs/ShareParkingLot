@@ -7,7 +7,7 @@
     android:layout_marginLeft="16dp"
     android:layout_marginTop="16dp"
     android:layout_marginRight="16dp"
-    android:background="@color/white">
+    android:background="@drawable/day_select_white_background">
 
     <ImageView
         android:id="@+id/image_delete_item_my_share_parking_lot"

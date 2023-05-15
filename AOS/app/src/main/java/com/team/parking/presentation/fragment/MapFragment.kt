@@ -414,7 +414,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun changeLocation(){
         searchViewModel.searchedPlace.observe(viewLifecycleOwner){
             searchFlag = true
-
             val oi = OverlayImage.fromResource(R.drawable.ic_search_mark)
             searchMarker.height = 130
             searchMarker.width= 110
@@ -691,6 +690,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 }
 
             }else{
+                fragmentMapBinding.btnFragmentMapOpen.visibility = View.INVISIBLE
                 CoroutineScope(Dispatchers.Main).launch {
                     removeClusteringMapData()
                     removeNoClusteringMapData()

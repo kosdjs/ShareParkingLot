@@ -1,5 +1,7 @@
 package com.team.parking.presentation.fragment
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -219,6 +221,7 @@ class PurchaseTicketFragment : Fragment() {
         val dialogBinding = DialogCheckBinding.inflate(layoutInflater)
         builder.setView(dialogBinding.root)
         val dialog = builder.create()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialogBinding.apply {
             textTitleCheckDialog.text =
                 if(point){

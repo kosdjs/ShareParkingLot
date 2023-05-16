@@ -1,9 +1,7 @@
 package com.example.jumouser.service.impl;
 
-import com.example.domain.dto.PushNotiDto;
 import com.example.domain.dto.point.request.TicketCreateRequestDto;
 import com.example.domain.dto.point.response.*;
-import com.example.domain.dto.user.UserInfoDto;
 import com.example.domain.entity.*;
 import com.example.domain.etc.DayName;
 import com.example.domain.etc.OutTiming;
@@ -12,21 +10,10 @@ import com.example.error.exception.InputException;
 import com.example.error.exception.SaveException;
 import com.example.jumouser.service.TicketService;
 import com.example.jumouser.util.NotificationUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserter;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.validation.constraints.AssertFalse;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;

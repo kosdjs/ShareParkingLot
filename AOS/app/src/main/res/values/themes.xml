@@ -16,5 +16,9 @@
         <item name="android:fontFamily">@font/kakao_regular</item>
     </style>
     <style name="Theme.NavigationDrawer" parent="Theme.MaterialComponents.Light.NoActionBar"/>
+    <style name="Theme.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/main_color2</item>
+        <item name="postSplashScreenTheme">@style/Theme.ParkingLot</item>
+    </style>
 
 </resources>

@@ -38,4 +38,6 @@
     <string name="dialog_exit_question">정말로 앱을 종료하시겠습니까?</string>
     <string name="dialog_exit_button_cancel">취소</string>
     <string name="dialog_exit_button_out">확인</string>
+    <string name="text_only_share">공유</string>
+    <string name="text_only_parking">일반</string>
 </resources>

@@ -85,6 +85,10 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private var watchFlag = false
     private var searchFlag : Boolean = false
 
+    var shareFlag = false
+    var parkingFlag = false
+
+
     var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
     //GPS 권한 생성
     private val requestPermission = registerForActivityResult(
@@ -560,17 +564,21 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                         else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         marker.width = 130
                                         marker.height = 130
+                                        marker.tag = data[i].parkType
                                         marker.icon = icon
+                                        Log.i(TAG, "getMapData: $shareFlag")
                                         if(data[i].parkType==0){
                                             marker.setOnClickListener {
                                                 getMapDetailData(data[i].parkId)
                                                 false
                                             }
+                                            if(shareFlag) marker.isVisible = false
                                         }else{
                                             marker.setOnClickListener {
                                                 getSharedLotDetail(data[i].parkId.toLong())
                                                 false
                                             }
+                                            if(parkingFlag) marker.isVisible = false
                                             marker.iconTintColor = Color.DKGRAY
                                         }
                                         noClusteringCache.add(marker)
@@ -912,7 +920,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     }
 
 
-
     /**
      * 장소 검색 클릭시 SearchFragment로 이동
      */
@@ -972,6 +979,45 @@ class MapFragment : Fragment() , OnMapReadyCallback{
 
             })
     }
+    fun onClickShareButton(){
+            if(shareFlag){
+                fragmentMapBinding.tvFragmentMapOnlyShare.setBackgroundResource(R.drawable.map_only_share_white)
+                shareFlag=false
+                for(marker in noClusteringCache){
+                    if(marker.tag==0)
+                        marker.isVisible = true
+                }
+            }else{
+                shareFlag = true
+                fragmentMapBinding.tvFragmentMapOnlyShare.setBackgroundResource(R.drawable.map_only_share_org)
+                for(marker in noClusteringCache){
+                    if(marker.tag==0)
+                        marker.isVisible = false
+                }
+            }
+        
+    }
+    fun onClickParkingButton(){
+        if(parkingFlag){
+            fragmentMapBinding.tvFragmentMapOnlyParking.setBackgroundResource(R.drawable.map_only_share_white)
+            parkingFlag=false
+            for(marker in noClusteringCache){
+                Log.i(TAG, "onClickParkingButton: ${marker.tag}")
+                if(marker.tag!=0) {
+                    marker.isVisible = true
+                }
+            }
+        }else{
+            parkingFlag = true
+            fragmentMapBinding.tvFragmentMapOnlyParking.setBackgroundResource(R.drawable.map_only_share_org)
+            for(marker in noClusteringCache){
+                if(marker.tag!=0)
+                    marker.isVisible = false
+            }
+        }
+
+    }
+    
 }
 
 

@@ -29,4 +29,6 @@ interface MapAPIService {
     suspend fun getParkingOrderByPrice(
         @Body request: MapRequest
     ) : Response<List<MapOrderResponse>>
+
+    
 }

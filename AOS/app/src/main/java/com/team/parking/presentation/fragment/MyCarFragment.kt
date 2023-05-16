@@ -90,6 +90,9 @@ class MyCarFragment : Fragment() {
         dialogBinding.apply {
             buttonAddDialogAddCar.setOnClickListener {
                 if(editTextNumberDialogAddCar.text.isNotEmpty()){
+                    if(previousView != null){
+                        previousView!!.background = ResourcesCompat.getDrawable(resources, R.drawable.day_select_white_background, null)
+                    }
                     carViewModel.postCar(editTextNumberDialogAddCar.text.toString(), userViewModel.userLiveData.value!!.user_id)
                     dialog.dismiss()
                 } else {

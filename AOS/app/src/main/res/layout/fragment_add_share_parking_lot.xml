@@ -138,12 +138,12 @@
 
                     <EditText
                         android:id="@+id/edit_text_price_add_share_parking_lot"
-                        android:layout_width="50dp"
+                        android:layout_width="55dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="16dp"
                         android:background="#00FFFFFF"
-                        android:ems="10"
+                        android:ems="5"
                         android:hint="10000"
                         android:inputType="number"
                         android:maxLength="5"

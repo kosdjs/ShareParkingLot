@@ -1,5 +1,7 @@
 package com.team.parking.presentation.fragment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -34,7 +36,11 @@ class TicketDetailFragment : Fragment() {
         ticketDetailViewModel.getTicketDetail()
         ticketDetailImageAdapter = TicketDetailImageAdapter()
         ticketDetailViewModel.ticketDetail.observe(viewLifecycleOwner){
-            ticketDetailImageAdapter.differ.submitList(it.images)
+            if(it.images.isEmpty()){
+                ticketDetailImageAdapter.differ.submitList(listOf(""))
+            } else {
+                ticketDetailImageAdapter.differ.submitList(it.images)
+            }
             binding.apply {
                 textParkingLotNameTicketDetail.text = it.parkingRegion
                 textNameCustomerInfoTicketDetail.text = it.nickname
@@ -62,6 +68,24 @@ class TicketDetailFragment : Fragment() {
                     }
                 buttonSellConfirmTicketDetail.isEnabled = !ticketDetailViewModel.buyer && !it.sellConfirm
                 buttonBuyConfirmTicketDetail.isEnabled = ticketDetailViewModel.buyer && !it.buyConfirm && it.sellConfirm
+                textTitleDialTicketDetail.text =
+                    if(ticketDetailViewModel.buyer) "판매자 연락처" else "구매자 연락처"
+                textPhoneNumberTicketDetail.text =
+                    if (ticketDetailViewModel.buyer) {
+                        val phoneOrigin = it.sellerNumber
+                        val phone = if (it.sellerNumber.isNotEmpty())"${phoneOrigin.substring(0 until 3)}-${phoneOrigin.substring(3 until 7)}-${phoneOrigin.substring(7 until 11)}" else ""
+                        phone
+                    } else {
+                        val phoneOrigin = it.buyerNumber
+                        val phone = if (it.buyerNumber.isNotEmpty())"${phoneOrigin.substring(0 until 3)}-${phoneOrigin.substring(3 until 7)}-${phoneOrigin.substring(7 until 11)}" else ""
+                        phone
+                    }
+                imageDialTicketDetail.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:${textPhoneNumberTicketDetail.text}")
+                    }
+                    startActivity(intent)
+                }
             }
         }
         binding.apply {

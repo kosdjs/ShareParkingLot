@@ -9,8 +9,12 @@ import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
+
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -82,12 +86,26 @@ class MainActivity : AppCompatActivity() {
     private lateinit var headerBinding: SideHeaderBinding
     lateinit var navController: NavController
 
+    init{
+        instance = this
+    }
+
+
 
     private lateinit var sp: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
 
 
+    companion object{
+        private var instance:MainActivity?=null
+        fun getInstance():MainActivity?{
+            return instance
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         headerBinding = SideHeaderBinding.inflate(layoutInflater)

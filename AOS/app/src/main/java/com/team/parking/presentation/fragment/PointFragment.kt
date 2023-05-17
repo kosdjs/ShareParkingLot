@@ -105,6 +105,7 @@ class PointFragment : Fragment() {
                         .setQty(1)
                         .setId("${pointViewModel.point.value!! / 100}")
                     ))
+                    .setPg("kcp")
                     .setUser(BootUser()
                             //번호 받을 시 지울 것
                         .setPhone(if(userViewModel.userLiveData.value!!.phone.isEmpty()) "010-1234-5678" else phone)

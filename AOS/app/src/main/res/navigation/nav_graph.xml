@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_mapFragment"
-            app:destination="@id/map_fragment" />
+            app:destination="@id/map_fragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_login_fragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
@@ -152,7 +154,14 @@
         android:id="@+id/purchaseTicketFragment"
         android:name="com.team.parking.presentation.fragment.PurchaseTicketFragment"
         android:label="fragment_purchase_ticket"
-        tools:layout="@layout/fragment_purchase_ticket" />
+        tools:layout="@layout/fragment_purchase_ticket" >
+        <action
+            android:id="@+id/action_purchaseTicketFragment_to_pointFragment"
+            app:destination="@id/pointFragment" />
+        <action
+            android:id="@+id/action_purchaseTicketFragment_to_myCarFragment"
+            app:destination="@id/myCarFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addShareParkingLotFragment"
         android:name="com.team.parking.presentation.fragment.AddShareParkingLotFragment"

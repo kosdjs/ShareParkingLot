@@ -42,6 +42,21 @@ class ParkingLotDetailFragment : BottomSheetDialogFragment() {
         mapViewModel = (activity as MainActivity).mapViewModel
         favoriteViewModel = (activity as MainActivity).favoriteViewModel
         userViewModel = (activity as MainActivity).userViewModel
+        favoriteViewModel.favorite.observe(viewLifecycleOwner){
+            if(it){
+                binding.imageFavoriteParkingLotDetail.background = ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.icon_star_filled,
+                    null
+                )
+            } else {
+                binding.imageFavoriteParkingLotDetail.background = ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.icon_star_outline,
+                    null
+                )
+            }
+        }
         if (mapViewModel.selectedPark.value == 0) {
             binding.buttonPurchaseParkingLotDetail.visibility = View.INVISIBLE
             mapViewModel.getDetailMapData(favoriteViewModel.parkId, userViewModel.userLiveData.value!!.user_id)
@@ -113,6 +128,7 @@ class ParkingLotDetailFragment : BottomSheetDialogFragment() {
             lifecycleOwner = this@ParkingLotDetailFragment
         }
         binding.apply {
+            btnDetailUp.visibility = View.GONE
             imageFavoriteParkingLotDetail.background = ResourcesCompat.getDrawable(
                 resources,
                 R.drawable.icon_star_filled,

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/add_share_parking_lot_background">
+    android:background="@drawable/check_dialog_background">
 
     <TextView
         android:id="@+id/text_title_check_dialog"
@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="정말 삭제하시겠습니까?"
+        android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/button_ok_check_dialog"

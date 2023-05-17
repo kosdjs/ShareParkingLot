@@ -1,14 +1,22 @@
 package com.team.parking.presentation.fragment
 
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.team.parking.MainActivity
+import com.team.parking.R
+import com.team.parking.databinding.DialogCheckBinding
 import com.team.parking.databinding.FragmentPurchaseTicketBinding
+import com.team.parking.databinding.ToastMapBinding
 import com.team.parking.presentation.viewmodel.*
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog.OnTimeSetListener
@@ -31,6 +39,9 @@ class PurchaseTicketFragment : Fragment() {
     lateinit var purchaseTicketViewModelFactory: PurchaseTicketViewModelFactory
     private lateinit var purchaseTicketViewModel: PurchaseTicketViewModel
 
+    private lateinit var toast :Toast
+    private lateinit var toastMapBinding: ToastMapBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,6 +52,10 @@ class PurchaseTicketFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        toastMapBinding = ToastMapBinding.inflate(layoutInflater)
+        toast = Toast(requireContext())
+        toast.view = toastMapBinding.root
+        toast.duration = Toast.LENGTH_SHORT
         mapViewModel = (activity as MainActivity).mapViewModel
         userViewModel = (activity as MainActivity).userViewModel
         carViewModel = (activity as MainActivity).carViewModel
@@ -169,25 +184,19 @@ class PurchaseTicketFragment : Fragment() {
                         if (purchaseTicketViewModel.expectedPrice.value!! <= userViewModel.userLiveData.value!!.pt_has) {
                             if (carAvailable) {
                                 purchaseTicketViewModel.postTicketAvailable(userViewModel.userLiveData.value!!.user_id)
-                                Toast.makeText(
-                                    requireContext(),
-                                    "주차권이 구매되었습니다.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                showToast("주차권이 구매되었습니다.")
                                 requireActivity().onBackPressed()
                             } else {
-                                Toast.makeText(requireContext(), "차량을 등록해주세요.", Toast.LENGTH_SHORT)
-                                    .show()
+                                showDialog(false)
                             }
                         } else {
-                            Toast.makeText(requireContext(), "포인트 잔액이 부족합니다.", Toast.LENGTH_SHORT)
-                                .show()
+                            showDialog(true)
                         }
                     } else {
-                        Toast.makeText(requireContext(), "주차권을 선택해주세요.", Toast.LENGTH_SHORT).show()
+                        showToast("주차권을 선택해주세요.")
                     }
                 } else {
-                    Toast.makeText(requireContext(), "결제 약관에 동의해주세요.", Toast.LENGTH_SHORT).show()
+                    showToast("결제 약관에 동의해주세요.")
                 }
             }
             buttonCancelPurchaseTicket.setOnClickListener {
@@ -196,8 +205,10 @@ class PurchaseTicketFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     fun showTimePickerDialog(onTimeSetListener: OnTimeSetListener) {
         val timePickerDialog = TimePickerDialog.newInstance(onTimeSetListener, false)
+        timePickerDialog.setAccentColor(R.color.main_color2)
         timePickerDialog.enableMinutes(false)
         timePickerDialog.setMinTime(Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + 1, 0, 0)
         timePickerDialog.show(parentFragmentManager, "")
@@ -210,5 +221,38 @@ class PurchaseTicketFragment : Fragment() {
             select5HourTicket.isChecked = false
             selectAllDayTicket.isChecked = false
         }
+    }
+
+    fun showDialog(point: Boolean){
+        val builder = AlertDialog.Builder(requireContext())
+        val dialogBinding = DialogCheckBinding.inflate(layoutInflater)
+        builder.setView(dialogBinding.root)
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogBinding.apply {
+            textTitleCheckDialog.text =
+                if(point){
+                    "포인트가 부족합니다.\n포인트 충전 페이지로 이동하시겠습니까?"
+                } else {
+                    "차량이 등록되지 않았습니다.\n차량 등록 페이지로 이동하시겠습니까?"
+                }
+            buttonCancelCheckDialog.setOnClickListener {
+                dialog.dismiss()
+            }
+            buttonOkCheckDialog.setOnClickListener {
+                if(point){
+                    findNavController().navigate(R.id.action_purchaseTicketFragment_to_pointFragment)
+                } else {
+                    findNavController().navigate(R.id.action_purchaseTicketFragment_to_myCarFragment)
+                }
+                dialog.dismiss()
+            }
+        }
+        dialog.show()
+    }
+
+    fun showToast(message: String){
+        toastMapBinding.toastText.text = message
+        toast.show()
     }
 }

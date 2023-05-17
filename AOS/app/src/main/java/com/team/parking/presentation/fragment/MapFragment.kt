@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.res.ResourcesCompat
@@ -38,10 +39,16 @@ import com.team.parking.MainActivity
 import com.team.parking.R
 import com.team.parking.data.model.map.MapOrderResponse
 import com.team.parking.data.model.map.MapRequest
+import com.team.parking.data.model.map.MapResponse
 import com.team.parking.data.util.Resource
 import com.team.parking.databinding.FragmentMapBinding
 import com.team.parking.presentation.viewmodel.*
 import com.team.parking.presentation.adapter.ParkingOrderByAdapter
+import com.team.parking.presentation.utils.ExitDialog
+import com.team.parking.presentation.viewmodel.MapViewModel
+import com.team.parking.presentation.viewmodel.MyTicketViewModel
+import com.team.parking.presentation.viewmodel.SearchViewModel
+import com.team.parking.presentation.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,6 +85,10 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private val searchMarker =  Marker()
     private var watchFlag = false
     private var searchFlag : Boolean = false
+
+    var shareFlag = false
+    var parkingFlag = false
+
 
     var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
     //GPS 권한 생성
@@ -408,7 +419,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun changeLocation(){
         searchViewModel.searchedPlace.observe(viewLifecycleOwner){
             searchFlag = true
-
             val oi = OverlayImage.fromResource(R.drawable.ic_search_mark)
             searchMarker.height = 130
             searchMarker.width= 110
@@ -421,6 +431,37 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         }
     }
 
+    /**
+     * cache에 있는 데이터가 새로 갱신되는 데이터에 존재 하는지 비교
+     * 있으면 유지, 없으면 삭제
+     */
+    private fun compareCache(markers:List<MapResponse>){
+        val elementsToRemove = mutableListOf<Int>()
+        for(i in 0 until noClusteringCache.size){
+            var flag = true
+            for(mk in markers){
+                if(noClusteringCache[i].position.latitude==mk.lat&&noClusteringCache[i].position.longitude==mk.lng){
+                    flag = false
+                }
+            }
+            if(flag){
+                elementsToRemove.add(i)
+            }
+        }
+        for(index in elementsToRemove.indices.reversed()) {
+            noClusteringCache[elementsToRemove[index]].map = null
+            noClusteringCache[elementsToRemove[index]].onClickListener = null
+            noClusteringCache.removeAt(elementsToRemove[index])
+        }
+    }
+
+    private fun compareData(marker:MapResponse) : Boolean{
+        for(m in noClusteringCache){
+            if(marker.lat==m.position.latitude && marker.lng==m.position.longitude)
+                return true
+        }
+        return false
+    }
 
     /**
      * 주차장 데이터 가져오기(마커 등록)
@@ -548,29 +589,41 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                         }
 
                                     }
-                                    for(i in beforeMarkerSize until data.size){
-                                        val marker = Marker()
-                                        if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
-                                        else if(data[i].feeBasic==0) loadMarkerFromMemCache("정보없음")
-                                        else loadMarkerFromMemCache(data[i].feeBasic.toString())
-                                        marker.width = 130
-                                        marker.height = 130
-                                        marker.icon = icon
-                                        if(data[i].parkType==0){
-                                            marker.setOnClickListener {
-                                                getMapDetailData(data[i].parkId)
-                                                false
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        compareCache(data)
+                                        val addData = arrayListOf<Marker>()
+                                        for (i in beforeMarkerSize until data.size) {
+                                            if(compareData(data[i])) continue
+                                            else {
+                                                val marker = Marker()
+                                                if (data[i].feeBasic == -1) loadMarkerFromMemCache("무료")
+                                                else if (data[i].feeBasic == 0) loadMarkerFromMemCache(
+                                                    "정보없음"
+                                                )
+                                                else loadMarkerFromMemCache(data[i].feeBasic.toString())
+                                                marker.width = 130
+                                                marker.height = 130
+                                                marker.tag = data[i].parkType
+                                                marker.icon = icon
+                                                if (data[i].parkType == 0) {
+                                                    marker.setOnClickListener {
+                                                        getMapDetailData(data[i].parkId)
+                                                        false
+                                                    }
+                                                    if (shareFlag) marker.isVisible = false
+                                                } else {
+                                                    marker.setOnClickListener {
+                                                        getSharedLotDetail(data[i].parkId.toLong())
+                                                        false
+                                                    }
+                                                    if (parkingFlag) marker.isVisible = false
+                                                    marker.iconTintColor = Color.DKGRAY
+                                                }
+                                                noClusteringCache.add(marker)
+                                                marker.position = LatLng(data[i].lat, data[i].lng)
+                                                marker.map = naverMap
                                             }
-                                        }else{
-                                            marker.setOnClickListener {
-                                                getSharedLotDetail(data[i].parkId.toLong())
-                                                false
-                                            }
-                                            marker.iconTintColor = Color.DKGRAY
                                         }
-                                        noClusteringCache.add(marker)
-                                        marker.position = LatLng(data[i].lat,data[i].lng)
-                                        marker.map = naverMap
                                     }
                                 }
 
@@ -598,23 +651,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     private fun getMapDataFromRemote(){
 
         naverMap.addOnCameraChangeListener { i, b ->
-            /*val zoom = naverMap.cameraPosition.zoom
 
-            val view = layoutInflater.inflate(R.layout.toast_map,null)
-            val tv = view.findViewById<TextView>(R.id.toast_text)
-            if(zoom<13.8){
-                tv.text = resources.getString(R.string.distance_low)
-                toast.duration = Toast.LENGTH_SHORT
-                toast.setGravity(Gravity.CENTER,0,-600)
-                toast.view = view
-                toast.show()
-            }else{
-                tv.text = resources.getString(R.string.distance_high)
-                toast.duration= Toast.LENGTH_SHORT
-                toast.setGravity(Gravity.CENTER,0,-600)
-                toast.view = view
-                toast.show()
-            }*/
         }
         naverMap.addOnCameraIdleListener {
             if(searchFlag){
@@ -624,7 +661,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             }
             currentZoom =  naverMap.cameraPosition.zoom
             if(currentZoom>=13.8&&currentZoom<17.2){
-                toast.cancel()
+                fragmentMapBinding.tvToastLow.visibility = View.INVISIBLE
                 if(currentZoom<15f){
                     CoroutineScope(Dispatchers.Main).launch {
                         removeNoClusteringMapData()
@@ -651,14 +688,13 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     val nowLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
                     val dist = nowLocation.distanceTo(beforeCenterLocation)
                     //현재 중심점이 이전 중심점보다 1km 차이가 나면 갱신
-                    CoroutineScope(Dispatchers.Main).launch {
+                   /* CoroutineScope(Dispatchers.Main).launch {
                         removeNoClusteringMapData()
-                    }
+                    }*/
                     val mForLatitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180)) / 1000)*2000
                     val mForLongitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180) * Math.cos(
                         Math.toRadians(nowLocation.latitude)
                     )) / 1000) * 2000
-                    Log.i(TAG, "${mForLatitude},${mForLongitude}")
 
                     var mapRequest = MapRequest(
                         naverMap.cameraPosition.target.latitude,
@@ -685,12 +721,20 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                 }
 
             }else{
+                fragmentMapBinding.btnFragmentMapOpen.visibility = View.INVISIBLE
                 CoroutineScope(Dispatchers.Main).launch {
                     removeClusteringMapData()
                     removeNoClusteringMapData()
                     clusteringCache.clear()
                 }
-
+                if(currentZoom<13.8){
+                    fragmentMapBinding.tvToastLow.text = resources.getString(R.string.distance_low)
+                    fragmentMapBinding.tvToastLow.visibility = View.VISIBLE
+                }
+                else{
+                    fragmentMapBinding.tvToastLow.text = resources.getString(R.string.distance_high)
+                    fragmentMapBinding.tvToastLow.visibility = View.VISIBLE
+                }
             }
 
         }
@@ -786,7 +830,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         setTabLayout()
         initMarkerData()
         initAdapter()
-
+        clickBackpressed()
     }
 
     /**
@@ -794,12 +838,15 @@ class MapFragment : Fragment() , OnMapReadyCallback{
      */
     private fun mapSetting(){
         naverMap.uiSettings.apply {
-            isLocationButtonEnabled = true
+            isLocationButtonEnabled = false
+            isZoomControlEnabled = false
             logoGravity = Gravity.END
             setLogoMargin(0,10,10,0)
         }
         naverMap.minZoom = 8.0
         naverMap.maxZoom = 18.0
+        fragmentMapBinding.zoomcontrolMapFragment.map = naverMap
+        fragmentMapBinding.locationbuttonMapFragment.map = naverMap
     }
 
     override fun onMapReady(naverMap: NaverMap) {
@@ -896,7 +943,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     }
 
 
-
     /**
      * 장소 검색 클릭시 SearchFragment로 이동
      */
@@ -932,6 +978,78 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             if(watchFlag) listBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
+
+    /**
+     * 뒤로가기 클릭시 나가기 알림생성
+     */
+    private fun clickBackpressed(){
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,object : OnBackPressedCallback(true){
+                override fun handleOnBackPressed() {
+                    if(listBottomSheet.state!=BottomSheetBehavior.STATE_HIDDEN){
+                        listBottomSheet.state=BottomSheetBehavior.STATE_HIDDEN
+                    }
+                    else if(clickBottomSheet.state!=BottomSheetBehavior.STATE_HIDDEN){
+                        clickBottomSheet.state = BottomSheetBehavior.STATE_HIDDEN
+                    }
+                    else if((activity as MainActivity).navigationDrawer.isOpen){
+                        (activity as MainActivity).navigationDrawer.closeDrawers()
+                    }
+                    else{
+                        ExitDialog().show(childFragmentManager,null)
+                    }
+                }
+
+            })
+    }
+
+    /**
+     * 공유주차장만 보기
+     */
+    fun onClickShareButton(){
+            if(shareFlag){
+                fragmentMapBinding.tvFragmentMapOnlyShare.setBackgroundResource(R.drawable.map_only_share_white)
+                shareFlag=false
+                for(marker in noClusteringCache){
+                    if(marker.tag==0)
+                        marker.isVisible = true
+                }
+            }else{
+                shareFlag = true
+                fragmentMapBinding.tvFragmentMapOnlyShare.setBackgroundResource(R.drawable.map_only_share_org)
+                for(marker in noClusteringCache){
+                    if(marker.tag==0)
+                        marker.isVisible = false
+                }
+            }
+        
+    }
+
+    /**
+     * 일반주차장만 보기
+     */
+    fun onClickParkingButton(){
+
+        if(parkingFlag){
+            fragmentMapBinding.tvFragmentMapOnlyParking.setBackgroundResource(R.drawable.map_only_share_white)
+            parkingFlag=false
+            for(marker in noClusteringCache){
+                Log.i(TAG, "onClickParkingButton: ${marker.tag}")
+                if(marker.tag!=0) {
+                    marker.isVisible = true
+                }
+            }
+        }else{
+            parkingFlag = true
+            fragmentMapBinding.tvFragmentMapOnlyParking.setBackgroundResource(R.drawable.map_only_share_org)
+            for(marker in noClusteringCache){
+                if(marker.tag!=0)
+                    marker.isVisible = false
+            }
+        }
+
+    }
+    
 }
 
 

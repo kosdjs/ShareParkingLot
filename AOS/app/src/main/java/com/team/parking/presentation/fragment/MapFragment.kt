@@ -89,7 +89,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     var shareFlag = false
     var parkingFlag = false
 
-
     var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
     //GPS 권한 생성
     private val requestPermission = registerForActivityResult(
@@ -120,8 +119,12 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         locationSource = FusedLocationSource(this, PERMISSION_REQUEST_CODE)
     }
-    
-    
+
+    override fun onPause() {
+        super.onPause()
+        mapViewModel.updateBeforeLocation(CameraPosition(naverMap.cameraPosition.target,naverMap.cameraPosition.zoom))
+        noClusteringCache.clear()
+    }
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -477,6 +480,10 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                             val beforeMarkerSize = clusteringCache.size
                             //클러스러팅 마커
                             if(data!![0].parkId==-1){
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    removeNoClusteringMapData()
+                                    noClusteringCache = arrayListOf()
+                                }
                                 //이전 마커들이 더 많은경우 재사용후 남은것들은 삭제
                                 if(data.size<beforeMarkerSize){
                                     for(i in 0 until data.size){
@@ -573,7 +580,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 else{
                                     for(i in 0 until beforeMarkerSize){
                                         if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
-                                        else if(data[i].feeBasic==0) loadMarkerFromMemCache("정보없음")
+                                        else if(data[i].feeBasic==0) loadMarkerFromMemCache("가격없음")
                                         else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
                                         noClusteringCache[i].icon = icon
@@ -598,7 +605,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                                 val marker = Marker()
                                                 if (data[i].feeBasic == -1) loadMarkerFromMemCache("무료")
                                                 else if (data[i].feeBasic == 0) loadMarkerFromMemCache(
-                                                    "정보없음"
+                                                    "가격없음"
                                                 )
                                                 else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                                 marker.width = 130
@@ -617,7 +624,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                                         false
                                                     }
                                                     if (parkingFlag) marker.isVisible = false
-                                                    marker.iconTintColor = Color.DKGRAY
+                                                    marker.iconTintColor = Color.BLUE
                                                 }
                                                 noClusteringCache.add(marker)
                                                 marker.position = LatLng(data[i].lat, data[i].lng)
@@ -691,33 +698,18 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                    /* CoroutineScope(Dispatchers.Main).launch {
                         removeNoClusteringMapData()
                     }*/
-                    val mForLatitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180)) / 1000)*2000
-                    val mForLongitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180) * Math.cos(
-                        Math.toRadians(nowLocation.latitude)
-                    )) / 1000) * 2000
-
                     var mapRequest = MapRequest(
                         naverMap.cameraPosition.target.latitude,
                         naverMap.cameraPosition.target.longitude,
-                        naverMap.contentBounds.northWest.latitude+mForLatitude,
-                        naverMap.contentBounds.northEast.longitude+mForLongitude,
-                        naverMap.contentBounds.southWest.latitude-mForLatitude,
-                        naverMap.contentBounds.southWest.longitude-mForLongitude,
+                        naverMap.contentBounds.northWest.latitude,
+                        naverMap.contentBounds.northEast.longitude,
+                        naverMap.contentBounds.southWest.latitude,
+                        naverMap.contentBounds.southWest.longitude,
                         naverMap.cameraPosition.zoom
                     )
                     getMapData(mapRequest)
                     beforeCenterLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
-
-                    var currentRequest = MapRequest(
-                        naverMap.cameraPosition.target.latitude,
-                        naverMap.cameraPosition.target.longitude,
-                        naverMap.contentBounds.northWest.latitude,
-                        naverMap.contentBounds.northEast.longitude ,
-                        naverMap.contentBounds.southWest.latitude ,
-                        naverMap.contentBounds.southWest.longitude ,
-                        naverMap.cameraPosition.zoom
-                    )
-                    requestAllMapRequest = currentRequest
+                    requestAllMapRequest = mapRequest
                 }
 
             }else{
@@ -726,6 +718,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                     removeClusteringMapData()
                     removeNoClusteringMapData()
                     clusteringCache.clear()
+                    noClusteringCache.clear()
                 }
                 if(currentZoom<13.8){
                     fragmentMapBinding.tvToastLow.text = resources.getString(R.string.distance_low)
@@ -858,9 +851,26 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         getMapDataFromRemote()
         changeLocation()
         onCkickMapListener()
+
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        if(mapViewModel.beforeLocation!=null) {
+            naverMap.cameraPosition = mapViewModel.beforeLocation!!
+            var mapRequest = MapRequest(
+                naverMap.cameraPosition.target.latitude,
+                naverMap.cameraPosition.target.longitude,
+                naverMap.contentBounds.northWest.latitude,
+                naverMap.contentBounds.northEast.longitude,
+                naverMap.contentBounds.southWest.latitude,
+                naverMap.contentBounds.southWest.longitude,
+                naverMap.cameraPosition.zoom
+            )
+            getMapData(mapRequest)
+            Log.i(TAG, "onResume: zzz")
+        }
+    }
     //두 지점 간의 거리 계산
     private fun getDistance(
         lat1: Double,
@@ -1034,7 +1044,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             fragmentMapBinding.tvFragmentMapOnlyParking.setBackgroundResource(R.drawable.map_only_share_white)
             parkingFlag=false
             for(marker in noClusteringCache){
-                Log.i(TAG, "onClickParkingButton: ${marker.tag}")
                 if(marker.tag!=0) {
                     marker.isVisible = true
                 }

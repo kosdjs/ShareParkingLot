@@ -89,7 +89,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
     var shareFlag = false
     var parkingFlag = false
 
-
     var beforeCenterLocation : LatLng = LatLng(0.0,0.0)
     //GPS 권한 생성
     private val requestPermission = registerForActivityResult(
@@ -120,8 +119,12 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         locationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         locationSource = FusedLocationSource(this, PERMISSION_REQUEST_CODE)
     }
-    
-    
+
+    override fun onPause() {
+        super.onPause()
+        mapViewModel.updateBeforeLocation(CameraPosition(naverMap.cameraPosition.target,naverMap.cameraPosition.zoom))
+        noClusteringCache.clear()
+    }
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -692,33 +695,18 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                    /* CoroutineScope(Dispatchers.Main).launch {
                         removeNoClusteringMapData()
                     }*/
-                    val mForLatitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180)) / 1000)*2000
-                    val mForLongitude = (1 / (EARTH_RADIUS * 1 * (Math.PI / 180) * Math.cos(
-                        Math.toRadians(nowLocation.latitude)
-                    )) / 1000) * 2000
-
                     var mapRequest = MapRequest(
                         naverMap.cameraPosition.target.latitude,
                         naverMap.cameraPosition.target.longitude,
-                        naverMap.contentBounds.northWest.latitude+mForLatitude,
-                        naverMap.contentBounds.northEast.longitude+mForLongitude,
-                        naverMap.contentBounds.southWest.latitude-mForLatitude,
-                        naverMap.contentBounds.southWest.longitude-mForLongitude,
+                        naverMap.contentBounds.northWest.latitude,
+                        naverMap.contentBounds.northEast.longitude,
+                        naverMap.contentBounds.southWest.latitude,
+                        naverMap.contentBounds.southWest.longitude,
                         naverMap.cameraPosition.zoom
                     )
                     getMapData(mapRequest)
                     beforeCenterLocation = LatLng(naverMap.cameraPosition.target.latitude,naverMap.cameraPosition.target.longitude)
-
-                    var currentRequest = MapRequest(
-                        naverMap.cameraPosition.target.latitude,
-                        naverMap.cameraPosition.target.longitude,
-                        naverMap.contentBounds.northWest.latitude,
-                        naverMap.contentBounds.northEast.longitude ,
-                        naverMap.contentBounds.southWest.latitude ,
-                        naverMap.contentBounds.southWest.longitude ,
-                        naverMap.cameraPosition.zoom
-                    )
-                    requestAllMapRequest = currentRequest
+                    requestAllMapRequest = mapRequest
                 }
 
             }else{
@@ -860,9 +848,26 @@ class MapFragment : Fragment() , OnMapReadyCallback{
         getMapDataFromRemote()
         changeLocation()
         onCkickMapListener()
+
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        if(mapViewModel.beforeLocation!=null) {
+            naverMap.cameraPosition = mapViewModel.beforeLocation!!
+            var mapRequest = MapRequest(
+                naverMap.cameraPosition.target.latitude,
+                naverMap.cameraPosition.target.longitude,
+                naverMap.contentBounds.northWest.latitude,
+                naverMap.contentBounds.northEast.longitude,
+                naverMap.contentBounds.southWest.latitude,
+                naverMap.contentBounds.southWest.longitude,
+                naverMap.cameraPosition.zoom
+            )
+            getMapData(mapRequest)
+            Log.i(TAG, "onResume: zzz")
+        }
+    }
     //두 지점 간의 거리 계산
     private fun getDistance(
         lat1: Double,
@@ -1036,7 +1041,6 @@ class MapFragment : Fragment() , OnMapReadyCallback{
             fragmentMapBinding.tvFragmentMapOnlyParking.setBackgroundResource(R.drawable.map_only_share_white)
             parkingFlag=false
             for(marker in noClusteringCache){
-                Log.i(TAG, "onClickParkingButton: ${marker.tag}")
                 if(marker.tag!=0) {
                     marker.isVisible = true
                 }

@@ -480,7 +480,10 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                             val beforeMarkerSize = clusteringCache.size
                             //클러스러팅 마커
                             if(data!![0].parkId==-1){
-                                removeNoClusteringMapData()
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    removeNoClusteringMapData()
+                                    noClusteringCache = arrayListOf()
+                                }
                                 //이전 마커들이 더 많은경우 재사용후 남은것들은 삭제
                                 if(data.size<beforeMarkerSize){
                                     for(i in 0 until data.size){
@@ -577,7 +580,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                 else{
                                     for(i in 0 until beforeMarkerSize){
                                         if(data[i].feeBasic==-1) loadMarkerFromMemCache("무료")
-                                        else if(data[i].feeBasic==0) loadMarkerFromMemCache("정보없음")
+                                        else if(data[i].feeBasic==0) loadMarkerFromMemCache("가격없음")
                                         else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                         noClusteringCache[i].position = LatLng(data[i].lat,data[i].lng)
                                         noClusteringCache[i].icon = icon
@@ -602,7 +605,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                                 val marker = Marker()
                                                 if (data[i].feeBasic == -1) loadMarkerFromMemCache("무료")
                                                 else if (data[i].feeBasic == 0) loadMarkerFromMemCache(
-                                                    "정보없음"
+                                                    "가격없음"
                                                 )
                                                 else loadMarkerFromMemCache(data[i].feeBasic.toString())
                                                 marker.width = 130
@@ -621,7 +624,7 @@ class MapFragment : Fragment() , OnMapReadyCallback{
                                                         false
                                                     }
                                                     if (parkingFlag) marker.isVisible = false
-                                                    marker.iconTintColor = Color.DKGRAY
+                                                    marker.iconTintColor = Color.BLUE
                                                 }
                                                 noClusteringCache.add(marker)
                                                 marker.position = LatLng(data[i].lat, data[i].lng)

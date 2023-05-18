@@ -18,6 +18,7 @@ import com.kakao.sdk.common.KakaoSdk.type
 import com.team.parking.MainActivity
 import com.team.parking.R
 import com.team.parking.data.model.notification.GetNotiListRequest
+import kotlin.math.log
 
 
 private const val TAG = "FirebaseMessage종건"
@@ -53,7 +54,7 @@ class FirebaseMessagingServiceUtil : FirebaseMessagingService(){
         var title = remoteMessage.notification!!.title
         var body = remoteMessage.notification!!.body
 
-
+        Log.d(TAG, "sendNotification: ${body}")
         var data : GetNotiListRequest = gson.fromJson(body,GetNotiListRequest::class.java)
         var content = data.content
 
@@ -70,15 +71,18 @@ class FirebaseMessagingServiceUtil : FirebaseMessagingService(){
             editor.commit()
 
         }else {
+            Log.d(TAG, "sendNotification: ${data.noti_id}")
             Log.d(TAG, "sendNotification: ${data.ticket_id}")
+            Log.d(TAG, "sendNotification: ${data.type}")
             intent.putExtra("noti_id", data.noti_id)
             intent.putExtra("user_id", data.user_id)
             intent.putExtra("type", data.type)
             intent.putExtra("ticket_id", data.ticket_id)
         }
 
-        val pendingIntent = PendingIntent.getActivity(this, id, intent, PendingIntent.FLAG_IMMUTABLE)
-
+        val pendingIntent = PendingIntent.getActivity(this, id, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val noti_id = intent.getLongExtra("noti_id", -1)
+        Log.i(TAG, "222213: ${noti_id}")
         val channelId = "Channel ID"
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)

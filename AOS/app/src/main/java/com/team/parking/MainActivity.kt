@@ -130,7 +130,9 @@ class MainActivity : AppCompatActivity() {
         sp = PreferenceManager.getDefaultSharedPreferences(this)
 
         editor = sp.edit()
-
+        notificationViewModel.notiList.observe(this){
+            Log.i(TAG, "onCreate: $it")
+        }
         if (sp.getBoolean("auto_login", false)) {
             userViewModel.login(
                 User(
@@ -147,11 +149,12 @@ class MainActivity : AppCompatActivity() {
             )
             
             notificationViewModel.getNotiList(sp.getLong("user_id",0)!!)
+            Log.d(TAG, "onCreate: gsdgsgdsgdsgsgd")
             if (intent != null && "NOTIFICATION_CLICK" == intent.action) {
                 // Retrieve any necessary data from the intent extras
                 Log.i("종건", "onCreate: ${intent.action}")
                 val type: Int? = intent.getIntExtra("type",-1)
-
+                notificationViewModel.getNotiList(sp.getLong("user_id",-1))
                 when (type) {
                     0 -> {
 
@@ -165,6 +168,7 @@ class MainActivity : AppCompatActivity() {
                         ticketDetailViewModel.ticketId = ticket_id!!.toLong()
                         notificationViewModel.readNoti(noti_id!!.toLong(),sp.getLong("user_id",0))
                         navController.navigate(R.id.action_loginFragment_to_mapFragment)
+                        Log.d(TAG, "onCreate: asdasdasdasdasdasdas")
                         navController.navigate(R.id.action_map_fragment_to_ticketDetailFragment)
                     }
                     else -> {
@@ -182,7 +186,7 @@ class MainActivity : AppCompatActivity() {
 
                         ticketDetailViewModel.buyer=false
                         ticketDetailViewModel.ticketId = ticket_id!!.toLong()
-
+                        Log.d(TAG, "onCreate: asdasdasdasdasdasasdasddas")
                         notificationViewModel.readNoti(noti_id!!,sp.getLong("user_id",0))
                         
                         navController.navigate(R.id.action_loginFragment_to_mapFragment)
@@ -310,6 +314,7 @@ class MainActivity : AppCompatActivity() {
         if (it!!.isNotEmpty()){
             headerBinding.circle.visibility=View.VISIBLE
         }else{
+            Log.d(TAG, "checkList: ${it}")
             headerBinding.circle.visibility=View.GONE
         }
     }

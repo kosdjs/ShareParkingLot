@@ -26,6 +26,7 @@ class FirebaseMessagingServiceUtil : FirebaseMessagingService(){
     var gson = Gson()
     private lateinit var sp: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private lateinit var mainActivity: MainActivity
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d(TAG, "onNewToken: ${token}")
@@ -41,6 +42,9 @@ class FirebaseMessagingServiceUtil : FirebaseMessagingService(){
         // FCM을 통해서 전달 받은 정보에 Notification 정보가 있는 경우 알림을 생성한다.
         if (remoteMessage.notification != null){
             sendNotification(remoteMessage)
+            mainActivity= MainActivity.getInstance()!!
+            sp = PreferenceManager.getDefaultSharedPreferences(this)
+            mainActivity.notificationViewModel.getNotiList(sp.getLong("user_id",0))
         }else{
             Log.d(TAG, "수신 에러: Notification이 비어있습니다.")
         }

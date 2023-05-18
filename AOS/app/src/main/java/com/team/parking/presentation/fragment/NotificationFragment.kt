@@ -24,6 +24,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+private const val TAG="종건"
 class NotificationFragment : Fragment() {
     private lateinit var binding: FragmentNotificationBinding
     private lateinit var userViewModel: UserViewModel
@@ -86,6 +87,7 @@ class NotificationFragment : Fragment() {
             }
         })
         notiViewModel.notiList.observe(viewLifecycleOwner){
+            Log.i(TAG, "onViewCreated: ")
             (activity as MainActivity).checkList(it!!)
             notiAdapter.differ.submitList(it)
         }

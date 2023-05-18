@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.overlay.Marker
 import com.team.parking.data.model.map.MapDetailResponse
 import com.team.parking.data.model.map.MapOrderResponse
@@ -54,7 +56,8 @@ class MapViewModel(
     val parkingOrder : LiveData<Resource<List<MapOrderResponse>>> get() = _parkingOrder
 
 
-
+    //지도 Frag 에서 다른 Frag 이동시 위치 저장
+     var beforeLocation : CameraPosition? = null
 
     private var _marker : MutableLiveData<Marker> = MutableLiveData()
 
@@ -64,6 +67,10 @@ class MapViewModel(
      */
     fun updateSelectedPark(type: Int){
         _selectedPark.postValue(type)
+    }
+
+    fun updateBeforeLocation(cameraPosition: CameraPosition){
+        beforeLocation = cameraPosition
     }
 
 

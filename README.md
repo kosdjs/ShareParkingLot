@@ -32,6 +32,13 @@
 - **알림창**: 거래에 따라 발생되는 알림을 확인 할 수 있습니다.
 - **거래내역**: 자신이 거래했던 내역에 대해서 확인 할 수 있습니다.
 
+
+---
+
+
+
+
+
 | 분야 | 사용기술 및 라이브러리 |  |  |
 | --- | --- | --- | --- |
 | FrontEnd | Android, Clean Architecture, SAA, MVVM, Coroutine, Hilt, Jetpack Navigation, Bootpay |  |  |

@@ -74,6 +74,7 @@
 [주차권 구매 ]
 
 ![거래_구매자_입장_AdobeExpress](/uploads/b953cd51e4d47a767ead65221ad9a1e7/거래_구매자_입장_AdobeExpress.gif)
+
 [주차권 판매 ]
 
 ![주차권거래_판매자_입장_AdobeExpress](/uploads/fc0ff871fd04c743dd71a965e504b708/주차권거래_판매자_입장_AdobeExpress.gif)

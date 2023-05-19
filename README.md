@@ -47,3 +47,34 @@
 | DevOps | AWS EC2, Docker, Jenkins |  |  |
 | Tool | Jira, Notion, IntelliJ, AndroidStudio, GitLab |  |  |
 | Design | Figma |  |  |
+
+
+
+
+
+
+# 🙈 기능 엿보기 (GIF)
+
+[주차장 정보]
+
+![지도클러_AdobeExpress.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/09b7bcca-199d-45c7-bd27-b2cb84ca9653/%EC%A7%80%EB%8F%84%ED%81%B4%EB%9F%AC_AdobeExpress.gif)
+
+[주차장 세부]
+
+![세부_AdobeExpress.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4c84e2d1-80fb-4f0e-b5b3-dbf1c3ba557d/%EC%84%B8%EB%B6%80_AdobeExpress.gif)
+
+[한눈에 보기]
+
+![한눈에보기_AdobeExpress.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/92d8e7b2-e839-411d-aac0-112a9251a48e/%ED%95%9C%EB%88%88%EC%97%90%EB%B3%B4%EA%B8%B0_AdobeExpress.gif)
+
+[장소 검색]
+
+![장소_검색_AdobeExpress.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ac5e0251-9cb8-4140-9c67-52c87d3283fb/%EC%9E%A5%EC%86%8C_%EA%B2%80%EC%83%89_AdobeExpress.gif)
+
+[주차권 구매 ]
+
+![거래_구매자_입장_AdobeExpress.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b47aa399-657a-4770-9af4-4eedad2b6df9/%EA%B1%B0%EB%9E%98_%EA%B5%AC%EB%A7%A4%EC%9E%90_%EC%9E%85%EC%9E%A5_AdobeExpress.gif)
+
+[주차권 판매 ]
+
+![주차권거래_판매자_입장_AdobeExpress.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b4b8b519-dfb2-4a10-b6c8-63f3571bfe73/%EC%A3%BC%EC%B0%A8%EA%B6%8C%EA%B1%B0%EB%9E%98_%ED%8C%90%EB%A7%A4%EC%9E%90_%EC%9E%85%EC%9E%A5_AdobeExpress.gif)

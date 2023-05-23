@@ -31,7 +31,6 @@ public class SwaggerConfiguration {
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Ju, Mo",
-                "싸피 자율 프로젝트",
                 "version1.0",
                 "",
                 new Contact("Contact Me", "", "luminaries1@gmial.com"),

@@ -53,28 +53,4 @@
 
 
 
-# 🙈 기능 엿보기 (GIF)
 
-[주차장 정보]
-
-![지도클러_AdobeExpress](/uploads/4b736621026630191e99fa246ca71bea/지도클러_AdobeExpress.gif)
-
-[주차장 세부]
-
-![세부_AdobeExpress](/uploads/e1d9671cf46e7187bbee9f6ca4cb420f/세부_AdobeExpress.gif)
-
-[한눈에 보기]
-
-![한눈에보기_AdobeExpress](/uploads/2bf1aab72fabebe886ea6860cbd2a3de/한눈에보기_AdobeExpress.gif)
-
-[장소 검색]
-
-![장소_검색_AdobeExpress](/uploads/c093ee4b33975216f99bd939b0ffd229/장소_검색_AdobeExpress.gif)
-
-[주차권 구매 ]
-
-![거래_구매자_입장_AdobeExpress](/uploads/b953cd51e4d47a767ead65221ad9a1e7/거래_구매자_입장_AdobeExpress.gif)
-
-[주차권 판매 ]
-
-![주차권거래_판매자_입장_AdobeExpress](/uploads/fc0ff871fd04c743dd71a965e504b708/주차권거래_판매자_입장_AdobeExpress.gif)

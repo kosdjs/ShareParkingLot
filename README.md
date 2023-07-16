@@ -54,3 +54,28 @@
 
 
 
+# 🙈 기능 엿보기 (GIF)
+
+[주차장 정보]
+
+![지도클러_AdobeExpress](https://github.com/GGE2/ShareParkingLot/assets/5858988/e7217e6d-57fa-4116-8327-2548af4aee42)
+
+[주차장 세부]
+
+![세부_AdobeExpress](https://github.com/GGE2/ShareParkingLot/assets/5858988/d1241537-0d22-4521-879f-0739bf8a416c)
+
+[한눈에 보기]
+
+![한눈에보기_AdobeExpress](https://github.com/GGE2/ShareParkingLot/assets/5858988/5f3f414f-861a-4576-aec7-37fa9525e59f)
+
+[장소 검색]
+
+![장소_검색_AdobeExpress](https://github.com/GGE2/ShareParkingLot/assets/5858988/09c3e424-8308-4616-8b5c-4074257b64b1)
+
+[주차권 구매 ]
+
+![거래_구매자_입장_AdobeExpress](https://github.com/GGE2/ShareParkingLot/assets/5858988/305727a8-1b21-4e85-84be-38438025f902)
+
+[주차권 판매 ]
+
+![주차권거래_판매자_입장_AdobeExpress](https://github.com/GGE2/ShareParkingLot/assets/5858988/48d07b53-69c9-46b7-9368-7ba4f07fe09f)
